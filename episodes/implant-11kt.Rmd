@@ -4,14 +4,6 @@ teaching: 20
 exercises: 75
 ---
 
-:::::::::::::::::::::::::::::::::::::: questions
-
-- How can we deliver a sustained, controlled androgen dose to a freely-swimming electric fish?
-- Why is a pre-treatment EOD recording essential before any hormone manipulation?
-- What landmarks and surgical practices keep an intraperitoneal (IP) implant safe and reproducible?
-
-::::::::::::::::::::::::::::::::::::::::::::::::
-
 :::::::::::::::::::::::::::::::::::::: objectives
 
 - Prepare a 20% w/w 11-ketotestosterone (11-KT) / cocoa butter implant suitable for IP delivery.
