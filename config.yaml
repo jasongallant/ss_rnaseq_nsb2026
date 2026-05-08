@@ -1,3 +1,4 @@
+---
 #------------------------------------------------------------
 # Values for this lesson.
 #------------------------------------------------------------
@@ -10,37 +11,37 @@
 # incubator: The Carpentries Incubator
 # Note that you can also use a custom carpentry type. For more info,
 # see the documentation: https://carpentries.github.io/sandpaper-docs/editing.html
-carpentry: 'incubator'
+carpentry: "efish-genomics"
 
 # Custom carpentry description
 # This will be used as the alt text for the logo
-# carpentry_description: "Custom Carpentry"
+carpentry_description: "EFISH Genomics"
 
 # Overall title for pages.
-title: 'Lesson Title'
+title: "Electric Fish: Single-Nucleus RNA-seq"
 
 # Date the lesson was created (YYYY-MM-DD, this is empty by default)
-created: '2026-05-06'
+created: "2026-05-06"
 
 # Comma-separated list of keywords for the lesson
-keywords: 'software, data, lesson, The Carpentries'
+keywords: "software, data, lesson, The Carpentries"
 
 # Life cycle stage of the lesson
 # refer to <https://docs.carpentries.org/resources/curriculum/lesson-life-cycle.html> for details
 # possible values: pre-alpha, alpha, beta, stable
-life_cycle: 'pre-alpha'
+#life_cycle: "pre-alpha"
 
 # License of the lesson materials (recommended CC-BY 4.0)
-license: 'CC-BY 4.0'
+license: "CC-BY 4.0"
 
 # Link to the source repository for this lesson
-source: 'https://github.com/jasongallant/ss_rnaseq_nsb2026'
+source: "https://github.com/jasongallant/ss_rnaseq_nsb2026"
 
 # Default branch of your lesson
-branch: 'main'
+branch: "main"
 
 # Who to contact if there are any issues
-contact: 'team@carpentries.org'
+contact: "jgallant@msu.edu"
 
 # Navigation ------------------------------------------------
 #
@@ -65,22 +66,19 @@ contact: 'team@carpentries.org'
 # - another-learner.md
 
 # Order of episodes in your lesson
-episodes: 
-- introduction.Rmd
-- implant-11kt.Rmd
+episodes:
+  - introduction.Rmd
+  - implant-11kt.Rmd
+  - examine-eod-duration.Rmd
 
 # Information for Learners
-learners: 
+learners:
 
 # Information for Instructors
-instructors: 
+instructors:
 
 # Learner Profiles
-profiles: 
+profiles:
 
 # Customisation ---------------------------------------------
-#
-# This space below is where custom yaml items (e.g. pinning
-# sandpaper and varnish versions) should live
-
-
+varnish: jasongallant/varnish
