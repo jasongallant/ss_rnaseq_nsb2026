@@ -241,14 +241,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#introduction-and-overview" id="toc-introduction-and-overview" class="nav-link active" data-scroll-target="#introduction-and-overview">Introduction and Overview</a></li>
-  <li><a href="#the-story-so-far" id="toc-the-story-so-far" class="nav-link" data-scroll-target="#the-story-so-far">The Story So Far</a>
-  <ul class="collapse">
-  <li><a href="#the-peripheral-story-hormones-the-electric-organ-and-the-eod" id="toc-the-peripheral-story-hormones-the-electric-organ-and-the-eod" class="nav-link" data-scroll-target="#the-peripheral-story-hormones-the-electric-organ-and-the-eod">The peripheral story: hormones, the electric organ, and the EOD</a></li>
-  <li><a href="#the-molecular-layer-what-we-recently-published" id="toc-the-molecular-layer-what-we-recently-published" class="nav-link" data-scroll-target="#the-molecular-layer-what-we-recently-published">The molecular layer: what we recently published</a></li>
-  <li><a href="#the-central-layer-corollary-discharge" id="toc-the-central-layer-corollary-discharge" class="nav-link" data-scroll-target="#the-central-layer-corollary-discharge">The central layer: corollary discharge</a></li>
-  </ul></li>
-  <li><a href="#key-references" id="toc-key-references" class="nav-link" data-scroll-target="#key-references">Key references</a></li>
+  <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview">Overview</a></li>
+  <li><a href="#the-sensorimotor-loop" id="toc-the-sensorimotor-loop" class="nav-link" data-scroll-target="#the-sensorimotor-loop">The Sensorimotor Loop</a></li>
+  <li><a href="#whats-missing-cell-type-resolution" id="toc-whats-missing-cell-type-resolution" class="nav-link" data-scroll-target="#whats-missing-cell-type-resolution">What’s Missing: Cell-Type Resolution</a></li>
+  <li><a href="#keypoints" id="toc-keypoints" class="nav-link" data-scroll-target="#keypoints">Keypoints</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/jasongallant/ss_rnaseq_nsb2026/edit/main/episodes/introduction.Rmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/jasongallant/ss_rnaseq_nsb2026/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
@@ -285,10 +281,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <div class="callout-body-container callout-body">
 <ul>
-<li>What genomic resources have been developed for weakly electric fish, and why?</li>
-<li>How does single-cell RNA sequencing differ from bulk RNA-seq, and why does that matter for studying the electric organ system?</li>
-<li>What is the integrated story linking hormones, the electric organ, sensory receptor tuning, and central corollary discharge in mormyrid fish?</li>
-<li>How can changes at the cellular and molecular level reshape behavior across seasonal, developmental, and evolutionary timescales?</li>
+<li>How does testosterone simultaneously change the electric organ, knollenorgans, and corollary discharge circuit?</li>
+<li>Why can’t bulk RNA-seq tell us which cell types are responsible for gene expression changes in the electric organ?</li>
+<li>What questions can single-nucleus RNA-seq answer in this system that previous approaches could not?</li>
 </ul>
 </div>
 </div>
@@ -303,11 +298,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <div class="callout-body-container callout-body">
 <ul>
-<li>Describe the genomic resources developed for weakly electric fish at the MSU Electric Fish Lab.</li>
-<li>Explain why single-cell transcriptomics is a transformative technique for biology and what kinds of questions it enables.</li>
-<li>Summarize how testosterone coordinately reshapes the electric organ, knollenorgan electroreceptor tuning, and central corollary discharge timing.</li>
-<li>Identify the molecular and cellular changes implicated in testosterone-induced EOD elongation in mormyrids.</li>
-<li>Connect the single-cell approach to open questions that motivate this module.</li>
+<li>Trace the mormyrid sensorimotor loop from command nucleus to electric organ to knollenorgan and back.</li>
+<li>Summarize what testosterone does to each component of the loop and by what mechanism.</li>
+<li>Distinguish the direct (corollary discharge circuit) from indirect (knollenorgan retuning) mechanisms of hormonal coordination.</li>
+<li>Explain why single-nucleus RNA-seq is the natural next step after bulk transcriptomics in this system.</li>
 </ul>
 </div>
 </div>
@@ -315,133 +309,61 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <source src="https://d18e7eu8nurr5a.cloudfront.net/lectures/introduction.mp4" type="video/mp4">
   Your browser does not support embedded video.
 </video>
-<section id="introduction-and-overview" class="level2">
-<h2 class="anchored" data-anchor-id="introduction-and-overview">Introduction and Overview</h2>
-<p>The MSU Electric Fish Lab (<a href="https://efish.integrativebiology.msu.edu">https://efish.integrativebiology.msu.edu</a>) has been leading efforts to develop genomic resources for weakly electric fish for the last 13 years. We started with the electric eel genome (<a href="https://doi.org/10.1126/science.1254432">Gallant et al.&nbsp;2014, <em>Science</em></a>), and from there we’ve developed genomes for many of the major lineages of weakly electric fish — both South American (Gymnotiformes) and African (Mormyroidea). We’ve also developed techniques for genome manipulation using CRISPR/Cas9 and Tol2 transposases, though that’s out of the scope of this module!</p>
-<div class="callout callout-style-default callout-note callout-titled" title="Ask Vicky and Jason">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Ask Vicky and Jason
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>If you’re curious about CRISPR/Cas9 and Tol2 transposase work in electric fish, ask Vicky Salazar and Jason about their efforts to develop these techniques.</p>
-</div>
-</div>
-<p>A major innovation since the original genome and transcriptome sequencing has been the ability to sequence transcriptomes from individual cells. This technique was named <em>Science</em> magazine’s Breakthrough of the Year in 2018 (<a href="https://doi.org/10.1126/science.362.6421.1344">Pennisi 2018, <em>Science</em> 362:1344</a>), and it has already led to incredible insights across biology:</p>
-<ul>
-<li><strong>Neuroscience</strong> — comprehensive cell-type atlases of the mammalian brain (e.g., <a href="https://doi.org/10.1038/s41586-018-0654-5">Tasic et al.&nbsp;2018, <em>Nature</em></a>; the <a href="https://doi.org/10.1038/s41586-021-03950-0">BRAIN Initiative Cell Census Network’s 2021 mouse primary motor cortex atlas, <em>Nature</em></a>) have replaced classical morphological taxonomies with molecular ones.</li>
-<li><strong>Developmental and evolutionary biology</strong> — whole-embryo single-cell atlases of zebrafish (<a href="https://doi.org/10.1126/science.aar3131">Wagner et al.&nbsp;2018, <em>Science</em></a>; <a href="https://doi.org/10.1126/science.aar4362">Briggs et al.&nbsp;2018, <em>Science</em></a>) and <em>Xenopus</em> have reconstructed cellular lineages from zygote to organogenesis, while comparative cell-type atlases (reviewed in <a href="https://doi.org/10.1016/j.tig.2021.08.007">Tanay &amp; Sebé-Pedrós 2021, <em>Trends in Genetics</em></a>) are letting us trace cell-type homology across millions of years of evolution.</li>
-<li><strong>Genomics</strong> — single-cell approaches have revealed regulatory heterogeneity invisible to bulk RNA-seq, including rare cell states that drive disease progression and tissue regeneration.</li>
-</ul>
-<p>We’ll be exploring this technique in this course module <strong>end-to-end</strong> — including sample preparation, bioinformatics, and data analysis.</p>
+<section id="overview" class="level2">
+<h2 class="anchored" data-anchor-id="overview">Overview</h2>
+<p>In this module you’ll analyze real single-nucleus RNA-seq data from <em>Brienomyrus brachyistius</em> — a weakly electric fish from West Africa — to ask which cell types in the electric organ change gene expression when testosterone elongates the electric organ discharge (EOD). The lecture video above introduces the full biological context. This page provides the key concepts in brief and the exercises to work through after watching.</p>
+<p>Electric fish are an unusually tractable system for linking gene expression to behavior. The EOD is produced by a dedicated peripheral motor system, detected by specialized electroreceptors, and gated by a precisely-timed corollary discharge circuit in the brain — and all three respond to the same hormonal signal. That makes it possible to trace a behavioral change (a longer EOD) to morphological changes, physiological changes, and molecular changes in a single, well-mapped system.</p>
+<p>The gap single-nucleus RNA-seq fills is cell-type resolution. Prior work used bulk RNA-seq, which averages gene expression across all the cell types in the tissue. Single-nucleus RNA-seq decomposes that average, letting us ask which genes change in which cells.</p>
 </section>
-<section id="the-story-so-far" class="level2">
-<h2 class="anchored" data-anchor-id="the-story-so-far">The Story So Far</h2>
-<p>One of the great things about electric fish is that they “wear their behavior on their sleeves” — the behavior of interest, of course, is the <strong>electric organ discharge (EOD)</strong>, which is used for both communication and electrolocation. The temporal properties of the EOD waveform, as well as the rate at which the electric organ fires, have considerable bearing on the day-to-day lives of these fish, as you have doubtlessly learned. What we’ll be working on for this module is a rather interesting example of integration across the nervous system, coordinated by hormones.</p>
-<section id="the-peripheral-story-hormones-the-electric-organ-and-the-eod" class="level3">
-<h3 class="anchored" data-anchor-id="the-peripheral-story-hormones-the-electric-organ-and-the-eod">The peripheral story: hormones, the electric organ, and the EOD</h3>
-<p>The story begins with <strong><a href="https://doi.org/10.1126/science.220.4600.971">Bass &amp; Hopkins (1983, <em>Science</em> 220:971–974)</a></strong>, who demonstrated that mormyrids show seasonal sexual dimorphism in EOD waveform: males elongate their EODs during the breeding season — a change associated with the drop in conductivity that comes with the rainy season — while females do not. Bass and Hopkins showed that this change can be induced in the laboratory by exposure to 17α-methyltestosterone (17αMT), and that hormone treatment elicits a male-like response in females and juveniles as well.</p>
-<p>A series of follow-up studies established what testosterone is actually doing to the electric organ:</p>
-<ul>
-<li><strong>Structural changes (<a href="files/introduction/Bass_etal_1986_androgen_binding_brain_electric_organ.pdf">Bass, Denizot, &amp; Marchaterre 1986</a>; <a href="files/introduction/Freedman_etal_1989_temporal_analysis_testosterone_electric_organs.pdf">Freedman et al.&nbsp;1989</a>).</strong> The wafer-shaped electrocytes that make up the electric organ undergo dramatic remodeling under T treatment. Surface area of <em>both</em> the anterior and posterior faces of the electrocyte increases, but the increase is <strong>more pronounced on the anterior face</strong>, driven by the elaboration of deep membrane invaginations. Overall electrocyte width also increases.</li>
-<li><strong>Physiological changes (<a href="files/introduction/Bass_etal_1987_behavior_to_membranes_testosterone_AP_duration.pdf">Bass &amp; Volman 1987, <em>PNAS</em></a>).</strong> Intracellular recordings from individual electrocytes showed that T elongates the duration of the action potentials generated by both faces of the electrocyte by 2–3×, with little effect on AP amplitude. The current model is that increased anterior-face surface area raises membrane capacitance, which delays spike initiation in the anterior face relative to the posterior face — preventing the two APs from canceling and producing a longer overall EOD.</li>
-<li><strong>Sensory tuning (<a href="https://doi.org/10.1007/BF00610851">Bass &amp; Hopkins 1984</a>).</strong> Knollenorgan electroreceptors — the receptors specifically dedicated to detecting incoming EODs — also retune under hormone treatment. And wouldn’t you know it: their tuning shifts in exactly the same direction, becoming more sensitive to the lower peak frequencies that characterize long-duration EODs. So the periphery isn’t just changing the signal — it’s also retuning the receivers.</li>
-</ul>
-<div class="callout callout-style-default callout-note callout-titled" title="Stop and predict">
+<section id="the-sensorimotor-loop" class="level2">
+<h2 class="anchored" data-anchor-id="the-sensorimotor-loop">The Sensorimotor Loop</h2>
+<p>When a mormyrid fires its electric organ, the command originates in the <strong>command nucleus (CN)</strong> in the hindbrain, travels via spinal electromotor neurons, and synchronously activates hundreds of flat, coin-shaped cells called <strong>electrocytes</strong> in the electric organ. The resulting EOD waveform depends directly on electrocyte membrane area and ion channel composition: more anterior-face membrane area raises capacitance and delays spike initiation, producing a longer waveform (<a href="files/introduction/Bass_etal_1986_androgen_binding_brain_electric_organ.pdf">Bass, Denizot &amp; Marchaterre 1986</a>; <a href="files/introduction/Bass_etal_1987_behavior_to_membranes_testosterone_AP_duration.pdf">Bass &amp; Volman 1987</a>; <a href="files/introduction/Freedman_etal_1989_temporal_analysis_testosterone_electric_organs.pdf">Freedman et al.&nbsp;1989</a>).</p>
+<p>The incoming signal from another fish is detected by <strong>knollenorgans (KOs)</strong> — electroreceptors specialized for conspecific communication signals. <a href="files/introduction/Raman_Hopkins_2025_high_frequency_tuning_knollenorgan.pdf">Raman &amp; Hopkins (2025)</a> showed these are precisely tuned to the species’ own EOD frequency spectrum, functioning as matched filters. When testosterone elongates the EOD, KO tuning shifts to match — but through an <strong>indirect mechanism</strong>: the changed EOD itself drives receptor cell turnover (<a href="files/introduction/Bass_Hopkins_1984_androgen_shifts_knollenorgan_tuning.pdf">Bass &amp; Hopkins 1984</a>).</p>
+<p>The brain keeps the loop coherent using a <strong>corollary discharge (CD)</strong> pathway: a copy of each motor command routes from CN through the bulbar (BCA) and mesencephalic (MCA) command-associated nuclei to the sublemniscal nucleus (slem), which inhibits the electrosensory nucleus (nELL) just as the fish’s own EOD arrives there — making the fish effectively deaf to its own signal (<a href="https://doi.org/10.1523/JNEUROSCI.09-03-01029.1989">Bell &amp; Grant 1989</a>). <a href="files/introduction/Fukutomi_etal_2023_hormonal_coordination_motor_sensory_electric_fish.pdf">Fukutomi &amp; Carlson (2023)</a> showed this CD timing window shifts under testosterone to match the elongated EOD — and it does so <strong>directly</strong>, without requiring altered sensory feedback. <a href="files/introduction/Jarzyna_etal_2026_shared_neural_substrates_sensorimotor_integration.pdf">Jarzyna &amp; Carlson (2026)</a> further showed that MCA is a conserved temporal hub: the same circuit node adjusts CD timing across seasonal (days), developmental (years), and evolutionary (millions of years) timescales.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Component</th>
+<th>What testosterone does</th>
+<th>Mechanism</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Electric organ (electrocytes)</td>
+<td>Elongates EOD waveform</td>
+<td>Direct androgen target; membrane remodeling and ion channel retuning</td>
+</tr>
+<tr class="even">
+<td>Knollenorgans (KOs)</td>
+<td>Shifts best frequency to match new EOD</td>
+<td>Indirect; stimulus-driven receptor cell turnover</td>
+</tr>
+<tr class="odd">
+<td>Corollary discharge (MCA)</td>
+<td>Delays and elongates the inhibition window</td>
+<td>Direct androgen target; independent of sensory feedback</td>
+</tr>
+</tbody>
+</table>
+<div class="callout callout-style-default callout-important callout-titled" title="Challenge 1: Stop and Predict (3 min)">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Stop and predict
+<span class="screen-reader-only">Important</span>Challenge 1: Stop and Predict (3 min)
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Before reading the next section: if testosterone elongates a male’s EOD, and elongates the spike that knollenorgan receptors fire in response to that EOD, what would have to happen <em>centrally</em> in the brain to keep the fish from confusing its own (now-longer) EOD with an EOD from another fish?</p>
-</div>
-</div>
-</section>
-<section id="the-molecular-layer-what-we-recently-published" class="level3">
-<h3 class="anchored" data-anchor-id="the-molecular-layer-what-we-recently-published">The molecular layer: what we recently published</h3>
-<p>Last year, <strong>Mauricio Losilla and I published a paper (<a href="files/introduction/Losilla_etal_2025_gene_expression_EOD_duration_mormyrid.pdf">Losilla &amp; Gallant 2025, <em>J. Exp. Biol.</em> 228:jeb249548</a>)</strong> that took the next mechanistic step: what genes change expression as the EOD elongates? We used a clean experimental design — <em>Brienomyrus brachyistius</em> exposed to 17αMT for 1 day or 8 days versus ethanol-vehicle controls — and performed RNA-seq plus differential expression and functional enrichment analyses on caudal peduncle tissue.</p>
-<p>By day 8, EOD duration had nearly doubled, and we identified <strong>44 genes of highest interest</strong> whose expression tracked the elongation. They cluster into four functional themes:</p>
-<div class="callout callout-style-default callout-tip callout-titled" title="Detailed gene list">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Tip</span>Detailed gene list
-</div>
-<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
-</div>
-<div id="callout-5" class="callout-5-contents callout-collapse collapse">
-<div class="callout-body-container callout-body">
-<ul>
-<li><strong>Cytoskeletal &amp; sarcomeric</strong> — strong upregulation of actin and actin-related genes (<em>actn1</em>, <em>actc1c</em>, <em>myh6</em>, <em>acta1b</em>, <em>xirp1</em>, <em>myo1d</em>) and microtubule-related genes (<em>eml6</em>, <em>tubb2</em>, <em>cavin4b</em>, <em>mid1ip1l</em>). These are consistent with the cytoskeletal scaffolding required to support the expanded, more elaborately invaginated membrane.</li>
-<li><strong>Extracellular matrix</strong> — upregulation of a collagen gene (<em>si:dkey-61l1.4</em>), thrombospondin <em>thbs4b</em>, and cadherin <em>cdh11</em>; downregulation of <em>epdl2</em>, an ependymin-related gene that we previously implicated in EOD waveform variation across <em>Paramormyrops</em>.</li>
-<li><strong>Lipid metabolism</strong> — strong upregulation of <em>elovl7a</em> and <em>selenoi</em> (membrane-lipid biosynthesis) and <em>fam126a</em> (a gene with a known role in cell types with expanded plasma membrane). Increased membrane area presumably requires more phospholipid.</li>
-<li><strong>Cation homeostasis</strong> — a coordinated shift in voltage-gated ion channel expression. We found one Na⁺ channel β-subunit gene (<strong><em>scn4b</em></strong>, downregulated) and <strong>five voltage-gated K⁺ channels</strong>. Four are delayed-rectifiers — <em>kcna1</em> (Kv1.1), <em>kcna7a1</em> (Kv1.7), <em>kcnc1</em> (Kv3.1), and <em>kcnc2</em> (Kv3.2) — all <strong>downregulated</strong> in long-EOD fish, which would slow K⁺ efflux and prolong APs. The fifth, <em>kcng4a</em> (Kv6.4), is a “modifier/silencer” subunit and is <strong>upregulated</strong>; its known effect on Kv2.1 is to shift inactivation to more negative potentials, again favoring AP elongation. Notably, the most highly expressed K⁺ channel in mormyrid electrocytes — <em>kcna7a2</em> — did <em>not</em> change significantly, suggesting EOD elongation is modulated through coordinated regulation of several less-abundantly-expressed channels rather than the dominant one.</li>
-</ul>
-</div>
-</div>
-</div>
-<p>So the molecular picture aligns beautifully with the morphological and physiological work: the same cells are simultaneously remodeling their cytoskeleton and ECM contacts, expanding their membrane via lipid biosynthesis, and retuning their ionic currents.</p>
-<div class="callout callout-style-default callout-note callout-titled" title="Why this matters for single-cell">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Why this matters for single-cell
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>The Losilla &amp; Gallant (2025) study used <strong>bulk RNA-seq on whole caudal peduncle tissue</strong> — a mixture of electrocytes, connective tissue, nerves, and skin. The signals we recovered are real, but they’re averaged across cell types. Single-cell transcriptomics promises to tell us <em>which</em> cells are doing what — and that’s a key motivation for this module.</p>
-</div>
-</div>
-</section>
-<section id="the-central-layer-corollary-discharge" class="level3">
-<h3 class="anchored" data-anchor-id="the-central-layer-corollary-discharge">The central layer: corollary discharge</h3>
-<p>Another aspect of this system that we haven’t yet discussed is the <strong>corollary discharge</strong> — something mormyrids are a famous model system for. When a mormyrid produces an EOD, the command originates in the <strong>command nucleus (CN)</strong> in the hindbrain. CN drives the medullary relay nucleus (MRN), which in turn drives spinal electromotor neurons that activate the electric organ.</p>
-<p>Critically, CN also sends an <strong>efference copy</strong> of that command down a parallel corollary discharge (CD) pathway: CN → bulbar command-associated nucleus (BCA) → mesencephalic command-associated nucleus (MCA) → sublemniscal nucleus (slem). The slem is GABAergic and provides precisely-timed inhibition onto the adendritic neurons of the <strong>nucleus of the electrosensory lateral line lobe (nELL)</strong> — the same neurons that receive excitatory input from knollenorgan primary afferents. Because the inhibition arrives just as the knollenorgan reafferent spikes do, the fish is effectively “deaf” to its own EODs, and the downstream knollenorgan pathway is dedicated to processing EODs from <em>other</em> fish (<a href="https://doi.org/10.1523/JNEUROSCI.09-03-01029.1989">Bell &amp; Grant 1989</a>; reviewed in <a href="https://doi.org/10.3389/fnint.2020.00042">Fukutomi &amp; Carlson 2020</a>).</p>
-<div class="callout callout-style-default callout-caution callout-titled" title="Instructor Note: Terminology">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Caution</span>Instructor Note: Terminology
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Older literature (and Losilla &amp; Gallant 2025) uses “pacemaker nucleus” for the small cells ventral to the relay nucleus that initiate each EOD command. Modern Carlson-lab papers (Fukutomi &amp; Carlson 2023, Jarzyna &amp; Carlson 2026) use “command nucleus (CN)” for the same population. They refer to the same structure — flag this for students if they see both terms across the reading list.</p>
-</div>
-</div>
-<p>What’s more, <strong>Bruce Carlson’s lab has shown that this central pathway is also hormonally sensitive — and adjusts in a way that beautifully complements the peripheral changes.</strong> Three findings are especially relevant:</p>
-<ul>
-<li><strong><a href="files/introduction/Fukutomi_etal_2023_hormonal_coordination_motor_sensory_electric_fish.pdf">Fukutomi &amp; Carlson (2023, <em>Current Biology</em>)</a></strong> showed that T treatment in <em>B. brachyistius</em> not only elongates the EOD (peripherally) but also <strong>delays and elongates the time window of CD inhibition</strong> in the brain. Critically, the timing of this shifted inhibition matches the shifted timing of knollenorgan reafferent input almost exactly — so the system continues to cleanly cancel responses to the fish’s own EOD even as the EOD changes shape.</li>
-<li><strong>The shift is not driven by sensory feedback.</strong> Fukutomi &amp; Carlson surgically silenced fish (spinal cord transection) so that T elongated electrocyte properties without producing any actual EODs, and then measured CD timing. The CD shift still occurred. So testosterone is acting directly on the central CD circuit, not adjusting it via altered reafference.</li>
-<li><strong><a href="files/introduction/Jarzyna_etal_2026_shared_neural_substrates_sensorimotor_integration.pdf">Jarzyna &amp; Carlson (2026, preprint)</a></strong> then localized the central effect: simultaneous field-potential recordings throughout the CD pathway show that the shift in onset and duration of CD activity originates at the <strong>mesencephalic command-associated nucleus (MCA)</strong>, propagating through slem to nELL. Even more elegantly, the <em>same</em> MCA locus accounts for <strong>evolutionary differences</strong> between short-EOD (<em>C. compressirostris</em>) and long-EOD (<em>C. numenius</em>) species, and for <strong>developmental plasticity</strong> in extreme long-EOD adult <em>C. numenius</em>. So one neural substrate handles seasonal hormonal shifts (days), developmental shifts (years), and evolutionary divergence (millions of years).</li>
-</ul>
-<p>That last point is what makes this such a satisfying integration story: from a single hormonal cue, the periphery (electric organ) and the central nervous system (corollary discharge circuitry) are co-regulated to keep the entire sensorimotor loop coherent. And the central locus appears to be reused across timescales of plasticity. <strong>This is the system we’ll be probing at single-cell resolution in this module.</strong></p>
-<div class="callout callout-style-default callout-important callout-titled" title="Putting it together">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Important</span>Putting it together
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Sketch the loop linking testosterone, the electric organ, knollenorgan electroreceptors, and the corollary discharge pathway. For each component, note one thing that <em>changes</em> under T treatment and one outstanding question that single-cell transcriptomics could address.</p>
+<p>Testosterone elongates a male’s EOD and shifts the spike that knollenorgan receptors fire in response to it. Before reading further: what would have to happen <em>centrally</em> in the brain to keep the fish from confusing its own (now-longer) EOD with an EOD from another fish?</p>
 <div class="callout callout-style-default callout-tip callout-titled" title="Solution">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-8-contents" aria-controls="callout-8" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -450,56 +372,64 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-8" class="callout-8-contents callout-collapse collapse">
+<div id="callout-3" class="callout-3-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
-<p>Possible answers (yours may differ — the goal is to make the integration explicit):</p>
-<ul>
-<li><strong>Electric organ / electrocytes</strong> — change: anterior-face surface area expands, K⁺/Na⁺ channel expression shifts, cytoskeleton remodels. Open question: are these changes uniform across all electrocytes, or are there electrocyte sub-populations responding differently?</li>
-<li><strong>Knollenorgan electroreceptors</strong> — change: tuning shifts to lower peak frequency. Open question: is this driven by a single cell-type-specific transcriptional program, and is the same program triggered by T as in the electric organ?</li>
-<li><strong>CD pathway (especially MCA)</strong> — change: onset and duration of CD activity is delayed and elongated to match shifted reafferent input. Open question: which cell types in MCA express androgen / estrogen receptors, and is the same molecular toolkit used here as in the periphery?</li>
-<li><strong>Loop integration</strong> — change: the entire sensorimotor loop stays internally consistent across seasons, development, and species. Open question: what shared molecular signatures define cell types that are “T-responsive” across this whole circuit?</li>
-</ul>
+<p>The corollary discharge inhibition window must shift in both its onset and its duration to match the delayed and elongated reafferent input. Fukutomi &amp; Carlson (2023) showed exactly this: CD inhibition timing tracks EOD duration precisely. Critically, the shift is a direct hormonal effect on the MCA circuit — not a consequence of experiencing a different EOD.</p>
 </div>
 </div>
 </div>
 </div>
 </div>
 </section>
-</section>
-<section id="key-references" class="level2">
-<h2 class="anchored" data-anchor-id="key-references">Key references</h2>
-<p><a href="https://doi.org/10.1126/science.220.4600.971">Bass, A. H., &amp; Hopkins, C. D. (1983). Hormonal control of sexual differentiation: changes in electric organ discharge waveform. <em>Science</em> 220:971–974.</a></p>
-<p><a href="https://doi.org/10.1007/BF00610851">Bass, A. H., &amp; Hopkins, C. D. (1984). Shifts in frequency tuning of electroreceptors in androgen-treated mormyrid fish. <em>J. Comp. Physiol. A</em> 155:713–724.</a></p>
-<p><a href="files/introduction/Bass_etal_1986_androgen_binding_brain_electric_organ.pdf">Bass, A. H., Denizot, J.-P., &amp; Marchaterre, M. A. (1986). Ultrastructural features and hormone-dependent sex differences of mormyrid electric organs. <em>J. Comp. Neurol.</em> 254:511–528.</a></p>
-<p><a href="files/introduction/Bass_etal_1987_behavior_to_membranes_testosterone_AP_duration.pdf">Bass, A. H., &amp; Volman, S. F. (1987). From behavior to membranes: testosterone-induced changes in action potential duration in electric organs. <em>PNAS</em> 84:9295–9298.</a></p>
-<p><a href="https://doi.org/10.1523/JNEUROSCI.09-03-01029.1989">Bell, C. C., &amp; Grant, K. (1989). Corollary discharge inhibition and preservation of temporal information in a sensory nucleus of mormyrid electric fish. <em>J. Neurosci.</em> 9:1029–1044.</a></p>
-<p><a href="files/introduction/Freedman_etal_1989_temporal_analysis_testosterone_electric_organs.pdf">Freedman, E. G., Olyarchuk, J., Marchaterre, M. A., &amp; Bass, A. H. (1989). A temporal analysis of testosterone-induced changes in electric organs and electric organ discharges of mormyrid fishes. <em>J. Neurobiol.</em> 20:619–634.</a></p>
-<p><a href="https://doi.org/10.3389/fnint.2020.00042">Fukutomi, M., &amp; Carlson, B. A. (2020). A history of corollary discharge: contributions of mormyrid weakly electric fish. <em>Front. Integr. Neurosci.</em> 14:42.</a></p>
-<p><a href="files/introduction/Fukutomi_etal_2023_hormonal_coordination_motor_sensory_electric_fish.pdf">Fukutomi, M., &amp; Carlson, B. A. (2023). Hormonal coordination of motor output and internal prediction of sensory consequences in an electric fish. <em>Current Biology</em> 33:3350–3359.</a></p>
-<p><a href="https://doi.org/10.1126/science.1254432">Gallant, J. R., et al.&nbsp;(2014). Genomic basis for the convergent evolution of electric organs. <em>Science</em> 344:1522–1525.</a></p>
-<p><a href="files/introduction/Jarzyna_etal_2026_shared_neural_substrates_sensorimotor_integration.pdf">Jarzyna, M. W., &amp; Carlson, B. A. (2026). Shared neural substrates support seasonal, developmental, and evolutionary shifts in sensorimotor integration. <em>Preprint.</em></a></p>
-<p><a href="files/introduction/Losilla_etal_2025_gene_expression_EOD_duration_mormyrid.pdf">Losilla, M., &amp; Gallant, J. R. (2025). Gene expression correlates and mechanistic insights into electric organ discharge duration changes in mormyrid electric fish. <em>J. Exp. Biol.</em> 228:jeb249548.</a></p>
-<p><a href="https://doi.org/10.1126/science.362.6421.1344">Pennisi, E. (2018). Development cell by cell. <em>Science</em> 362:1344 [Breakthrough of the Year].</a></p>
-<div class="callout callout-style-default callout-tip callout-titled" title="Key Points">
+<section id="whats-missing-cell-type-resolution" class="level2">
+<h2 class="anchored" data-anchor-id="whats-missing-cell-type-resolution">What’s Missing: Cell-Type Resolution</h2>
+<p><a href="https://doi.org/10.1126/science.220.4600.971">Bass &amp; Hopkins (1983)</a> established the seasonal dimorphism; the work above traced it across all three components of the loop. The next mechanistic layer is gene expression. <a href="files/introduction/Losilla_etal_2025_gene_expression_EOD_duration_mormyrid.pdf">Losilla &amp; Gallant (2025)</a> used bulk RNA-seq on <em>B. brachyistius</em> caudal peduncle tissue to identify 44 genes tracking EOD elongation — a coordinated shift in cytoskeletal, extracellular matrix, lipid-metabolism, and ion channel genes that aligns with the morphological and physiological data.</p>
+<p>The limitation is resolution. Caudal peduncle tissue contains electrocytes, connective tissue, support cells, blood vessel cells, and immune cells. Bulk RNA-seq averages across all of them. A K⁺ channel gene that shifts in bulk data might be changing specifically in electrocytes — or in a support cell population with no role in action potential generation. Without cell-type resolution, mechanistic interpretation is limited. That is the gap single-nucleus RNA-seq fills, and it is the central motivation for this module.</p>
+<div class="callout callout-style-default callout-important callout-titled" title="Challenge 2: Putting It Together (10 min)">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Tip</span>Key Points
+<span class="screen-reader-only">Important</span>Challenge 2: Putting It Together (10 min)
 </div>
 </div>
 <div class="callout-body-container callout-body">
+<p>Sketch the full sensorimotor loop linking testosterone, the electric organ, knollenorgan electroreceptors, and the corollary discharge pathway. For each component, note (a) one change under testosterone treatment and (b) one open question that single-nucleus RNA-seq could address but bulk RNA-seq cannot.</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Solution">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-5" class="callout-5-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Possible answers — the goal is to make the integration explicit, so yours may differ:</p>
 <ul>
-<li>The MSU Electric Fish Lab has built genomic resources spanning the major weakly electric fish lineages, beginning with the electric eel genome in 2014.</li>
-<li>Single-cell RNA-seq (named <em>Science</em>’s Breakthrough of the Year in 2018) reveals cell-type-specific biology that bulk RNA-seq cannot resolve.</li>
-<li>In mormyrids, testosterone elongates the EOD by remodeling electrocyte morphology and physiology, retunes knollenorgan electroreceptors, and shifts central corollary discharge timing — all coordinated to keep the sensorimotor loop coherent.</li>
-<li>The Losilla &amp; Gallant (2025) paper identified 44 genes of interest, including cytoskeletal, ECM, lipid-metabolism, and ion channel genes — but bulk RNA-seq cannot tell us which cell types drive these signals.</li>
-<li>The same neural locus (MCA) appears to handle seasonal, developmental, and evolutionary shifts in CD timing — a striking example of substrate reuse across timescales.</li>
-<li>Single-cell transcriptomics is the natural next step to ask <em>which cells</em> in this integrated system carry which molecular signatures of plasticity.</li>
+<li><strong>Electric organ / electrocytes</strong> — change: anterior-face membrane area expands; K⁺ and Na⁺ channel expression shifts toward longer APs. Open question: which of the 44 differentially expressed genes change specifically in electrocytes vs.&nbsp;connective tissue or immune cells?</li>
+<li><strong>Knollenorgan electroreceptors</strong> — change: best frequency shifts to match the elongated EOD. Open question: what transcriptional program drives KO receptor cell turnover, and is the same gene regulatory network active here as in the electric organ?</li>
+<li><strong>Corollary discharge (MCA)</strong> — change: onset and duration of CD inhibition delay and elongate. Open question: which MCA cell types express androgen receptors, and what genes change in those cells under testosterone?</li>
+<li><strong>Loop integration</strong> — change: all three systems stay internally coherent as EOD duration changes across seasons, development, and evolution. Open question: is there a shared androgen-responsive gene regulatory program operating across electrocytes, KO receptor cells, and MCA neurons?</li>
 </ul>
 </div>
 </div>
+</div>
+</div>
+</div>
+</section>
+<section id="keypoints" class="level2">
+<h2 class="anchored" data-anchor-id="keypoints">Keypoints</h2>
+<ol type="1">
+<li>The mormyrid sensorimotor loop links command nucleus → electric organ → knollenorgans → corollary discharge circuit, with a copy of each motor command used to predict and cancel self-generated sensory input.</li>
+<li>Testosterone coordinately reshapes all three components — the electric organ (direct), knollenorgans (indirect, stimulus-driven), and the corollary discharge circuit (direct, MCA-centered) — keeping the loop coherent as the EOD changes.</li>
+<li>The MCA is a conserved temporal hub: the same circuit node adjusts CD timing across seasonal, developmental, and evolutionary timescales.</li>
+<li>Bulk RNA-seq on electric organ tissue identified 44 candidate genes but cannot resolve which genes changed in which cell types.</li>
+<li>Single-nucleus RNA-seq is the natural next step: it applies to frozen archived tissue and provides cell-type-resolved gene expression across the full sensorimotor circuit.</li>
+</ol>
 
 
 <!-- -->
@@ -978,171 +908,99 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "Introduction: Single-Cell Transcriptomics in Weakly Electric Fish"</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="an">teaching:</span><span class="co"> 30</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="an">exercises:</span><span class="co"> 10</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="an">teaching:</span><span class="co"> 5</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="an">exercises:</span><span class="co"> 15</span></span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>::: {.callout-note title="Questions"}</span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>What genomic resources have been developed for weakly electric fish, and why?</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>How does single-cell RNA sequencing differ from bulk RNA-seq, and why does that matter for studying the electric organ system?</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>What is the integrated story linking hormones, the electric organ, sensory receptor tuning, and central corollary discharge in mormyrid fish?</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>How can changes at the cellular and molecular level reshape behavior across seasonal, developmental, and evolutionary timescales?</span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>::: {.callout-tip title="Objectives"}</span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Describe the genomic resources developed for weakly electric fish at the MSU Electric Fish Lab.</span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Explain why single-cell transcriptomics is a transformative technique for biology and what kinds of questions it enables.</span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Summarize how testosterone coordinately reshapes the electric organ, knollenorgan electroreceptor tuning, and central corollary discharge timing.</span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Identify the molecular and cellular changes implicated in testosterone-induced EOD elongation in mormyrids.</span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Connect the single-cell approach to open questions that motivate this module.</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>How does testosterone simultaneously change the electric organ, knollenorgans, and corollary discharge circuit?</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Why can't bulk RNA-seq tell us which cell types are responsible for gene expression changes in the electric organ?</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>What questions can single-nucleus RNA-seq answer in this system that previous approaches could not?</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>::: {.callout-tip title="Objectives"}</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Trace the mormyrid sensorimotor loop from command nucleus to electric organ to knollenorgan and back.</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Summarize what testosterone does to each component of the loop and by what mechanism.</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Distinguish the direct (corollary discharge circuit) from indirect (knollenorgan retuning) mechanisms of hormonal coordination.</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Explain why single-nucleus RNA-seq is the natural next step after bulk transcriptomics in this system.</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>:::</span>
 <span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a><span class="in">```{=html}</span></span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a><span class="in">&lt;video class="plyr-video" playsinline controls preload="metadata"&gt;</span></span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a><span class="in">  &lt;source src="https://d18e7eu8nurr5a.cloudfront.net/lectures/introduction.mp4"</span></span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a><span class="in">          type="video/mp4" /&gt;</span></span>
-<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a><span class="in">  Your browser does not support embedded video.</span></span>
-<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a><span class="in">&lt;/video&gt;</span></span>
-<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="in">```{=html}</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="in">&lt;video class="plyr-video" playsinline controls preload="metadata"&gt;</span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a><span class="in">  &lt;source src="https://d18e7eu8nurr5a.cloudfront.net/lectures/introduction.mp4"</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a><span class="in">          type="video/mp4" /&gt;</span></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a><span class="in">  Your browser does not support embedded video.</span></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a><span class="in">&lt;/video&gt;</span></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a><span class="fu">## Overview</span></span>
 <span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a><span class="fu">## Introduction and Overview</span></span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>In this module you'll analyze real single-nucleus RNA-seq data from *Brienomyrus brachyistius* — a weakly electric fish from West Africa — to ask which cell types in the electric organ change gene expression when testosterone elongates the electric organ discharge (EOD). The lecture video above introduces the full biological context. This page provides the key concepts in brief and the exercises to work through after watching.</span>
 <span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>The MSU Electric Fish Lab (<span class="co">[</span><span class="ot">https://efish.integrativebiology.msu.edu</span><span class="co">](https://efish.integrativebiology.msu.edu)</span>) has been leading efforts to develop genomic resources for weakly electric fish for the last 13 years. We started with the electric eel genome (<span class="co">[</span><span class="ot">Gallant et al. 2014, *Science*</span><span class="co">](https://doi.org/10.1126/science.1254432)</span>), and from there we've developed genomes for many of the major lineages of weakly electric fish — both South American (Gymnotiformes) and African (Mormyroidea). We've also developed techniques for genome manipulation using CRISPR/Cas9 and Tol2 transposases, though that's out of the scope of this module!</span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>Electric fish are an unusually tractable system for linking gene expression to behavior. The EOD is produced by a dedicated peripheral motor system, detected by specialized electroreceptors, and gated by a precisely-timed corollary discharge circuit in the brain — and all three respond to the same hormonal signal. That makes it possible to trace a behavioral change (a longer EOD) to morphological changes, physiological changes, and molecular changes in a single, well-mapped system.</span>
 <span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>::: {.callout-note title="Ask Vicky and Jason"}</span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>The gap single-nucleus RNA-seq fills is cell-type resolution. Prior work used bulk RNA-seq, which averages gene expression across all the cell types in the tissue. Single-nucleus RNA-seq decomposes that average, letting us ask which genes change in which cells.</span>
 <span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>If you're curious about CRISPR/Cas9 and Tol2 transposase work in electric fish, ask Vicky Salazar and Jason about their efforts to develop these techniques.</span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a><span class="fu">## The Sensorimotor Loop</span></span>
 <span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>When a mormyrid fires its electric organ, the command originates in the **command nucleus (CN)** in the hindbrain, travels via spinal electromotor neurons, and synchronously activates hundreds of flat, coin-shaped cells called **electrocytes** in the electric organ. The resulting EOD waveform depends directly on electrocyte membrane area and ion channel composition: more anterior-face membrane area raises capacitance and delays spike initiation, producing a longer waveform (<span class="co">[</span><span class="ot">Bass, Denizot &amp; Marchaterre 1986</span><span class="co">](files/introduction/Bass_etal_1986_androgen_binding_brain_electric_organ.pdf)</span>; <span class="co">[</span><span class="ot">Bass &amp; Volman 1987</span><span class="co">](files/introduction/Bass_etal_1987_behavior_to_membranes_testosterone_AP_duration.pdf)</span>; <span class="co">[</span><span class="ot">Freedman et al. 1989</span><span class="co">](files/introduction/Freedman_etal_1989_temporal_analysis_testosterone_electric_organs.pdf)</span>).</span>
 <span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>A major innovation since the original genome and transcriptome sequencing has been the ability to sequence transcriptomes from individual cells. This technique was named *Science* magazine's Breakthrough of the Year in 2018 ([Pennisi 2018, *Science* 362:1344](https://doi.org/10.1126/science.362.6421.1344)), and it has already led to incredible insights across biology:</span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>The incoming signal from another fish is detected by **knollenorgans (KOs)** — electroreceptors specialized for conspecific communication signals. [Raman &amp; Hopkins (2025)](files/introduction/Raman_Hopkins_2025_high_frequency_tuning_knollenorgan.pdf) showed these are precisely tuned to the species' own EOD frequency spectrum, functioning as matched filters. When testosterone elongates the EOD, KO tuning shifts to match — but through an **indirect mechanism**: the changed EOD itself drives receptor cell turnover (<span class="co">[</span><span class="ot">Bass &amp; Hopkins 1984</span><span class="co">](files/introduction/Bass_Hopkins_1984_androgen_shifts_knollenorgan_tuning.pdf)</span>).</span>
 <span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Neuroscience** — comprehensive cell-type atlases of the mammalian brain (e.g., <span class="co">[</span><span class="ot">Tasic et al. 2018, *Nature*</span><span class="co">](https://doi.org/10.1038/s41586-018-0654-5)</span>; the <span class="co">[</span><span class="ot">BRAIN Initiative Cell Census Network's 2021 mouse primary motor cortex atlas, *Nature*</span><span class="co">](https://doi.org/10.1038/s41586-021-03950-0)</span>) have replaced classical morphological taxonomies with molecular ones.</span>
-<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Developmental and evolutionary biology** — whole-embryo single-cell atlases of zebrafish (<span class="co">[</span><span class="ot">Wagner et al. 2018, *Science*</span><span class="co">](https://doi.org/10.1126/science.aar3131)</span>; <span class="co">[</span><span class="ot">Briggs et al. 2018, *Science*</span><span class="co">](https://doi.org/10.1126/science.aar4362)</span>) and *Xenopus* have reconstructed cellular lineages from zygote to organogenesis, while comparative cell-type atlases (reviewed in [Tanay &amp; Sebé-Pedrós 2021, *Trends in Genetics*](https://doi.org/10.1016/j.tig.2021.08.007)) are letting us trace cell-type homology across millions of years of evolution.</span>
-<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Genomics** — single-cell approaches have revealed regulatory heterogeneity invisible to bulk RNA-seq, including rare cell states that drive disease progression and tissue regeneration.</span>
-<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a>We'll be exploring this technique in this course module **end-to-end** — including sample preparation, bioinformatics, and data analysis.</span>
-<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a><span class="fu">## The Story So Far</span></span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a>The brain keeps the loop coherent using a **corollary discharge (CD)** pathway: a copy of each motor command routes from CN through the bulbar (BCA) and mesencephalic (MCA) command-associated nuclei to the sublemniscal nucleus (slem), which inhibits the electrosensory nucleus (nELL) just as the fish's own EOD arrives there — making the fish effectively deaf to its own signal ([Bell &amp; Grant 1989](https://doi.org/10.1523/JNEUROSCI.09-03-01029.1989)). [Fukutomi &amp; Carlson (2023)](files/introduction/Fukutomi_etal_2023_hormonal_coordination_motor_sensory_electric_fish.pdf) showed this CD timing window shifts under testosterone to match the elongated EOD — and it does so **directly**, without requiring altered sensory feedback. <span class="co">[</span><span class="ot">Jarzyna &amp; Carlson (2026)</span><span class="co">](files/introduction/Jarzyna_etal_2026_shared_neural_substrates_sensorimotor_integration.pdf)</span> further showed that MCA is a conserved temporal hub: the same circuit node adjusts CD timing across seasonal (days), developmental (years), and evolutionary (millions of years) timescales.</span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Component <span class="pp">|</span> What testosterone does <span class="pp">|</span> Mechanism <span class="pp">|</span></span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a><span class="pp">|---|---|---|</span></span>
+<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Electric organ (electrocytes) <span class="pp">|</span> Elongates EOD waveform <span class="pp">|</span> Direct androgen target; membrane remodeling and ion channel retuning <span class="pp">|</span></span>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Knollenorgans (KOs) <span class="pp">|</span> Shifts best frequency to match new EOD <span class="pp">|</span> Indirect; stimulus-driven receptor cell turnover <span class="pp">|</span></span>
+<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Corollary discharge (MCA) <span class="pp">|</span> Delays and elongates the inhibition window <span class="pp">|</span> Direct androgen target; independent of sensory feedback <span class="pp">|</span></span>
 <span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a>One of the great things about electric fish is that they "wear their behavior on their sleeves" — the behavior of interest, of course, is the **electric organ discharge (EOD)**, which is used for both communication and electrolocation. The temporal properties of the EOD waveform, as well as the rate at which the electric organ fires, have considerable bearing on the day-to-day lives of these fish, as you have doubtlessly learned. What we'll be working on for this module is a rather interesting example of integration across the nervous system, coordinated by hormones.</span>
+<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a>::: {.callout-important title="Challenge 1: Stop and Predict (3 min)"}</span>
 <span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a><span class="fu">### The peripheral story: hormones, the electric organ, and the EOD</span></span>
+<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a>Testosterone elongates a male's EOD and shifts the spike that knollenorgan receptors fire in response to it. Before reading further: what would have to happen *centrally* in the brain to keep the fish from confusing its own (now-longer) EOD with an EOD from another fish?</span>
 <span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a>The story begins with **[Bass &amp; Hopkins (1983, *Science* 220:971–974)](https://doi.org/10.1126/science.220.4600.971)**, who demonstrated that mormyrids show seasonal sexual dimorphism in EOD waveform: males elongate their EODs during the breeding season — a change associated with the drop in conductivity that comes with the rainy season — while females do not. Bass and Hopkins showed that this change can be induced in the laboratory by exposure to 17α-methyltestosterone (17αMT), and that hormone treatment elicits a male-like response in females and juveniles as well.</span>
+<span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a>:::: {.callout-tip title="Solution" collapse="true"}</span>
 <span id="cb1-59"><a href="#cb1-59" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-60"><a href="#cb1-60" aria-hidden="true" tabindex="-1"></a>A series of follow-up studies established what testosterone is actually doing to the electric organ:</span>
+<span id="cb1-60"><a href="#cb1-60" aria-hidden="true" tabindex="-1"></a>The corollary discharge inhibition window must shift in both its onset and its duration to match the delayed and elongated reafferent input. Fukutomi &amp; Carlson (2023) showed exactly this: CD inhibition timing tracks EOD duration precisely. Critically, the shift is a direct hormonal effect on the MCA circuit — not a consequence of experiencing a different EOD.</span>
 <span id="cb1-61"><a href="#cb1-61" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-62"><a href="#cb1-62" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Structural changes ([Bass, Denizot, &amp; Marchaterre 1986](files/introduction/Bass_etal_1986_androgen_binding_brain_electric_organ.pdf); [Freedman et al. 1989](files/introduction/Freedman_etal_1989_temporal_analysis_testosterone_electric_organs.pdf)).** The wafer-shaped electrocytes that make up the electric organ undergo dramatic remodeling under T treatment. Surface area of *both* the anterior and posterior faces of the electrocyte increases, but the increase is **more pronounced on the anterior face**, driven by the elaboration of deep membrane invaginations. Overall electrocyte width also increases.</span>
-<span id="cb1-63"><a href="#cb1-63" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Physiological changes ([Bass &amp; Volman 1987, *PNAS*](files/introduction/Bass_etal_1987_behavior_to_membranes_testosterone_AP_duration.pdf)).** Intracellular recordings from individual electrocytes showed that T elongates the duration of the action potentials generated by both faces of the electrocyte by 2–3×, with little effect on AP amplitude. The current model is that increased anterior-face surface area raises membrane capacitance, which delays spike initiation in the anterior face relative to the posterior face — preventing the two APs from canceling and producing a longer overall EOD.</span>
-<span id="cb1-64"><a href="#cb1-64" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Sensory tuning ([Bass &amp; Hopkins 1984](https://doi.org/10.1007/BF00610851)).** Knollenorgan electroreceptors — the receptors specifically dedicated to detecting incoming EODs — also retune under hormone treatment. And wouldn't you know it: their tuning shifts in exactly the same direction, becoming more sensitive to the lower peak frequencies that characterize long-duration EODs. So the periphery isn't just changing the signal — it's also retuning the receivers.</span>
+<span id="cb1-62"><a href="#cb1-62" aria-hidden="true" tabindex="-1"></a>::::</span>
+<span id="cb1-63"><a href="#cb1-63" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-64"><a href="#cb1-64" aria-hidden="true" tabindex="-1"></a>:::</span>
 <span id="cb1-65"><a href="#cb1-65" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-66"><a href="#cb1-66" aria-hidden="true" tabindex="-1"></a>::: {.callout-note title="Stop and predict"}</span>
+<span id="cb1-66"><a href="#cb1-66" aria-hidden="true" tabindex="-1"></a><span class="fu">## What's Missing: Cell-Type Resolution</span></span>
 <span id="cb1-67"><a href="#cb1-67" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-68"><a href="#cb1-68" aria-hidden="true" tabindex="-1"></a>Before reading the next section: if testosterone elongates a male's EOD, and elongates the spike that knollenorgan receptors fire in response to that EOD, what would have to happen *centrally* in the brain to keep the fish from confusing its own (now-longer) EOD with an EOD from another fish?</span>
+<span id="cb1-68"><a href="#cb1-68" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">Bass &amp; Hopkins (1983)</span><span class="co">](https://doi.org/10.1126/science.220.4600.971)</span> established the seasonal dimorphism; the work above traced it across all three components of the loop. The next mechanistic layer is gene expression. <span class="co">[</span><span class="ot">Losilla &amp; Gallant (2025)</span><span class="co">](files/introduction/Losilla_etal_2025_gene_expression_EOD_duration_mormyrid.pdf)</span> used bulk RNA-seq on *B. brachyistius* caudal peduncle tissue to identify 44 genes tracking EOD elongation — a coordinated shift in cytoskeletal, extracellular matrix, lipid-metabolism, and ion channel genes that aligns with the morphological and physiological data.</span>
 <span id="cb1-69"><a href="#cb1-69" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-70"><a href="#cb1-70" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb1-70"><a href="#cb1-70" aria-hidden="true" tabindex="-1"></a>The limitation is resolution. Caudal peduncle tissue contains electrocytes, connective tissue, support cells, blood vessel cells, and immune cells. Bulk RNA-seq averages across all of them. A K⁺ channel gene that shifts in bulk data might be changing specifically in electrocytes — or in a support cell population with no role in action potential generation. Without cell-type resolution, mechanistic interpretation is limited. That is the gap single-nucleus RNA-seq fills, and it is the central motivation for this module.</span>
 <span id="cb1-71"><a href="#cb1-71" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-72"><a href="#cb1-72" aria-hidden="true" tabindex="-1"></a><span class="fu">### The molecular layer: what we recently published</span></span>
+<span id="cb1-72"><a href="#cb1-72" aria-hidden="true" tabindex="-1"></a>::: {.callout-important title="Challenge 2: Putting It Together (10 min)"}</span>
 <span id="cb1-73"><a href="#cb1-73" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-74"><a href="#cb1-74" aria-hidden="true" tabindex="-1"></a>Last year, **Mauricio Losilla and I published a paper ([Losilla &amp; Gallant 2025, *J. Exp. Biol.* 228:jeb249548](files/introduction/Losilla_etal_2025_gene_expression_EOD_duration_mormyrid.pdf))** that took the next mechanistic step: what genes change expression as the EOD elongates? We used a clean experimental design — *Brienomyrus brachyistius* exposed to 17αMT for 1 day or 8 days versus ethanol-vehicle controls — and performed RNA-seq plus differential expression and functional enrichment analyses on caudal peduncle tissue.</span>
+<span id="cb1-74"><a href="#cb1-74" aria-hidden="true" tabindex="-1"></a>Sketch the full sensorimotor loop linking testosterone, the electric organ, knollenorgan electroreceptors, and the corollary discharge pathway. For each component, note (a) one change under testosterone treatment and (b) one open question that single-nucleus RNA-seq could address but bulk RNA-seq cannot.</span>
 <span id="cb1-75"><a href="#cb1-75" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-76"><a href="#cb1-76" aria-hidden="true" tabindex="-1"></a>By day 8, EOD duration had nearly doubled, and we identified **44 genes of highest interest** whose expression tracked the elongation. They cluster into four functional themes:</span>
+<span id="cb1-76"><a href="#cb1-76" aria-hidden="true" tabindex="-1"></a>:::: {.callout-tip title="Solution" collapse="true"}</span>
 <span id="cb1-77"><a href="#cb1-77" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-78"><a href="#cb1-78" aria-hidden="true" tabindex="-1"></a>::: {.callout-tip title="Detailed gene list" collapse="true"}</span>
+<span id="cb1-78"><a href="#cb1-78" aria-hidden="true" tabindex="-1"></a>Possible answers — the goal is to make the integration explicit, so yours may differ:</span>
 <span id="cb1-79"><a href="#cb1-79" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-80"><a href="#cb1-80" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Cytoskeletal &amp; sarcomeric** — strong upregulation of actin and actin-related genes (*actn1*, *actc1c*, *myh6*, *acta1b*, *xirp1*, *myo1d*) and microtubule-related genes (*eml6*, *tubb2*, *cavin4b*, *mid1ip1l*). These are consistent with the cytoskeletal scaffolding required to support the expanded, more elaborately invaginated membrane.</span>
-<span id="cb1-81"><a href="#cb1-81" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Extracellular matrix** — upregulation of a collagen gene (*si:dkey-61l1.4*), thrombospondin *thbs4b*, and cadherin *cdh11*; downregulation of *epdl2*, an ependymin-related gene that we previously implicated in EOD waveform variation across *Paramormyrops*.</span>
-<span id="cb1-82"><a href="#cb1-82" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Lipid metabolism** — strong upregulation of *elovl7a* and *selenoi* (membrane-lipid biosynthesis) and *fam126a* (a gene with a known role in cell types with expanded plasma membrane). Increased membrane area presumably requires more phospholipid.</span>
-<span id="cb1-83"><a href="#cb1-83" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Cation homeostasis** — a coordinated shift in voltage-gated ion channel expression. We found one Na⁺ channel β-subunit gene (***scn4b***, downregulated) and **five voltage-gated K⁺ channels**. Four are delayed-rectifiers — *kcna1* (Kv1.1), *kcna7a1* (Kv1.7), *kcnc1* (Kv3.1), and *kcnc2* (Kv3.2) — all **downregulated** in long-EOD fish, which would slow K⁺ efflux and prolong APs. The fifth, *kcng4a* (Kv6.4), is a "modifier/silencer" subunit and is **upregulated**; its known effect on Kv2.1 is to shift inactivation to more negative potentials, again favoring AP elongation. Notably, the most highly expressed K⁺ channel in mormyrid electrocytes — *kcna7a2* — did *not* change significantly, suggesting EOD elongation is modulated through coordinated regulation of several less-abundantly-expressed channels rather than the dominant one.</span>
+<span id="cb1-80"><a href="#cb1-80" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Electric organ / electrocytes** — change: anterior-face membrane area expands; K⁺ and Na⁺ channel expression shifts toward longer APs. Open question: which of the 44 differentially expressed genes change specifically in electrocytes vs. connective tissue or immune cells?</span>
+<span id="cb1-81"><a href="#cb1-81" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Knollenorgan electroreceptors** — change: best frequency shifts to match the elongated EOD. Open question: what transcriptional program drives KO receptor cell turnover, and is the same gene regulatory network active here as in the electric organ?</span>
+<span id="cb1-82"><a href="#cb1-82" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Corollary discharge (MCA)** — change: onset and duration of CD inhibition delay and elongate. Open question: which MCA cell types express androgen receptors, and what genes change in those cells under testosterone?</span>
+<span id="cb1-83"><a href="#cb1-83" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Loop integration** — change: all three systems stay internally coherent as EOD duration changes across seasons, development, and evolution. Open question: is there a shared androgen-responsive gene regulatory program operating across electrocytes, KO receptor cells, and MCA neurons?</span>
 <span id="cb1-84"><a href="#cb1-84" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-85"><a href="#cb1-85" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb1-85"><a href="#cb1-85" aria-hidden="true" tabindex="-1"></a>::::</span>
 <span id="cb1-86"><a href="#cb1-86" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-87"><a href="#cb1-87" aria-hidden="true" tabindex="-1"></a>So the molecular picture aligns beautifully with the morphological and physiological work: the same cells are simultaneously remodeling their cytoskeleton and ECM contacts, expanding their membrane via lipid biosynthesis, and retuning their ionic currents.</span>
+<span id="cb1-87"><a href="#cb1-87" aria-hidden="true" tabindex="-1"></a>:::</span>
 <span id="cb1-88"><a href="#cb1-88" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-89"><a href="#cb1-89" aria-hidden="true" tabindex="-1"></a>::: {.callout-note title="Why this matters for single-cell"}</span>
+<span id="cb1-89"><a href="#cb1-89" aria-hidden="true" tabindex="-1"></a><span class="fu">## Keypoints</span></span>
 <span id="cb1-90"><a href="#cb1-90" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-91"><a href="#cb1-91" aria-hidden="true" tabindex="-1"></a>The Losilla &amp; Gallant (2025) study used **bulk RNA-seq on whole caudal peduncle tissue** — a mixture of electrocytes, connective tissue, nerves, and skin. The signals we recovered are real, but they're averaged across cell types. Single-cell transcriptomics promises to tell us *which* cells are doing what — and that's a key motivation for this module.</span>
-<span id="cb1-92"><a href="#cb1-92" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-93"><a href="#cb1-93" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb1-94"><a href="#cb1-94" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-95"><a href="#cb1-95" aria-hidden="true" tabindex="-1"></a><span class="fu">### The central layer: corollary discharge</span></span>
-<span id="cb1-96"><a href="#cb1-96" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-97"><a href="#cb1-97" aria-hidden="true" tabindex="-1"></a>Another aspect of this system that we haven't yet discussed is the **corollary discharge** — something mormyrids are a famous model system for. When a mormyrid produces an EOD, the command originates in the **command nucleus (CN)** in the hindbrain. CN drives the medullary relay nucleus (MRN), which in turn drives spinal electromotor neurons that activate the electric organ.</span>
-<span id="cb1-98"><a href="#cb1-98" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-99"><a href="#cb1-99" aria-hidden="true" tabindex="-1"></a>Critically, CN also sends an **efference copy** of that command down a parallel corollary discharge (CD) pathway: CN → bulbar command-associated nucleus (BCA) → mesencephalic command-associated nucleus (MCA) → sublemniscal nucleus (slem). The slem is GABAergic and provides precisely-timed inhibition onto the adendritic neurons of the **nucleus of the electrosensory lateral line lobe (nELL)** — the same neurons that receive excitatory input from knollenorgan primary afferents. Because the inhibition arrives just as the knollenorgan reafferent spikes do, the fish is effectively "deaf" to its own EODs, and the downstream knollenorgan pathway is dedicated to processing EODs from *other* fish (<span class="co">[</span><span class="ot">Bell &amp; Grant 1989</span><span class="co">](https://doi.org/10.1523/JNEUROSCI.09-03-01029.1989)</span>; reviewed in <span class="co">[</span><span class="ot">Fukutomi &amp; Carlson 2020</span><span class="co">](https://doi.org/10.3389/fnint.2020.00042)</span>).</span>
-<span id="cb1-100"><a href="#cb1-100" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-101"><a href="#cb1-101" aria-hidden="true" tabindex="-1"></a>::: {.callout-caution title="Instructor Note: Terminology"}</span>
-<span id="cb1-102"><a href="#cb1-102" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-103"><a href="#cb1-103" aria-hidden="true" tabindex="-1"></a>Older literature (and Losilla &amp; Gallant 2025) uses "pacemaker nucleus" for the small cells ventral to the relay nucleus that initiate each EOD command. Modern Carlson-lab papers (Fukutomi &amp; Carlson 2023, Jarzyna &amp; Carlson 2026) use "command nucleus (CN)" for the same population. They refer to the same structure — flag this for students if they see both terms across the reading list.</span>
-<span id="cb1-104"><a href="#cb1-104" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-105"><a href="#cb1-105" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb1-106"><a href="#cb1-106" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-107"><a href="#cb1-107" aria-hidden="true" tabindex="-1"></a>What's more, **Bruce Carlson's lab has shown that this central pathway is also hormonally sensitive — and adjusts in a way that beautifully complements the peripheral changes.** Three findings are especially relevant:</span>
-<span id="cb1-108"><a href="#cb1-108" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-109"><a href="#cb1-109" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**[Fukutomi &amp; Carlson (2023, *Current Biology*)](files/introduction/Fukutomi_etal_2023_hormonal_coordination_motor_sensory_electric_fish.pdf)** showed that T treatment in *B. brachyistius* not only elongates the EOD (peripherally) but also **delays and elongates the time window of CD inhibition** in the brain. Critically, the timing of this shifted inhibition matches the shifted timing of knollenorgan reafferent input almost exactly — so the system continues to cleanly cancel responses to the fish's own EOD even as the EOD changes shape.</span>
-<span id="cb1-110"><a href="#cb1-110" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**The shift is not driven by sensory feedback.** Fukutomi &amp; Carlson surgically silenced fish (spinal cord transection) so that T elongated electrocyte properties without producing any actual EODs, and then measured CD timing. The CD shift still occurred. So testosterone is acting directly on the central CD circuit, not adjusting it via altered reafference.</span>
-<span id="cb1-111"><a href="#cb1-111" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**[Jarzyna &amp; Carlson (2026, preprint)](files/introduction/Jarzyna_etal_2026_shared_neural_substrates_sensorimotor_integration.pdf)** then localized the central effect: simultaneous field-potential recordings throughout the CD pathway show that the shift in onset and duration of CD activity originates at the **mesencephalic command-associated nucleus (MCA)**, propagating through slem to nELL. Even more elegantly, the *same* MCA locus accounts for **evolutionary differences** between short-EOD (*C. compressirostris*) and long-EOD (*C. numenius*) species, and for **developmental plasticity** in extreme long-EOD adult *C. numenius*. So one neural substrate handles seasonal hormonal shifts (days), developmental shifts (years), and evolutionary divergence (millions of years).</span>
-<span id="cb1-112"><a href="#cb1-112" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-113"><a href="#cb1-113" aria-hidden="true" tabindex="-1"></a>That last point is what makes this such a satisfying integration story: from a single hormonal cue, the periphery (electric organ) and the central nervous system (corollary discharge circuitry) are co-regulated to keep the entire sensorimotor loop coherent. And the central locus appears to be reused across timescales of plasticity. **This is the system we'll be probing at single-cell resolution in this module.**</span>
-<span id="cb1-114"><a href="#cb1-114" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-115"><a href="#cb1-115" aria-hidden="true" tabindex="-1"></a>::: {.callout-important title="Putting it together"}</span>
-<span id="cb1-116"><a href="#cb1-116" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-117"><a href="#cb1-117" aria-hidden="true" tabindex="-1"></a>Sketch the loop linking testosterone, the electric organ, knollenorgan electroreceptors, and the corollary discharge pathway. For each component, note one thing that *changes* under T treatment and one outstanding question that single-cell transcriptomics could address.</span>
-<span id="cb1-118"><a href="#cb1-118" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-119"><a href="#cb1-119" aria-hidden="true" tabindex="-1"></a>:::: {.callout-tip title="Solution" collapse="true"}</span>
-<span id="cb1-120"><a href="#cb1-120" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-121"><a href="#cb1-121" aria-hidden="true" tabindex="-1"></a>Possible answers (yours may differ — the goal is to make the integration explicit):</span>
-<span id="cb1-122"><a href="#cb1-122" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-123"><a href="#cb1-123" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Electric organ / electrocytes** — change: anterior-face surface area expands, K⁺/Na⁺ channel expression shifts, cytoskeleton remodels. Open question: are these changes uniform across all electrocytes, or are there electrocyte sub-populations responding differently?</span>
-<span id="cb1-124"><a href="#cb1-124" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Knollenorgan electroreceptors** — change: tuning shifts to lower peak frequency. Open question: is this driven by a single cell-type-specific transcriptional program, and is the same program triggered by T as in the electric organ?</span>
-<span id="cb1-125"><a href="#cb1-125" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**CD pathway (especially MCA)** — change: onset and duration of CD activity is delayed and elongated to match shifted reafferent input. Open question: which cell types in MCA express androgen / estrogen receptors, and is the same molecular toolkit used here as in the periphery?</span>
-<span id="cb1-126"><a href="#cb1-126" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Loop integration** — change: the entire sensorimotor loop stays internally consistent across seasons, development, and species. Open question: what shared molecular signatures define cell types that are "T-responsive" across this whole circuit?</span>
-<span id="cb1-127"><a href="#cb1-127" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-128"><a href="#cb1-128" aria-hidden="true" tabindex="-1"></a>::::</span>
-<span id="cb1-129"><a href="#cb1-129" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-130"><a href="#cb1-130" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb1-131"><a href="#cb1-131" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-132"><a href="#cb1-132" aria-hidden="true" tabindex="-1"></a><span class="fu">## Key references</span></span>
-<span id="cb1-133"><a href="#cb1-133" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-134"><a href="#cb1-134" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">Bass, A. H., &amp; Hopkins, C. D. (1983). Hormonal control of sexual differentiation: changes in electric organ discharge waveform. *Science* 220:971–974.</span><span class="co">](https://doi.org/10.1126/science.220.4600.971)</span></span>
-<span id="cb1-135"><a href="#cb1-135" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-136"><a href="#cb1-136" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">Bass, A. H., &amp; Hopkins, C. D. (1984). Shifts in frequency tuning of electroreceptors in androgen-treated mormyrid fish. *J. Comp. Physiol. A* 155:713–724.</span><span class="co">](https://doi.org/10.1007/BF00610851)</span></span>
-<span id="cb1-137"><a href="#cb1-137" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-138"><a href="#cb1-138" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">Bass, A. H., Denizot, J.-P., &amp; Marchaterre, M. A. (1986). Ultrastructural features and hormone-dependent sex differences of mormyrid electric organs. *J. Comp. Neurol.* 254:511–528.</span><span class="co">](files/introduction/Bass_etal_1986_androgen_binding_brain_electric_organ.pdf)</span></span>
-<span id="cb1-139"><a href="#cb1-139" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-140"><a href="#cb1-140" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">Bass, A. H., &amp; Volman, S. F. (1987). From behavior to membranes: testosterone-induced changes in action potential duration in electric organs. *PNAS* 84:9295–9298.</span><span class="co">](files/introduction/Bass_etal_1987_behavior_to_membranes_testosterone_AP_duration.pdf)</span></span>
-<span id="cb1-141"><a href="#cb1-141" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-142"><a href="#cb1-142" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">Bell, C. C., &amp; Grant, K. (1989). Corollary discharge inhibition and preservation of temporal information in a sensory nucleus of mormyrid electric fish. *J. Neurosci.* 9:1029–1044.</span><span class="co">](https://doi.org/10.1523/JNEUROSCI.09-03-01029.1989)</span></span>
-<span id="cb1-143"><a href="#cb1-143" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-144"><a href="#cb1-144" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">Freedman, E. G., Olyarchuk, J., Marchaterre, M. A., &amp; Bass, A. H. (1989). A temporal analysis of testosterone-induced changes in electric organs and electric organ discharges of mormyrid fishes. *J. Neurobiol.* 20:619–634.</span><span class="co">](files/introduction/Freedman_etal_1989_temporal_analysis_testosterone_electric_organs.pdf)</span></span>
-<span id="cb1-145"><a href="#cb1-145" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-146"><a href="#cb1-146" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">Fukutomi, M., &amp; Carlson, B. A. (2020). A history of corollary discharge: contributions of mormyrid weakly electric fish. *Front. Integr. Neurosci.* 14:42.</span><span class="co">](https://doi.org/10.3389/fnint.2020.00042)</span></span>
-<span id="cb1-147"><a href="#cb1-147" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-148"><a href="#cb1-148" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">Fukutomi, M., &amp; Carlson, B. A. (2023). Hormonal coordination of motor output and internal prediction of sensory consequences in an electric fish. *Current Biology* 33:3350–3359.</span><span class="co">](files/introduction/Fukutomi_etal_2023_hormonal_coordination_motor_sensory_electric_fish.pdf)</span></span>
-<span id="cb1-149"><a href="#cb1-149" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-150"><a href="#cb1-150" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">Gallant, J. R., et al. (2014). Genomic basis for the convergent evolution of electric organs. *Science* 344:1522–1525.</span><span class="co">](https://doi.org/10.1126/science.1254432)</span></span>
-<span id="cb1-151"><a href="#cb1-151" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-152"><a href="#cb1-152" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">Jarzyna, M. W., &amp; Carlson, B. A. (2026). Shared neural substrates support seasonal, developmental, and evolutionary shifts in sensorimotor integration. *Preprint.*</span><span class="co">](files/introduction/Jarzyna_etal_2026_shared_neural_substrates_sensorimotor_integration.pdf)</span></span>
-<span id="cb1-153"><a href="#cb1-153" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-154"><a href="#cb1-154" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">Losilla, M., &amp; Gallant, J. R. (2025). Gene expression correlates and mechanistic insights into electric organ discharge duration changes in mormyrid electric fish. *J. Exp. Biol.* 228:jeb249548.</span><span class="co">](files/introduction/Losilla_etal_2025_gene_expression_EOD_duration_mormyrid.pdf)</span></span>
-<span id="cb1-155"><a href="#cb1-155" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-156"><a href="#cb1-156" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">Pennisi, E. (2018). Development cell by cell. *Science* 362:1344 [Breakthrough of the Year].</span><span class="co">](https://doi.org/10.1126/science.362.6421.1344)</span></span>
-<span id="cb1-157"><a href="#cb1-157" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-158"><a href="#cb1-158" aria-hidden="true" tabindex="-1"></a>::: {.callout-tip title="Key Points"}</span>
-<span id="cb1-159"><a href="#cb1-159" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-160"><a href="#cb1-160" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>The MSU Electric Fish Lab has built genomic resources spanning the major weakly electric fish lineages, beginning with the electric eel genome in 2014.</span>
-<span id="cb1-161"><a href="#cb1-161" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Single-cell RNA-seq (named *Science*'s Breakthrough of the Year in 2018) reveals cell-type-specific biology that bulk RNA-seq cannot resolve.</span>
-<span id="cb1-162"><a href="#cb1-162" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>In mormyrids, testosterone elongates the EOD by remodeling electrocyte morphology and physiology, retunes knollenorgan electroreceptors, and shifts central corollary discharge timing — all coordinated to keep the sensorimotor loop coherent.</span>
-<span id="cb1-163"><a href="#cb1-163" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>The Losilla &amp; Gallant (2025) paper identified 44 genes of interest, including cytoskeletal, ECM, lipid-metabolism, and ion channel genes — but bulk RNA-seq cannot tell us which cell types drive these signals.</span>
-<span id="cb1-164"><a href="#cb1-164" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>The same neural locus (MCA) appears to handle seasonal, developmental, and evolutionary shifts in CD timing — a striking example of substrate reuse across timescales.</span>
-<span id="cb1-165"><a href="#cb1-165" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Single-cell transcriptomics is the natural next step to ask *which cells* in this integrated system carry which molecular signatures of plasticity.</span>
-<span id="cb1-166"><a href="#cb1-166" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-167"><a href="#cb1-167" aria-hidden="true" tabindex="-1"></a>:::</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
+<span id="cb1-91"><a href="#cb1-91" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>The mormyrid sensorimotor loop links command nucleus → electric organ → knollenorgans → corollary discharge circuit, with a copy of each motor command used to predict and cancel self-generated sensory input.</span>
+<span id="cb1-92"><a href="#cb1-92" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Testosterone coordinately reshapes all three components — the electric organ (direct), knollenorgans (indirect, stimulus-driven), and the corollary discharge circuit (direct, MCA-centered) — keeping the loop coherent as the EOD changes.</span>
+<span id="cb1-93"><a href="#cb1-93" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>The MCA is a conserved temporal hub: the same circuit node adjusts CD timing across seasonal, developmental, and evolutionary timescales.</span>
+<span id="cb1-94"><a href="#cb1-94" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>Bulk RNA-seq on electric organ tissue identified 44 candidate genes but cannot resolve which genes changed in which cell types.</span>
+<span id="cb1-95"><a href="#cb1-95" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>Single-nucleus RNA-seq is the natural next step: it applies to frozen archived tissue and provides cell-type-resolved gene expression across the full sensorimotor circuit.</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 <footer class="footer">
