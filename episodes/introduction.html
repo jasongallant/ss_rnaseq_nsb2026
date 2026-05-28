@@ -241,7 +241,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview">Overview</a></li>
+  <li><a href="#lecture-video" id="toc-lecture-video" class="nav-link active" data-scroll-target="#lecture-video">Lecture Video</a></li>
+  <li><a href="#overview" id="toc-overview" class="nav-link" data-scroll-target="#overview">Overview</a></li>
   <li><a href="#the-sensorimotor-loop" id="toc-the-sensorimotor-loop" class="nav-link" data-scroll-target="#the-sensorimotor-loop">The Sensorimotor Loop</a></li>
   <li><a href="#whats-missing-cell-type-resolution" id="toc-whats-missing-cell-type-resolution" class="nav-link" data-scroll-target="#whats-missing-cell-type-resolution">What’s Missing: Cell-Type Resolution</a></li>
   <li><a href="#keypoints" id="toc-keypoints" class="nav-link" data-scroll-target="#keypoints">Keypoints</a></li>
@@ -305,10 +306,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ul>
 </div>
 </div>
+<section id="lecture-video" class="level2">
+<h2 class="anchored" data-anchor-id="lecture-video">Lecture Video</h2>
 <video class="plyr-video" playsinline="" controls="" preload="metadata">
   <source src="https://d18e7eu8nurr5a.cloudfront.net/lectures/introduction.mp4" type="video/mp4">
   Your browser does not support embedded video.
 </video>
+</section>
 <section id="overview" class="level2">
 <h2 class="anchored" data-anchor-id="overview">Overview</h2>
 <p>In this module you’ll analyze real single-nucleus RNA-seq data from <em>Brienomyrus brachyistius</em> — a weakly electric fish from West Africa — to ask which cell types in the electric organ change gene expression when testosterone elongates the electric organ discharge (EOD). The lecture video above introduces the full biological context. This page provides the key concepts in brief and the exercises to work through after watching.</p>
@@ -383,7 +387,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="whats-missing-cell-type-resolution" class="level2">
 <h2 class="anchored" data-anchor-id="whats-missing-cell-type-resolution">What’s Missing: Cell-Type Resolution</h2>
-<p><a href="https://doi.org/10.1126/science.220.4600.971">Bass &amp; Hopkins (1983)</a> established the seasonal dimorphism; the work above traced it across all three components of the loop. The next mechanistic layer is gene expression. <a href="files/introduction/Losilla_etal_2025_gene_expression_EOD_duration_mormyrid.pdf">Losilla &amp; Gallant (2025)</a> used bulk RNA-seq on <em>B. brachyistius</em> caudal peduncle tissue to identify 44 genes tracking EOD elongation — a coordinated shift in cytoskeletal, extracellular matrix, lipid-metabolism, and ion channel genes that aligns with the morphological and physiological data.</p>
+<p><a href="https://doi.org/10.1126/science.6844924">Bass &amp; Hopkins (1983)</a> established the seasonal dimorphism; the work above traced it across all three components of the loop. The next mechanistic layer is gene expression. <a href="files/introduction/Losilla_etal_2025_gene_expression_EOD_duration_mormyrid.pdf">Losilla &amp; Gallant (2025)</a> used bulk RNA-seq on <em>B. brachyistius</em> caudal peduncle tissue to identify 44 genes tracking EOD elongation — a coordinated shift in cytoskeletal, extracellular matrix, lipid-metabolism, and ion channel genes that aligns with the morphological and physiological data.</p>
 <p>The limitation is resolution. Caudal peduncle tissue contains electrocytes, connective tissue, support cells, blood vessel cells, and immune cells. Bulk RNA-seq averages across all of them. A K⁺ channel gene that shifts in bulk data might be changing specifically in electrocytes — or in a support cell population with no role in action potential generation. Without cell-type resolution, mechanistic interpretation is limited. That is the gap single-nucleus RNA-seq fills, and it is the central motivation for this module.</p>
 <div class="callout callout-style-default callout-important callout-titled" title="Challenge 2: Putting It Together (10 min)">
 <div class="callout-header d-flex align-content-center">
@@ -928,7 +932,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Explain why single-nucleus RNA-seq is the natural next step after bulk transcriptomics in this system.</span>
 <span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="fu">## Lecture Video</span></span>
 <span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="in">```{=html}</span></span>
 <span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="in">&lt;video class="plyr-video" playsinline controls preload="metadata"&gt;</span></span>
 <span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a><span class="in">  &lt;source src="https://d18e7eu8nurr5a.cloudfront.net/lectures/introduction.mp4"</span></span>
@@ -973,7 +977,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-65"><a href="#cb1-65" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-66"><a href="#cb1-66" aria-hidden="true" tabindex="-1"></a><span class="fu">## What's Missing: Cell-Type Resolution</span></span>
 <span id="cb1-67"><a href="#cb1-67" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-68"><a href="#cb1-68" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">Bass &amp; Hopkins (1983)</span><span class="co">](https://doi.org/10.1126/science.220.4600.971)</span> established the seasonal dimorphism; the work above traced it across all three components of the loop. The next mechanistic layer is gene expression. <span class="co">[</span><span class="ot">Losilla &amp; Gallant (2025)</span><span class="co">](files/introduction/Losilla_etal_2025_gene_expression_EOD_duration_mormyrid.pdf)</span> used bulk RNA-seq on *B. brachyistius* caudal peduncle tissue to identify 44 genes tracking EOD elongation — a coordinated shift in cytoskeletal, extracellular matrix, lipid-metabolism, and ion channel genes that aligns with the morphological and physiological data.</span>
+<span id="cb1-68"><a href="#cb1-68" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">Bass &amp; Hopkins (1983)</span><span class="co">](https://doi.org/10.1126/science.6844924)</span> established the seasonal dimorphism; the work above traced it across all three components of the loop. The next mechanistic layer is gene expression. <span class="co">[</span><span class="ot">Losilla &amp; Gallant (2025)</span><span class="co">](files/introduction/Losilla_etal_2025_gene_expression_EOD_duration_mormyrid.pdf)</span> used bulk RNA-seq on *B. brachyistius* caudal peduncle tissue to identify 44 genes tracking EOD elongation — a coordinated shift in cytoskeletal, extracellular matrix, lipid-metabolism, and ion channel genes that aligns with the morphological and physiological data.</span>
 <span id="cb1-69"><a href="#cb1-69" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-70"><a href="#cb1-70" aria-hidden="true" tabindex="-1"></a>The limitation is resolution. Caudal peduncle tissue contains electrocytes, connective tissue, support cells, blood vessel cells, and immune cells. Bulk RNA-seq averages across all of them. A K⁺ channel gene that shifts in bulk data might be changing specifically in electrocytes — or in a support cell population with no role in action potential generation. Without cell-type resolution, mechanistic interpretation is limited. That is the gap single-nucleus RNA-seq fills, and it is the central motivation for this module.</span>
 <span id="cb1-71"><a href="#cb1-71" aria-hidden="true" tabindex="-1"></a></span>
