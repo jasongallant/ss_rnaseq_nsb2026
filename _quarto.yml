@@ -1,0 +1,81 @@
+project:
+  type: website
+  output-dir: site
+  render:
+    - index.md
+    - episodes/*.Rmd
+    - episodes/*.md
+    - "!bts/" # Ignores an entire folder
+    - "!slides/" # Ignores an entire folder
+    - "!_includes/" # HTML partials, not pages
+    - "!episodes/episodes_style_guide.md"
+
+website:
+  title: "Electric Fish: Single-Nucleus RNA-seq"
+  description: "A hands-on lesson on single-nucleus RNA-seq analysis in the context of electric fish biology and hormonal regulation of electric organ discharge."
+  repo-url: https://github.com/jasongallant/ss_rnaseq_nsb2026
+  repo-actions: [edit, issue]
+
+  navbar:
+    logo: episodes/files/shared/efishgenomics_icon.png
+    logo-alt: "EFISH Genomics"
+    title: "NS&B snRNASeq Tutorial"
+    left:
+      - text: "Home"
+        href: index.html
+      - text: "Setup"
+        href: episodes/setup.html
+    right:
+      - icon: github
+        href: https://github.com/jasongallant/ss_rnaseq_nsb2026
+        aria-label: GitHub
+
+  sidebar:
+    style: docked
+    search: true
+    contents:
+      - section: "June 8: Introduction, EOD Recording and Injection"
+        contents:
+          - episodes/introduction.Rmd
+          - episodes/eod-recording.Rmd  # optional background
+          - episodes/implant-11kt.Rmd
+      - section: "June 9: Tissue Dissection and Analysing EOD Differences"
+        contents:
+          - episodes/examine-eod-duration.Rmd
+      - section: "June 10: Intro to Single-Nucleus RNA-seq Analysis"
+        contents: []
+      - section: "June 11: Isolating Single Nuclei"
+        contents: []
+      - section: "June 12: Data Analysis and QC"
+        contents:
+          - episodes/snrnaseq-qc.Rmd
+      - section: "June 13: Clustering and Differential Expression Analysis"
+        contents:
+          - episodes/normalize-reduce-cluster.Rmd
+          - episodes/gene-expression-change.Rmd
+      - "---"
+      - episodes/setup.md
+
+  page-footer:
+    center: "Licensed [CC-BY 4.0](https://creativecommons.org/licenses/by/4.0/) &nbsp;|&nbsp; [Source on GitHub](https://github.com/jasongallant/ss_rnaseq_nsb2026)"
+
+format:
+  html:
+    include-in-header: _includes/plyr-head.html
+    include-after-body: _includes/plyr-foot.html
+    theme:
+      - cosmo
+      - custom.scss
+    toc: true
+    toc-depth: 3
+    number-sections: false
+    code-fold: false
+    code-tools: true
+    code-copy: true
+    link-external-icon: true
+    link-external-newwindow: true
+
+execute:
+  freeze: auto
+  warning: false
+  message: false

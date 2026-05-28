@@ -1,0 +1,129 @@
+/*-- scss:defaults --*/
+
+$primary: #0092ca;
+$primary-color: #0092ca;
+$dark-blue: #1a3a5c;
+
+/*-- scss:rules --*/
+
+// Objectives and Key Points (tip callouts) — green emphasis
+.callout-tip {
+  border-left-color: #27ae60;
+
+  .callout-title-container {
+    color: #1e8449;
+  }
+
+  .callout-icon::before {
+    background-color: #1e8449;
+  }
+}
+
+// Challenges (important callouts) — red emphasis
+.callout-important {
+  border-left-color: #c0392b;
+
+  .callout-title-container {
+    color: #c0392b;
+  }
+
+  .callout-icon::before {
+    background-color: #c0392b;
+  }
+}
+
+// Interpretive pitfalls (warning callouts) — amber, matches slide .warning box
+.callout-warning {
+  border-left-color: #d68910;
+
+  .callout-title-container {
+    color: #b7770d;
+  }
+
+  .callout-icon::before {
+    background-color: #d68910;
+  }
+}
+
+// Instructor notes (caution callouts) — amber, slightly muted
+.callout-caution {
+  border-left-color: #d68910;
+  opacity: 0.9;
+}
+
+// Slightly smaller code blocks (episodes have a lot of code)
+pre.sourceCode {
+  font-size: 0.84em;
+}
+
+// Navbar: light gray background matching efishgenomics.com header
+.navbar {
+  background-color: #eeeeee !important;
+  border-bottom: 1px solid #cdced1;
+
+  .navbar-brand,
+  .navbar-title,
+  .nav-link {
+    color: #222831 !important;
+    font-weight: 700;
+  }
+
+  .nav-link:hover {
+    color: #0092ca !important;
+  }
+
+  img.navbar-logo {
+    max-height: 2rem;
+  }
+}
+
+// Footer: cyan background matching efishgenomics.com footer
+.nav-footer {
+  background-color: #0092ca;
+  color: #ffffff;
+
+  .nav-footer-center,
+  a {
+    color: #ffffff !important;
+  }
+
+  a:hover {
+    text-decoration: underline;
+  }
+}
+
+// Sidebar section headers — bold to distinguish from child links
+.sidebar-item-section > .sidebar-item-container .sidebar-item-text,
+.sidebar-item-section > span.sidebar-item-text {
+  font-weight: 700;
+}
+
+// Episode page headings
+h2 {
+  border-bottom: 1px solid #dee2e6;
+  padding-bottom: 0.25rem;
+  margin-top: 2rem;
+}
+
+// Responsive Plyr video player
+.plyr {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+}
+
+// Responsive iframe video container (16:9) — wrap <iframe> in <div class="video-responsive">
+.video-responsive {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+
+  iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+}
