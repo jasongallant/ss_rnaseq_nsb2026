@@ -4,15 +4,15 @@ teaching: 20
 exercises: 25
 ---
 
-:::::::::::::::::::::::::::::::::::::: questions
+::: {.callout-note title="Questions"}
 
 - How do we load JSON EOD recordings into R?
 - How is EOD duration measured from a raw waveform?
 - Did 11-ketotestosterone treatment change EOD duration over time?
 
-::::::::::::::::::::::::::::::::::::::::::::::::
+:::
 
-::::::::::::::::::::::::::::::::::::: objectives
+::: {.callout-tip title="Objectives"}
 
 - Load JSON recording files into R using the `jsonlite` package
 - Navigate a list of recording objects to extract waveform data and metadata
@@ -23,7 +23,7 @@ exercises: 25
 - Perform a one-way ANOVA and interpret the result
 - Interpret a faceted comparison plot of EOD duration across treatment groups
 
-::::::::::::::::::::::::::::::::::::::::::::::::
+:::
 
 ## Introduction
 
@@ -43,22 +43,20 @@ JSON files can be read in R using the `jsonlite` package. The `read_json()` func
 ```{r load-json, message=FALSE, warning=FALSE}
 library(jsonlite)
 
-eod_data <- read_json("data/eod_duration/DAY0_MAY5/BB_T48.json")
+eod_data <- read_json("data/eod_duration/DAY0_MAY7/BBRAC_T48_MAY7.json")
 
 cat("Number of recordings:", length(eod_data), "\n")
 ```
 
 Each element of `eod_data` is one recording trial, stored as a named list. Use `names(eod_data[[1]])` to see the available fields and `$` to access them.
 
-::::::::::::::::::::::::::::::::::::: challenge
-
-## Challenge 1: Explore the recording metadata (5 min)
+::: {.callout-important title="Challenge 1: Explore the recording metadata (5 min)"}
 
 Using the `eod_data` object already loaded, print the specimen number, species, temperature, sampling rate, and number of waveform samples for the first recording trial.
 
 *Hint:* `names(eod_data[[1]])` shows the available fields.
 
-:::::::::::::::::::::::: solution
+:::: {.callout-tip title="Solution" collapse="true"}
 
 ```{r challenge-1-solution, eval=FALSE}
 names(eod_data[[1]])
@@ -69,8 +67,9 @@ cat("Rate:    ", eod_data[[1]]$Rate, "\n")
 cat("Samples: ", length(eod_data[[1]]$wave), "\n")
 ```
 
-:::::::::::::::::::::::::::::::::
-::::::::::::::::::::::::::::::::::::::::::::::::
+::::
+
+:::
 
 ## Visualizing an EOD Waveform
 
@@ -97,22 +96,20 @@ ggplot(waveform_df, aes(x = time_ms, y = voltage)) +
   )
 ```
 
-:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: instructor
+::: {.callout-caution title="Instructor Note"}
 
 Ask learners what they notice about the waveform shape: there should be a positive peak (P1) followed by a negative trough (P2). This biphasic structure is the signature of mormyrid EODs. Testosterone extends the duration of P2, making the whole EOD longer.
 
-::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+:::
 
-::::::::::::::::::::::::::::::::::::: challenge
-
-## Challenge 2: Compare waveforms across recording sessions (5 min)
+::: {.callout-important title="Challenge 2: Compare waveforms across recording sessions (5 min)"}
 
 Load the first recording from `data/eod_duration/DAY0_MAY7/BBRAC_T48_MAY7.json` and plot it alongside the May 5 waveform. Do the shapes look similar?
 
-:::::::::::::::::::::::: solution
+:::: {.callout-tip title="Solution" collapse="true"}
 
 ```{r challenge-2-solution, eval=FALSE}
-eod_may7  <- read_json("data/eod_duration/DAY0_MAY7/BBRAC_T48_MAY7.json")
+eod_may7  <- read_json("data/eod_duration/DAY1_MAY8/BB_T48.json")
 wave7     <- unlist(eod_may7[[1]]$wave)
 p1_idx7   <- which.max(wave7)
 time7_ms  <- (seq_along(wave7) - p1_idx7) / eod_may7[[1]]$Rate * 1000
@@ -134,8 +131,9 @@ ggplot(df_compare, aes(x = time_ms, y = voltage, color = session)) +
 
 Both are Day 0 baseline recordings taken before any treatment, so the waveform shapes should be similar.
 
-:::::::::::::::::::::::::::::::::
-::::::::::::::::::::::::::::::::::::::::::::::::
+::::
+
+:::
 
 ## Measuring EOD Duration
 
@@ -181,15 +179,13 @@ ggplot(norm_df, aes(x = time_ms, y = voltage)) +
   )
 ```
 
-::::::::::::::::::::::::::::::::::::: challenge
-
-## Challenge 3: Sensitivity of the threshold (5 min)
+::: {.callout-important title="Challenge 3: Sensitivity of the threshold (5 min)"}
 
 Repeat the duration calculation using a **20% threshold** instead of 10%. How does the measured duration change, and why?
 
 This is important: the choice of threshold is an **analytical decision** that must be reported in any publication.
 
-:::::::::::::::::::::::: solution
+:::: {.callout-tip title="Solution" collapse="true"}
 
 ```{r challenge-3-solution, eval=FALSE}
 threshold_20  <- 0.2 * max(abs(wave_norm))
@@ -202,8 +198,9 @@ cat("Duration at 10% threshold:", round(duration_ms, 3), "ms\n")
 
 A higher threshold excludes the low-amplitude tails of the waveform, making the measured duration shorter. Neither threshold is "wrong" — but the choice must be consistent across all animals in a study and clearly reported.
 
-:::::::::::::::::::::::::::::::::
-::::::::::::::::::::::::::::::::::::::::::::::::
+::::
+
+:::
 
 ## Building a Dataset Across All Recording Sessions
 
@@ -211,18 +208,18 @@ Now that we know how to measure EOD duration from a single file, we can apply th
 
 The study metadata is stored in `recordings.csv`, which maps each JSON file to its animal, day, and treatment group:
 
-```{r load-metadata, message=FALSE, warning=FALSE, eval=file.exists("data/eod_duration/recordings.csv")}
+```{r load-metadata, message=FALSE, warning=FALSE, eval=file.exists("data/eod_duration/all_surviving_recordings.csv")}
 library(dplyr)
 
-metadata <- read.csv("data/eod_duration/recordings.csv")
+metadata <- read.csv("data/eod_duration/all_surviving_recordings.csv")
 metadata$Treatment <- as.factor(metadata$Treatment)
 
-head(metadata)
+metadata
 ```
 
 We write a small function that takes a file path, loads the JSON, computes EOD duration for every trial, and returns the mean:
 
-```{r duration-function, message=FALSE, warning=FALSE, eval=file.exists("data/eod_duration/recordings.csv")}
+```{r duration-function, message=FALSE, warning=FALSE, eval=file.exists("data/eod_duration/all_surviving_recordings.csv")}
 mean_eod_duration <- function(file_path, threshold = 0.1) {
   recs <- read_json(file_path)
   durations <- sapply(recs, function(rec) {
@@ -239,7 +236,7 @@ mean_eod_duration <- function(file_path, threshold = 0.1) {
 
 We then apply this function to every row in the metadata table:
 
-```{r compute-durations, message=FALSE, warning=FALSE, eval=file.exists("data/eod_duration/recordings.csv")}
+```{r compute-durations, message=FALSE, warning=FALSE, eval=file.exists("data/eod_duration/all_surviving_recordings.csv")}
 metadata$EOD <- sapply(
   file.path("data/eod_duration", metadata$file),
   mean_eod_duration
@@ -252,7 +249,7 @@ head(metadata)
 
 With the full dataset assembled, we can visualize how EOD duration changes across the 8-day experiment for each treatment group. Points show the group mean; error bars show ±1 standard deviation.
 
-```{r longitudinal-plot, message=FALSE, warning=FALSE, eval=file.exists("data/eod_duration/recordings.csv"), fig.alt="Line plot showing mean EOD duration in milliseconds on the y-axis and experimental day on the x-axis, with separate colored lines for the 11-kt and control groups. Error bars represent one standard deviation.", fig.cap="Mean EOD duration (±SD) across experimental days by treatment group."}
+```{r longitudinal-plot, message=FALSE, warning=FALSE, eval=file.exists("data/eod_duration/all_surviving_recordings.csv"), fig.alt="Line plot showing mean EOD duration in milliseconds on the y-axis and experimental day on the x-axis, with separate colored lines for the 11-kt and control groups. Error bars represent one standard deviation.", fig.cap="Mean EOD duration (±SD) across experimental days by treatment group."}
 ggplot(metadata, aes(x = day, y = EOD, group = Treatment, color = Treatment)) +
   stat_summary(
     fun     = "mean",
@@ -284,7 +281,7 @@ Before running an ANOVA, we verify two key assumptions:
 - **Homogeneity of variance** — tested with Levene's test (`car::leveneTest`)
 - **Normality of residuals** — tested with the Shapiro-Wilk test
 
-```{r assumptions-day0, message=FALSE, warning=FALSE, eval=file.exists("data/eod_duration/recordings.csv")}
+```{r assumptions-day0, message=FALSE, warning=FALSE, eval=file.exists("data/eod_duration/all_surviving_recordings.csv")}
 suppressPackageStartupMessages(library(car))
 
 # Extract Day 0 baseline data
@@ -301,9 +298,7 @@ print(shp_d0)
 
 If neither test is significant (p > 0.05), the ANOVA assumptions are met.
 
-::::::::::::::::::::::::::::::::::::: challenge
-
-## Challenge 4: Full statistical comparison (10 min)
+::: {.callout-important title="Challenge 4: Full statistical comparison (10 min)"}
 
 Work through the following steps:
 
@@ -316,7 +311,7 @@ summary(res_aov_d0)
 **Step 2.** Extract Day 8 data and run the same ANOVA. Check assumptions first.
 
 ```{r challenge-4-step2, eval=FALSE}
-d8 <- metadata %>% filter(day == 8)
+d8 <- metadata %>% filter(day == 2)
 
 res_aov_d8 <- aov(EOD ~ Treatment, data = d8)
 
@@ -326,9 +321,9 @@ shapiro.test(residuals(res_aov_d8))
 summary(res_aov_d8)
 ```
 
-**Step 3 (stretch).** Reproduce the faceted plot below, showing Day 0 and Day 8 distributions side by side with individual data points overlaid.
+**Step 3 (stretch).** Reproduce the plot below, showing each fish as a connected line across Days 0–4, coloured by treatment group with a distinct point shape per individual.
 
-:::::::::::::::::::::::: solution
+:::: {.callout-tip title="Solution" collapse="true"}
 
 ```{r challenge-4-solution, eval=FALSE}
 # Step 1 — baseline check
@@ -336,28 +331,30 @@ summary(res_aov_d0)
 # Non-significant: groups were similar before treatment.
 
 # Step 2 — end-of-treatment comparison
-d8 <- metadata %>% filter(day == 8)
+d8 <- metadata %>% filter(day == 3)
 res_aov_d8 <- aov(EOD ~ Treatment, data = d8)
 leveneTest(res_aov_d8)
 shapiro.test(residuals(res_aov_d8))
 summary(res_aov_d8)
 
-# Step 3 — faceted plot
-d_plot <- bind_rows(
-  mutate(d0, timepoint = "Day 0"),
-  mutate(d8, timepoint = "Day 8")
-)
+# Step 3 — individual trajectories across days 0–4
+d_plot <- metadata %>%
+  filter(day %in% 0:4)
 
-ggplot(d_plot, aes(x = Treatment, y = EOD, color = Treatment)) +
-  stat_summary(
-    fun     = "mean",
-    geom    = "pointrange",
-    fun.max = function(x) mean(x) + sd(x),
-    fun.min = function(x) mean(x) - sd(x),
-    fatten  = 1.8
+d_labels <- d_plot %>%
+  group_by(specimenno) %>%
+  slice_max(day, n = 1)
+
+ggplot(d_plot, aes(x = day, y = EOD, color = Treatment, group = specimenno)) +
+  geom_line(linewidth = 0.7) +
+  geom_point(size = 2) +
+  geom_text(data = d_labels, aes(label = specimenno),
+            hjust = -0.15, size = 2.8, show.legend = FALSE) +
+  scale_x_continuous(
+    name   = "Day",
+    breaks = 0:4,
+    expand = expansion(mult = c(0.05, 0.25))
   ) +
-  geom_point(shape = 2, position = position_jitter(width = 0.07, seed = 84)) +
-  facet_wrap(~timepoint) +
   scale_y_continuous(
     name   = "EOD duration (ms)",
     breaks = scales::breaks_pretty(10)
@@ -366,19 +363,72 @@ ggplot(d_plot, aes(x = Treatment, y = EOD, color = Treatment)) +
   theme_classic() +
   theme(
     axis.text       = element_text(size = 9),
-    legend.position = "none",
     panel.border    = element_rect(colour = "black", fill = NA)
   )
 ```
 
-:::::::::::::::::::::::::::::::::
-::::::::::::::::::::::::::::::::::::::::::::::::
+::::
 
-::::::::::::::::::::::::::::::::::::: keypoints
+:::
+
+## Visualizing Waveform Shape Change by Individual
+
+The ANOVA tells us that EOD duration changed, but looking at the raw waveforms makes that change intuitive. Here we load the Day 0 and Day 2 recordings for each fish, normalize every waveform to a peak-to-peak amplitude of 1, and centre on the P1 peak. Overlaying the two traces for each animal shows directly how the waveform lengthens — or stays the same — depending on treatment.
+
+```{r waveform-by-subject, message=FALSE, warning=FALSE, eval=file.exists("data/eod_duration/recordings.csv"), fig.alt="Four faceted panels, one per fish. Each panel shows two overlaid normalized EOD waveforms: Day 0 in grey and Day 2 in red, centred on the P1 peak. The two 11-kt fish show a clear rightward extension of the waveform by Day 2; the two control fish waveforms are nearly identical across days.", fig.cap="Day 0 (grey) and Day 2 (red) EOD waveforms for each individual fish, normalized to peak-to-peak amplitude and centred on P1. Waveforms from the 11-kt-treated fish (BB48, BB49) show a lengthened P2 phase by Day 2; control fish (BB50, BB51) are largely unchanged."}
+load_waveform_norm <- function(file_path) {
+  recs   <- read_json(file_path)
+  rec    <- recs[[1]]
+  w      <- unlist(rec$wave)
+  rate   <- rec$Rate
+  p1_idx <- which.max(w)
+  w_norm <- w / (max(w) - min(w))
+  data.frame(
+    time_ms      = (seq_along(w) - p1_idx) / rate * 1000,
+    voltage_norm = w_norm
+  )
+}
+
+d0d2 <- metadata %>% filter(day %in% c(0, 4))
+
+waveform_overlay <- bind_rows(lapply(seq_len(nrow(d0d2)), function(i) {
+  fp            <- file.path("data/eod_duration", d0d2$file[i])
+  df            <- load_waveform_norm(fp)
+  df$fish_label <- paste0(d0d2$specimenno[i], " (", d0d2$Treatment[i], ")")
+  df$Day        <- paste0("Day ", d0d2$day[i])
+  df
+}))
+
+ggplot(waveform_overlay, aes(x = time_ms, y = voltage_norm, color = Day)) +
+  geom_line(linewidth = 0.6, alpha = 0.85) +
+  coord_cartesian(xlim = c(-1.5, 3)) +
+  facet_wrap(~ fish_label, ncol = 2) +
+  scale_colour_manual(values = c("Day 0" = "grey50", "Day 4" = "tomato")) +
+  theme_classic() +
+  theme(
+    strip.background = element_blank(),
+    strip.text       = element_text(face = "bold"),
+    legend.position  = "top"
+  ) +
+  labs(
+    x     = "Time (ms)",
+    y     = "Normalized voltage",
+    color = NULL,
+    title = "EOD waveforms by individual: Day 0 vs Day 2"
+  )
+```
+
+::: {.callout-caution title="Instructor Note"}
+
+Point out the contrast between the two panels on the left (11-kt fish) and the two on the right (control fish). In treated animals, the P2 phase — the negative lobe following P1 — extends noticeably further along the time axis by Day 2. This is the morphological signature of androgen action on the electric organ. In control fish the two traces should overlap closely, confirming that the duration change is treatment-driven rather than a recording artefact.
+
+:::
+
+::: {.callout-tip title="Key Points"}
 
 - `jsonlite::read_json()` loads JSON files as nested R lists; each recording trial is a named list with fields like `wave`, `Rate`, `temp`, and `specimenno`
 - EOD duration is defined by a threshold criterion applied to the normalized waveform — the choice of threshold is an analytical decision that must be reported
 - A metadata CSV that maps files to experimental conditions lets you build a tidy dataset by applying a duration function across all recording sessions
 - Always verify ANOVA assumptions (Levene's test for equal variance; Shapiro-Wilk on residuals for normality) before interpreting results
 
-::::::::::::::::::::::::::::::::::::::::::::::::
+:::

@@ -1,0 +1,2077 @@
+---
+title: 'Hormone-Driven Gene Expression Changes in the Electric Organ'
+teaching: 60
+exercises: 15
+editor: 
+  markdown: 
+    wrap: 72
+---
+
+::: {.callout-note title="Questions"}
+- Why must we correct for GEM-well batch effects before clustering, and
+  why can't we use Harmony-corrected values for differential expression?
+- Why is it statistically wrong to test for treatment effects by
+  comparing individual nuclei between conditions?
+- How does pseudobulk aggregation reconstruct the biological replicate
+  structure, and what does DESeq2 require as input?
+- How do you quantify changes in cell-type proportions and interpret
+  them when n=2 per condition?
+:::
+
+::: {.callout-tip title="Objectives"}
+- Load, merge, and re-annotate four EO samples, extending the workflow
+  from the previous episode.
+- Apply Harmony integration to correct GEM-well batch; compare
+  integrated and un-integrated UMAPs side by side.
+- Produce a labeled EO cell-type UMAP (electrocyte, muscle, Schwann,
+  fibroblast, endothelial).
+- Build a pseudobulk count matrix with `AggregateExpression` and run
+  DESeq2 `~ treatment` per cell type.
+- Plot per-fish pseudobulk expression values (not means ± SE) for top DE
+  genes.
+- Compute per-sample cell-type proportions and run propeller or
+  arcsine-limma for differential abundance.
+- Cross-validate results against known 11-KT-responsive gene families
+  from Losilla & Gallant 2025.
+:::
+
+## Setup
+
+::: callout-note
+## Installing harmony and speckle
+
+Two packages used in this episode are not installed by default and must
+be added before running this episode.
+
+``` r
+# harmony is on CRAN
+install.packages("harmony")
+
+# speckle (propeller) is on Bioconductor
+if (!requireNamespace("BiocManager", quietly = TRUE))
+  install.packages("BiocManager")
+BiocManager::install("speckle")
+
+# After installing, record in renv:
+renv::snapshot()
+```
+
+The differential abundance section (`propeller-or-arcsine` chunk)
+includes an automatic fallback to base R + limma if speckle is not
+available, so the episode will still render without it — but the
+propeller path gives a more principled test.
+:::
+
+```{r load-libraries, message=FALSE, warning=FALSE}
+library(Seurat)
+library(tidyverse)
+library(patchwork)
+library(glmGamPoi)
+library(presto)
+library(DESeq2)
+library(limma)
+library(harmony)
+if (requireNamespace("speckle", quietly = TRUE)) library(speckle)
+```
+
+## Load the data
+
+::: callout-note
+## Ambient RNA: CellBender has not been run
+
+**CellBender** removes ambient RNA contamination from Cell Ranger output
+matrices before Seurat analysis. For the EO data used here, CellBender
+has not yet been applied. The EO tissue is dominated by a single cell
+type (electrocytes), which reduces the practical impact of ambient RNA
+compared to more heterogeneous tissues, but running CellBender is still
+recommended before publishing results. We work directly from Cell Ranger
+output in this lesson to keep the pipeline self-contained.
+:::
+
+```{r load-data, message=FALSE, warning=FALSE}
+tissue <- "EO"
+sample_names <- c("BB48", "BB49INJ", "BB50", "BB50INJ")
+
+# Empty list to store one Seurat object per sample
+list_seurat <- list()
+
+for (sample in sample_names) {
+  data_dir <- file.path("data/ssrnaseq_data", tissue, sample)
+
+  seurat_data <- Read10X(data.dir = data_dir)
+  seurat_obj <- CreateSeuratObject(
+    counts = seurat_data,
+    min.features = 1,
+    project = paste0(tissue, "_", sample)
+  )
+
+  list_seurat[[sample]] <- seurat_obj
+}
+```
+
+## Merge samples and annotate experimental conditions
+
+```{r merge-and-annotate, message=FALSE, warning=FALSE}
+# Merge into one object; add.cell.id prefixes each barcode with its sample name
+merged_seurat <- merge(
+  x = list_seurat[[1]],
+  y = list_seurat[2:length(list_seurat)],
+  add.cell.id = names(list_seurat)
+)
+
+# In Seurat v5, layers must be joined before downstream analysis
+merged_seurat <- JoinLayers(merged_seurat)
+
+# --- sample: strip the tissue prefix from orig.ident ---
+merged_seurat$sample <- sub("EO_", "", merged_seurat$orig.ident)
+
+# --- fish: same as sample — each is a different individual ---
+# The "INJ" suffix records a library preparation detail, not a treatment.
+merged_seurat$fish <- merged_seurat$sample
+
+# --- treatment: assigned by fish ID, NOT the INJ suffix ---
+# 11-KT treated: BB48, BB49INJ
+# Vehicle      : BB50,  BB50INJ
+treatment_map <- c(
+  BB48    = "11kt",
+  BB49INJ = "11kt",
+  BB50    = "vehicle",
+  BB50INJ = "vehicle"
+)
+merged_seurat$treatment <- unname(treatment_map[merged_seurat$sample])
+
+head(merged_seurat@meta.data)
+```
+
+::: callout-note
+## The INJ suffix is a library label, not a treatment indicator
+
+Two samples are named **BB49INJ** and **BB50INJ**. The "INJ" suffix
+records a detail about how the library was prepared — it does **not**
+indicate that those fish received a vehicle injection. Treatment
+assignment is based on fish identity:
+
+| Fish    | Treatment                   |
+|---------|-----------------------------|
+| BB48    | 11-ketotestosterone (11-KT) |
+| BB49INJ | 11-ketotestosterone (11-KT) |
+| BB50    | Vehicle (cocoa butter)      |
+| BB50INJ | Vehicle (cocoa butter)      |
+
+Using the INJ string to infer treatment would reverse the condition
+labels for BB49INJ, producing completely wrong results downstream.
+Always check the experimental metadata rather than the sample name.
+:::
+
+## Quality control
+
+```{r qc-violin, fig.width=10, fig.height=5, message=FALSE, warning=FALSE, fig.alt="Violin plots of UMI counts and gene counts per sample in the electric organ dataset.", fig.cap="Distribution of UMI counts (nCount_RNA, left) and gene counts (nFeature_RNA, right) across the four EO samples. Points represent individual nuclei; the violin shape shows the density of values."}
+p_count <- VlnPlot(merged_seurat,
+  features  = "nCount_RNA",
+  group.by  = "orig.ident",
+  pt.size   = 0,
+  cols      = c("#E69F00", "#56B4E9", "#009E73", "#F0E442")
+) +
+  theme(legend.position = "none") +
+  ggtitle("UMI counts per nucleus")
+
+p_feat <- VlnPlot(merged_seurat,
+  features  = "nFeature_RNA",
+  group.by  = "orig.ident",
+  pt.size   = 0,
+  cols      = c("#E69F00", "#56B4E9", "#009E73", "#F0E442")
+) +
+  theme(legend.position = "none") +
+  ggtitle("Genes detected per nucleus")
+
+p_count | p_feat
+```
+
+::: callout-note
+## Mitochondrial content near zero is expected for this genome
+
+In mouse and human single-cell analyses, the percentage of reads from
+mitochondrial genes (`percent.mt`) is a standard QC metric — high values
+flag damaged or lysed cells. Running
+`PercentageFeatureSet(merged_seurat, pattern = "^mt-")` in *Brienomyrus
+brachyistius* returns approximately zero for every cell. **This is
+expected and correct** for this genome: mitochondrial genes in *B.
+brachyistius* are not named with the `^mt-` prefix used in mouse and
+human reference builds. Before using percent.mt as a filter, you would
+need to identify the correct mitochondrial gene names from
+`features.tsv.gz` and recalculate accordingly.
+:::
+
+```{r depth-comparison, fig.width=9, fig.height=4, message=FALSE, warning=FALSE, fig.alt="Box plots comparing UMI and gene counts grouped by treatment condition, with individual sample medians shown as colored points.", fig.cap="Sequencing depth comparison between 11-KT and vehicle libraries. Each point represents the median value for one sample (n=2 per condition). Overlapping depth distributions suggest that any differences in gene expression are biological rather than technical."}
+depth_summary <- merged_seurat@meta.data |>
+  group_by(orig.ident, treatment, sample) |>
+  summarise(
+    median_UMI  = median(nCount_RNA),
+    median_gene = median(nFeature_RNA),
+    .groups = "drop"
+  )
+
+p_umi <- ggplot(
+  merged_seurat@meta.data,
+  aes(x = treatment, y = nCount_RNA, fill = treatment)
+) +
+  geom_violin(alpha = 0.4, scale = "width") +
+  geom_point(
+    data     = depth_summary,
+    aes(x = treatment, y = median_UMI, color = sample),
+    size     = 3,
+    position = position_dodge(width = 0)
+  ) +
+  scale_fill_manual(values  = c("11kt" = "#D55E00", "vehicle" = "#0072B2")) +
+  scale_color_manual(values = c(BB48 = "#E69F00", BB49INJ = "#56B4E9",
+                                BB50 = "#009E73", BB50INJ = "#F0E442")) +
+  theme_bw() +
+  labs(title = "UMI depth by treatment", y = "nCount_RNA", x = "Treatment") +
+  theme(legend.position = "none")
+
+p_gene <- ggplot(
+  merged_seurat@meta.data,
+  aes(x = treatment, y = nFeature_RNA, fill = treatment)
+) +
+  geom_violin(alpha = 0.4, scale = "width") +
+  geom_point(
+    data     = depth_summary,
+    aes(x = treatment, y = median_gene, color = sample),
+    size     = 3,
+    position = position_dodge(width = 0)
+  ) +
+  scale_fill_manual(values  = c("11kt" = "#D55E00", "vehicle" = "#0072B2")) +
+  scale_color_manual(values = c(BB48 = "#E69F00", BB49INJ = "#56B4E9",
+                                BB50 = "#009E73", BB50INJ = "#F0E442")) +
+  theme_bw() +
+  labs(title = "Gene detection by treatment", y = "nFeature_RNA", x = "Treatment") +
+  theme(legend.position = "right")
+
+p_umi | p_gene
+```
+
+## Normalize, reduce, and cluster
+
+We repeat the normalization and PCA workflow from the previous episode,
+applied now to the EO dataset. The concepts — SCTransform, principal
+components, elbow plots — were introduced there; here we move quickly to
+the steps that are new to this episode. Throughout, we use **20 PCs**.
+
+```{r sctransform, message=FALSE, warning=FALSE}
+merged_seurat <- SCTransform(merged_seurat, verbose = FALSE)
+```
+
+```{r run-pca, message=FALSE, warning=FALSE}
+merged_seurat <- RunPCA(merged_seurat, verbose = FALSE, assay = "SCT")
+```
+
+```{r elbow-plot, message=FALSE, warning=FALSE, fig.alt="Elbow plot showing variance explained by each principal component for the EO dataset.", fig.cap="Elbow plot for the EO dataset. The curve flattens around PC 15–20, supporting the choice of 20 PCs throughout this episode."}
+ElbowPlot(merged_seurat, ndims = 30)
+```
+
+```{r run-umap-pca, message=FALSE, warning=FALSE}
+# Store the un-integrated UMAP so we can show it alongside the Harmony UMAP later
+merged_seurat <- RunUMAP(
+  merged_seurat,
+  dims           = 1:20,
+  reduction      = "pca",
+  reduction.name = "umap.pca",
+  verbose        = FALSE
+)
+```
+
+## Harmony integration
+
+Each of the four EO samples was captured in its own GEM well, creating
+the potential for **GEM-well batch effects**: small technical
+differences in ambient RNA, nucleus capture efficiency, and lysis
+conditions between wells. Harmony corrects for this by iteratively
+adjusting the PCA embedding so that cells from different samples are
+aligned by cell type rather than by which GEM well they came from.
+
+Importantly, Harmony corrects for *GEM-well identity* — not for
+*treatment*. Because 11-KT and vehicle fish span both GEM wells, Harmony
+cannot and does not remove the biological treatment signal. What it
+removes is the technical component of inter-well differences.
+
+::: callout-note
+## Don't over-integrate: Harmony is a sanity check, not a cure
+
+For this dataset, the 4-plex OCM experiment used the same reagent kit,
+sequencing run, and Cell Ranger pipeline across all four wells.
+Technical batch is expected to be small. If the PCA UMAP and the Harmony
+UMAP look nearly identical, **that is a good result**: it means
+technical batch was minimal and Harmony provided confirmation rather
+than correction.
+
+The critical constraint: integrated/corrected values are **for
+clustering and visualization only**. All differential expression
+analysis uses the original raw RNA counts (see §7). Passing Harmony
+embeddings or SCT residuals to DESeq2 would violate the negative
+binomial count model and produce incorrect results.
+:::
+
+```{r split-layers, message=FALSE, warning=FALSE}
+# Note: Seurat v5 integration methods that work on count data (CCA, RPCA, scVI)
+# require splitting the RNA assay by sample first:
+#   merged_seurat[["RNA"]] <- split(merged_seurat[["RNA"]], f = merged_seurat$orig.ident)
+#
+# Harmony is different — it corrects PCA embeddings, not count data, so we call
+# RunHarmony() directly on the already-computed PCA. No layer splitting needed.
+cat("Skipping layer split: RunHarmony works on PCA embeddings directly.\n")
+cat("orig.ident levels:", levels(factor(merged_seurat$orig.ident)), "\n")
+```
+
+```{r harmony-integration, message=FALSE, warning=FALSE}
+# RunHarmony corrects the PCA embedding for GEM-well batch effects.
+# group.by.vars tells Harmony which metadata column defines the batches.
+# reduction.save stores the result in a new "harmony" reduction slot.
+merged_seurat <- RunHarmony(
+  merged_seurat,
+  group.by.vars  = "orig.ident",
+  reduction      = "pca",
+  reduction.save = "harmony",
+  verbose        = FALSE
+)
+```
+
+```{r rejoin-layers, message=FALSE, warning=FALSE}
+# Layers were never split (we used RunHarmony directly on PCA embeddings).
+# The RNA assay is already joined from the merge-and-annotate step.
+# PrepSCTFindMarkers and AggregateExpression will find the counts ready to use.
+cat("RNA assay layers:", Layers(merged_seurat, assay = "RNA"), "\n")
+```
+
+```{r harmony-cluster, message=FALSE, warning=FALSE}
+# Cluster on the harmony reduction (not PCA) so clusters reflect batch-corrected space
+merged_seurat <- FindNeighbors(merged_seurat,
+  dims      = 1:20,
+  reduction = "harmony",
+  verbose   = FALSE
+)
+merged_seurat <- FindClusters(merged_seurat,
+  resolution = 0.8,
+  verbose    = FALSE
+)
+
+# UMAP on the harmony reduction — stored under a named reduction for comparison
+merged_seurat <- RunUMAP(
+  merged_seurat,
+  dims           = 1:20,
+  reduction      = "harmony",
+  reduction.name = "umap.harmony",
+  verbose        = FALSE
+)
+```
+
+```{r harmony-umap-comparison, fig.width=14, fig.height=8, message=FALSE, warning=FALSE, fig.alt="A 2-by-2 grid of UMAP plots comparing PCA (un-integrated) and Harmony-integrated embeddings, colored by sample and by treatment.", fig.cap="Comparison of un-integrated (PCA) and Harmony-integrated UMAPs, colored by sample (left column) and treatment (right column). After Harmony correction, sample-specific islands should dissolve while treatment-level separation is preserved. For this low-batch OCM dataset, the two embeddings are often similar — a sign of good sample quality."}
+p1 <- DimPlot(merged_seurat,
+  reduction = "umap.pca",
+  group.by  = "orig.ident",
+  alpha     = 0.4
+) + ggtitle("PCA — by sample") + theme(legend.position = "right")
+
+p2 <- DimPlot(merged_seurat,
+  reduction = "umap.pca",
+  group.by  = "treatment",
+  alpha     = 0.4,
+  cols      = c("11kt" = "#D55E00", "vehicle" = "#0072B2")
+) + ggtitle("PCA — by treatment")
+
+p3 <- DimPlot(merged_seurat,
+  reduction = "umap.harmony",
+  group.by  = "orig.ident",
+  alpha     = 0.4
+) + ggtitle("Harmony — by sample") + theme(legend.position = "right")
+
+p4 <- DimPlot(merged_seurat,
+  reduction = "umap.harmony",
+  group.by  = "treatment",
+  alpha     = 0.4,
+  cols      = c("11kt" = "#D55E00", "vehicle" = "#0072B2")
+) + ggtitle("Harmony — by treatment")
+
+(p1 | p2) / (p3 | p4)
+```
+
+::: callout-note
+## What to look for in the integration comparison
+
+**"By sample" panels (left column):** Look for sample-specific islands —
+compact regions occupied by cells from only one or two samples. These
+indicate GEM-well batch structure. After Harmony (bottom-left), those
+islands should dissolve: cells from all four samples intermix within
+each cluster.
+
+**"By treatment" panels (right column):** 11-KT and vehicle cells
+**should** partially segregate if hormone treatment changes gene
+expression — that is the biology you want to detect. Harmony corrects
+for GEM-well, not for treatment, so treatment-level separation in the
+UMAP is expected and desirable.
+
+If the two rows of the plot look nearly identical, that confirms the OCM
+captures had minimal technical batch. Harmony provides assurance, not
+necessarily a dramatic visual change.
+:::
+
+:::: callout-important
+## Before and after: how much did Harmony change the clusters?
+
+Run the following code to build a contingency table of sample membership
+by cluster.
+
+``` r
+# Build the table
+sample_cluster_table <- table(
+  merged_seurat$orig.ident,
+  merged_seurat$seurat_clusters
+)
+print(sample_cluster_table)
+```
+
+1.  Are there any clusters where one sample contributes more than 80% of
+    the cells? If so, which clusters, and does the Harmony UMAP still
+    show those clusters as isolated from the rest of the data?
+
+2.  Compare the cluster UMAP colored by `seurat_clusters` for both
+    reductions:
+
+    ``` r
+    DimPlot(merged_seurat, reduction = "umap.pca",     group.by = "seurat_clusters",
+            label = TRUE) + ggtitle("PCA clusters")
+    DimPlot(merged_seurat, reduction = "umap.harmony", group.by = "seurat_clusters",
+            label = TRUE) + ggtitle("Harmony clusters")
+    ```
+
+    Did Harmony split or merge any clusters relative to the PCA-based
+    clustering?
+
+::: {.callout-tip title="Solution" collapse="true"}
+A **balanced** table has similar cell counts across all four samples in
+every column. A **dominated** table has one sample contributing 80%+ of
+cells to a given cluster — a warning sign that the cluster may reflect a
+sample-specific artifact rather than a real cell type.
+
+For this low-complexity EO dataset, most clusters are expected to be
+reasonably balanced because the dominant cell type (electrocytes) is
+present in all four fish. A cluster dominated by a single sample could
+indicate: - A rare cell type that only happened to be captured in one
+fish - An ambient RNA or doublet population - A real biological state
+that is enriched in one treatment group (not an artifact)
+
+Harmony typically merges some previously split sample-specific clusters
+and can occasionally split one cluster into sample-mixed sub-clusters.
+Whether those splits reflect biology or correction artifacts requires
+comparing against marker genes.
+:::
+::::
+
+## Cell-type annotation
+
+Rather than running a generic GO enrichment test — which performs poorly
+when one cell type dominates a tissue and per-nucleus depth is shallow —
+we annotate clusters using **canonical marker genes** validated in
+published work on the mormyrid electric organ.
+
+Two genes in particular are confirmed electrocyte-specific across all
+published datasets and methods:
+
+- **scn4aa** (`LOC125742960`) — Nav1.4a, the principal electrogenic Na⁺
+  channel. Recruited convergently into electric organs across six
+  independent fish lineages (Gallant et al. 2014 *Science* 344:1522;
+  Thompson et al. 2018 *Curr Biol*).
+- **kcna7a** (`LOC125743019`) — Kv1.7a, the key delayed-rectifier K⁺
+  channel that sets EOD repolarisation kinetics (Losilla & Gallant 2025
+  *JEB*; Zakon et al. 2008 *GBE*).
+
+Electrocytes are the dominant EO cell type and are **myogenic in
+origin** (derived from muscle), so muscle progenitor clusters
+(expressing *pax7b*, myomesin) appear nearby on the UMAP. Schwann cells,
+vascular endothelial cells, and a small immune population round out the
+expected EO atlas.
+
+```{r prep-markers, message=FALSE, warning=FALSE}
+# PrepSCTFindMarkers re-normalizes counts across samples before FindAllMarkers
+merged_seurat <- PrepSCTFindMarkers(merged_seurat, verbose = FALSE)
+```
+
+```{r find-markers-eo, message=FALSE, warning=FALSE}
+all_markers_eo <- FindAllMarkers(
+  merged_seurat,
+  only.pos = TRUE,
+  verbose  = FALSE
+)
+
+all_markers_eo <- all_markers_eo |>
+  arrange(cluster, desc(avg_log2FC))
+
+head(all_markers_eo, 20)
+```
+
+```{r parse-gtf-eo, message=FALSE, warning=FALSE}
+# Parse the B. brachyistius RefSeq GTF for human-readable gene product names
+gtf_raw <- read_tsv(
+  "data/ssrnaseq_data/genes.gtf.gz",
+  comment        = "#",
+  col_names      = FALSE,
+  col_types      = "ccciicccc",
+  show_col_types = FALSE
+)
+
+gene_desc <- gtf_raw |>
+  filter(str_detect(X9, 'product "')) |>
+  mutate(
+    gene_id   = str_extract(X9, 'gene_id "([^"]+)"', group = 1),
+    gene_name = str_extract(X9, 'gene "([^"]+)"',     group = 1),
+    product   = str_extract(X9, 'product "([^"]+)"',  group = 1)
+  ) |>
+  dplyr::select(gene_id, gene_name, product) |>
+  distinct(gene_id, .keep_all = TRUE)
+
+# Build a combined lookup indexed by EITHER gene_id (LOC ID) OR gene_name (symbol).
+# Read10X uses gene symbols for named genes as rownames; unnamed genes use LOC IDs.
+# This two-key lookup handles the mixed naming convention in the Seurat object.
+gene_lookup <- bind_rows(
+  gene_desc |> transmute(key = gene_id, gene_name, product),
+  gene_desc |>
+    filter(!is.na(gene_name), gene_name != gene_id) |>
+    transmute(key = gene_name, gene_name, product)
+) |>
+  distinct(key, .keep_all = TRUE)
+
+cat("Gene descriptions loaded:", nrow(gene_desc), "genes\n")
+cat("Lookup entries (by LOC ID + gene symbol):", nrow(gene_lookup), "\n")
+```
+
+```{r annotate-markers-eo, message=FALSE, warning=FALSE}
+annotated_markers_eo <- all_markers_eo |>
+  left_join(gene_lookup |> dplyr::select(key, gene_name, product),
+            by = c("gene" = "key"))
+```
+
+```{r marker-gene-lists, message=FALSE, warning=FALSE}
+# Curated marker gene lists for EO cell types.
+# Gene names must match the Seurat rownames: Read10X uses gene SYMBOLS for named
+# genes (column 2 of features.tsv) and LOC IDs for unnamed genes.
+# scn4aa and kcna7a lack curated symbols in this genome build → appear as LOC IDs.
+#
+# Sources:
+#   Gallant et al. 2014 Science 344:1522  — convergent Nav1.4 recruitment
+#   Thompson et al. 2018 Curr Biol        — cis-regulatory evolution of scn4aa
+#   Traeger & Bhatt 2019 BMC Evol Biol    — kcna family upregulation in electrocytes
+#   Losilla & Gallant 2025 JEB            — mormyrid EO hormone-response gene expression
+#   Zakon et al. 2008 GBE                 — kcna channels as electrocyte signature
+#   Jessell 2000 Nat Rev Neurosci         — mnx1/isl1 as definitive motor neuron TFs
+#   Bhatt et al. 2007 Annu Rev Neurosci   — spinal motor circuit development (isl1/2, chat)
+#   Ericson et al. 1992 Science           — Islet-1 marks all postmitotic motor neurons
+
+marker_genes <- list(
+  Electrocyte = c(
+    # Sodium channels (Nav1.4 paralogs) — both present in electrocytes
+    "LOC125742960",  # scn4aa — Nav1.4a; no curated symbol in this genome build
+    "scn4ab",        # Nav1.4b
+    # Potassium channels — repolarisation
+    "LOC125743019",  # kcna7a — Kv1.7a; no curated symbol in this genome build
+    "kcna7",         # Kv1.7
+    "kcnq1.2",       # Kv7.1
+    "kcnq5a",        # Kv7.5
+    "kcnn2",         # SK2 Ca2+-activated K
+    # Ion transport / electrocyte identity
+    "cnga3a",        # Cyclic nucleotide-gated channel
+    "atp1b2b",       # Na/K-ATPase β2
+    # Cell-surface and structural identity
+    "rrad",          # Ras-related; high in electrocytes across species
+    "igsf9ba",       # Ig superfamily — electrocyte cell-surface marker
+    "robo2",         # Axon guidance receptor; marks the innervated stalk region
+    "tenm1"          # Teneurin-1; electrocyte identity
+  ),
+  Muscle = c(
+    "pax7b",         # Canonical muscle satellite cell transcription factor
+    "pitx3",         # Muscle/lens TF
+    "myom2a", "myom2b",  # Myomesin heavy chain (sarcomeric)
+    "hey2",          # Notch target; satellite cell quiescence
+    "ezh2",          # Epigenetic regulator; cycling myoblasts
+    "megf10",        # Phagocytic receptor on satellite cells
+    "mcama",         # CD146; myoblast marker
+    "fgfr4",         # FGF receptor; myoblast differentiation
+    "tbx22"          # T-box transcription factor; myogenic lineage
+  ),
+  Schwann = c(
+    "col28a1a",      # Collagen XXVIII — peripheral nerve ECM
+    "smoc1",         # SPARC-related ECM; Schwann cells
+    "prss12",        # Neurotrypsin — peripheral nerve marker
+    "antxr1b",       # TEM8 — expressed in peripheral glia
+    "numb",          # Notch pathway; Schwann cell fate
+    "olfml2ba",      # Olfactomedin-like; Schwann cells
+    "col6a3",        # Collagen VI — endomysial ECM
+    "sema3bl"        # Semaphorin 3B; axon-Schwann interaction
+  ),
+  Endothelial = c(
+    "cdh5",          # VE-cadherin — gold-standard pan-endothelial
+    "pecam1b",       # CD31 — pan-endothelial
+    "kdr",           # VEGFR2/Flk1 — pan-endothelial
+    "flt1",          # VEGFR1 — pan-endothelial
+    "clec14a",       # C-type lectin; capillary endothelial
+    "pcdh12",        # Protocadherin 12; vascular endothelial
+    "podxl",         # Podocalyxin
+    "adgrl4"         # Latrophilin 4 (ELTD1); angiogenic endothelial
+  ),
+  Motorneuron = c(
+    # Transcription factors — definitive post-mitotic motor neuron identity
+    # Note: isl1/isl2 lack curated symbols in BBRACH_0.4 → LOC IDs
+    "mnx1",          # Motor neuron and pancreas homeobox 1 (HB9); definitive pan-MN TF
+    "LOC125712540",  # isl-1  — insulin gene enhancer protein Isl-1
+    "LOC125745880",  # isl-1-like — Isl-1 paralog
+    "LOC125704285",  # isl-2a — insulin gene enhancer protein Isl-2a
+    "LOC125706047",  # isl-2a-like — Isl-2a paralog
+    # Cholinergic identity — electromotor neurons are cholinergic
+    # Note: in this genome the gene is named 'chata', not 'chat'
+    "chata",         # Choline O-acetyltransferase-a; ACh synthesis in all motor neurons
+    "slc18a3a",      # Vesicular acetylcholine transporter-A; cholinergic vesicles
+    # Pan-neuronal post-mitotic identity (marks all neurons including motor neurons)
+    "elavl3",        # HuC — ELAV-like RNA-binding protein 3; pan-neuronal, post-mitotic
+    "rbfox3a",       # NeuN — RNA-binding fox-1 homolog 3a; mature neuron nuclear marker
+    # Neurofilament / cytoskeletal — large-calibre motor and sensory axons
+    "nefma",         # Neurofilament medium chain-a
+    "nefla",         # Neurofilament light chain-a
+    "neflb",         # Neurofilament light chain-b
+    "LOC125751823",  # neurofilament medium polypeptide-like (nefm paralog)
+    "prph",          # Peripherin; intermediate filament of peripheral motor neurons
+    # Synaptic identity
+    "sv2a",          # Synaptic vesicle glycoprotein 2A; marks presynaptic terminals
+    "snap25a",       # SNAP-25A; SNARE protein at the cholinergic NMJ
+    "LOC125712969",  # synaptotagmin-2-like; Ca2+ sensor at fast synapses / NMJ
+    # Axonal growth and activity markers
+    "gap43",         # Growth-associated protein 43; high in active/regenerating axons
+    "nrn1b",         # Neuritin-1b; activity-regulated; high in post-mitotic motor neurons
+    "nrxn1a"         # Neurexin-1a; presynaptic organiser; NMJ and CNS synapses
+  )
+)
+
+# Filter to genes actually present in this dataset
+marker_genes <- lapply(marker_genes, function(g) g[g %in% rownames(merged_seurat)])
+
+cat("Marker genes present in dataset:\n")
+print(sapply(marker_genes, length))
+
+# Stalk sub-type marker: PMCA (plasma membrane Ca2+-ATPase) paralogs.
+# Defined here alongside the general markers so that stalk sub-classification
+# happens in the same annotation pass as the other cell types (see below).
+# Source: Baumann et al. 2025 Cell & Tissue Research —
+#         pan-PMCA protein enriched specifically on stalklet membrane.
+pmca_genes <- c("atp2b1a", "atp2b2", "atp2b3b", "atp2b4")
+pmca_genes <- pmca_genes[pmca_genes %in% rownames(merged_seurat)]
+cat("\nPMCA paralogs detected in dataset:", paste(pmca_genes, collapse = ", "), "\n")
+```
+
+```{r marker-dotplot, fig.width=15, fig.height=5, message=FALSE, warning=FALSE, fig.alt="Dot plot showing expression of canonical cell-type marker genes across Seurat clusters, including PMCA stalk markers. Dot size encodes percent of cells expressing; colour encodes average expression.", fig.cap="Canonical cell-type marker gene expression across EO clusters. scn4aa (LOC125742960) and scn4ab are electrocyte sodium channels; atp1b2b marks the electrogenic face. pax7b identifies muscle satellite cells; col28a1a and smoc1 mark Schwann cells; cdh5 and pecam1b mark endothelial cells; mnx1 and LOC125712540 (isl-1) mark post-mitotic motor neurons; chata (choline O-acetyltransferase-a) confirms cholinergic identity; elavl3 (HuC) and rbfox3a (NeuN) are pan-neuronal markers. atp2b paralogs (PMCA) mark the stalk electrocyte sub-cluster."}
+# A compact diagnostic panel: 3–4 most informative markers per cell type,
+# plus PMCA stalk markers so the stalk sub-type is visible alongside the others.
+dot_genes <- c(
+  # Electrocyte — sodium channel + electrogenic face + surface identity
+  "LOC125742960", "scn4ab", "atp1b2b", "rrad",
+  # Stalk electrocyte — PMCA paralogs (plasma membrane Ca2+-ATPase)
+  pmca_genes,
+  # Muscle / satellite cells
+  "pax7b", "myom2a", "hey2",
+  # Schwann cells
+  "col28a1a", "smoc1", "numb",
+  # Endothelial
+  "cdh5", "pecam1b", "kdr",
+  # Motor neurons — TF + cholinergic + pan-neuronal
+  "mnx1", "LOC125712540", "chata", "elavl3", "rbfox3a"
+)
+dot_genes <- dot_genes[dot_genes %in% rownames(merged_seurat)]
+
+if (length(dot_genes) > 0) {
+  DotPlot(merged_seurat,
+    features = dot_genes,
+    group.by = "seurat_clusters"
+  ) +
+    RotatedAxis() +
+    ggtitle("Canonical cell-type markers across clusters")
+} else {
+  message("No dot-plot marker genes found — check rownames(merged_seurat)")
+}
+```
+
+```{r module-score, fig.width=12, fig.height=9, message=FALSE, warning=FALSE, fig.alt="Feature plots on the Harmony UMAP showing module scores for each curated cell-type gene list plus the PMCA stalk score. Warm colours indicate cells with high expression of that cell type's markers.", fig.cap="Module scores for curated cell-type gene sets and the PMCA stalk score projected onto the Harmony UMAP. Each nucleus is scored against the gene list for one cell type or sub-type; higher scores indicate stronger expression of that group's canonical markers. The electrocyte score should dominate the UMAP; the PMCA score should highlight a subset of electrocyte clusters (the stalk candidate); Schwann, endothelial, muscle, and motor neuron scores should highlight smaller distinct territories."}
+# AddModuleScore computes the average expression of a gene set minus a randomly
+# selected background of control genes — positive scores indicate enrichment.
+for (ct in names(marker_genes)) {
+  if (length(marker_genes[[ct]]) < 3) {
+    message(ct, ": fewer than 3 markers found in dataset — skipping score")
+    next
+  }
+  merged_seurat <- AddModuleScore(
+    merged_seurat,
+    features = list(marker_genes[[ct]]),
+    name     = paste0(ct, "_score"),
+    nbin     = 12,   # default 24 fails when many genes share the same avg expression
+    seed     = 42
+  )
+  # AddModuleScore appends "1" to the column name — rename for clarity
+  old_col <- paste0(ct, "_score1")
+  new_col <- paste0(ct, "_score")
+  merged_seurat@meta.data[[new_col]] <- merged_seurat@meta.data[[old_col]]
+  merged_seurat@meta.data[[old_col]]  <- NULL
+}
+
+score_cols <- paste0(names(marker_genes), "_score")
+score_cols <- score_cols[score_cols %in% colnames(merged_seurat@meta.data)]
+
+# Compute PMCA (stalk) module score in the same pass as the cell-type scores.
+# It is kept out of score_cols (which drives the cell-type assignment step) because
+# PMCA is a sub-type discriminator within electrocytes, not a top-level cell-type
+# marker — but it IS shown in the FeaturePlot below so learners can see all scores
+# computed together before the annotation step.
+if (length(pmca_genes) >= 2) {
+  merged_seurat <- AddModuleScore(
+    merged_seurat,
+    features = list(pmca_genes),
+    name     = "PMCA_score",
+    nbin     = 12,
+    seed     = 42
+  )
+  merged_seurat$PMCA_score <- merged_seurat$PMCA_score1
+  merged_seurat$PMCA_score1 <- NULL
+}
+
+# Include PMCA_score in the plot alongside the five cell-type scores.
+plot_score_cols <- c(score_cols,
+                     if ("PMCA_score" %in% colnames(merged_seurat@meta.data)) "PMCA_score")
+
+FeaturePlot(merged_seurat,
+  features  = plot_score_cols,
+  reduction = "umap.harmony",
+  ncol      = 2,
+  order     = TRUE
+)
+```
+
+```{r annotate-from-markers, fig.width=9, fig.height=6, message=FALSE, warning=FALSE, fig.alt="UMAP of EO nuclei on the Harmony embedding, with clusters labeled by the cell type with the highest mean marker-gene module score. Electrocyte clusters are further sub-classified into Stalk_Electrocyte (PMCA-high) and Electrocyte in the same annotation pass.", fig.cap="EO cell-type atlas (Harmony UMAP), annotated by marker-gene module scores from curated literature-derived gene lists. Stalk electrocytes — the electrocyte sub-cluster with the highest mean PMCA module score — are distinguished from face electrocytes in the same annotation pass. Schwann, Endothelial, Muscle satellite, and Motorneuron clusters are identifiable as smaller distinct populations."}
+# Assign each cluster the cell type with the highest mean module score
+cluster_scores <- merged_seurat@meta.data |>
+  group_by(seurat_clusters) |>
+  summarise(across(all_of(score_cols), mean, .names = "{.col}"), .groups = "drop")
+
+cluster_labels <- cluster_scores |>
+  pivot_longer(-seurat_clusters, names_to = "score_col", values_to = "mean_score") |>
+  mutate(cell_type = str_remove(score_col, "_score")) |>
+  group_by(seurat_clusters) |>
+  slice_max(mean_score, n = 1, with_ties = FALSE) |>
+  ungroup() |>
+  dplyr::select(seurat_clusters, cell_type, mean_score) |>
+  arrange(as.integer(as.character(seurat_clusters)))
+
+label_vec <- setNames(cluster_labels$cell_type,
+                      as.character(cluster_labels$seurat_clusters))
+merged_seurat$cell_type_go <- unname(label_vec[as.character(merged_seurat$seurat_clusters)])
+
+# Sub-classify clusters into Stalk_Electrocyte vs. everything else using a
+# PMCA × Electrocyte joint score — done in the same annotation pass so that
+# cell_type_detail is the definitive per-nucleus label from the start.
+#
+# Searching only within clusters already labelled "Electrocyte" would miss the
+# stalk if it was initially mis-assigned (e.g. as Schwann or Muscle). Instead we
+# search ALL clusters and rank by PMCA_score × Electrocyte_score. The Electrocyte
+# score is zero-floored (pmax(..., 0)) so that clusters with negative electrocyte
+# module scores (i.e. clearly non-electrocyte) cannot outscore genuine electrocytes,
+# while still allowing any cluster to be considered.
+merged_seurat$cell_type_detail <- merged_seurat$cell_type_go
+
+if (length(pmca_genes) >= 2 && "PMCA_score" %in% colnames(merged_seurat@meta.data)) {
+
+  # Stalk search: all clusters, ranked by PMCA × electrocyte co-expression
+  stalk_scores <- merged_seurat@meta.data |>
+    group_by(seurat_clusters) |>
+    summarise(
+      mean_PMCA     = mean(PMCA_score),
+      mean_Elec     = mean(Electrocyte_score),
+      n_cells       = n(),
+      initial_label = names(sort(table(cell_type_go), decreasing = TRUE))[1],
+      .groups = "drop"
+    ) |>
+    mutate(stalk_score = mean_PMCA * pmax(mean_Elec, 0)) |>
+    arrange(desc(stalk_score))
+
+  cat("Top clusters by PMCA × electrocyte co-expression score:\n")
+  print(head(stalk_scores, 10))
+
+  stalk_cluster <- as.character(stalk_scores$seurat_clusters[1])
+  cat("\nStalk candidate: cluster", stalk_cluster,
+      "(initial label:", stalk_scores$initial_label[1],
+      "| PMCA =", round(stalk_scores$mean_PMCA[1], 3),
+      "| Electrocyte =", round(stalk_scores$mean_Elec[1], 3), ")\n")
+
+  # pmca_by_cluster: electrocyte-labelled clusters only, kept for elec-face-setup
+  # downstream which needs to identify non-stalk face groups among genuine electrocytes.
+  pmca_by_cluster <- merged_seurat@meta.data |>
+    filter(cell_type_go == "Electrocyte") |>
+    group_by(seurat_clusters) |>
+    summarise(mean_PMCA = mean(PMCA_score), n_cells = n(), .groups = "drop") |>
+    arrange(desc(mean_PMCA))
+
+  # Re-label the stalk cluster regardless of its initial cell_type_go assignment
+  stalk_idx <- rownames(merged_seurat@meta.data)[
+    as.character(merged_seurat$seurat_clusters) == stalk_cluster
+  ]
+  merged_seurat$cell_type_detail[stalk_idx] <- "Stalk_Electrocyte"
+}
+
+DimPlot(merged_seurat,
+  reduction = "umap.harmony",
+  group.by  = "cell_type_detail",
+  label     = TRUE,
+  repel     = TRUE
+) +
+  ggtitle("EO cell types (marker-based annotation, Harmony UMAP)") +
+  NoLegend()
+```
+
+```{r cluster-tissue-map, fig.width=14, fig.height=6, message=FALSE, warning=FALSE, fig.alt="Side-by-side UMAP panels: left shows the raw numbered Seurat clusters, right shows those same clusters colored and labeled by annotated cell type. This makes the cluster-to-tissue grouping explicit.", fig.cap="Numbered Seurat clusters (left) and their annotated cell-type identities (right). Each numbered cluster on the left maps to exactly one tissue label on the right; multiple clusters may share the same label (e.g., several electrocyte clusters). The side-by-side view shows which clusters were merged into each cell type and how cleanly they separate on the UMAP."}
+# Side-by-side: raw numbered clusters (left) vs. annotated cell types (right).
+# This makes the cluster → tissue grouping legible — learners can trace exactly
+# which cluster numbers were merged into each label.
+p_clusters <- DimPlot(merged_seurat,
+  reduction = "umap.harmony",
+  group.by  = "seurat_clusters",
+  label     = TRUE,
+  repel     = TRUE
+) +
+  ggtitle("Seurat clusters (numbered)") +
+  NoLegend()
+
+p_types <- DimPlot(merged_seurat,
+  reduction = "umap.harmony",
+  group.by  = "cell_type_detail",
+  label     = TRUE,
+  repel     = TRUE
+) +
+  ggtitle("Annotated cell types") +
+  NoLegend()
+
+p_clusters | p_types
+```
+
+```{r cluster-assignment-table, message=FALSE, warning=FALSE}
+# Cluster → cell-type assignment table.
+# n_cells = number of nuclei in this cluster across all samples.
+n_per_cluster <- merged_seurat@meta.data |>
+  group_by(seurat_clusters) |>
+  summarise(n_cells = n(), .groups = "drop")
+
+# Pull the final (stalk-refined) label for each cluster
+detail_per_cluster <- merged_seurat@meta.data |>
+  group_by(seurat_clusters) |>
+  summarise(cell_type = names(sort(table(cell_type_detail), decreasing = TRUE))[1],
+            .groups = "drop")
+
+cluster_labels |>
+  dplyr::rename(top_marker_score = mean_score) |>
+  dplyr::select(-cell_type) |>          # drop pre-stalk label; refined label comes from detail_per_cluster
+  left_join(detail_per_cluster, by = "seurat_clusters") |>
+  left_join(n_per_cluster,      by = "seurat_clusters") |>
+  dplyr::select(seurat_clusters, cell_type, top_marker_score, n_cells) |>
+  arrange(as.integer(as.character(seurat_clusters))) |>
+  knitr::kable(
+    digits  = 3,
+    col.names = c("Cluster", "Cell type", "Best module score", "Nuclei"),
+    caption = "Cluster → cell-type assignments. 'Best module score' is the mean score of the winning cell-type gene set. Electrocyte clusters are further refined into Stalk_Electrocyte using PMCA module scores."
+  )
+```
+
+```{r top-markers-table, message=FALSE, warning=FALSE}
+annotated_markers_eo |>
+  group_by(cluster) |>
+  slice_max(avg_log2FC, n = 3) |>
+  ungroup() |>
+  dplyr::select(cluster, gene, gene_name, product, avg_log2FC, p_val_adj, pct.1, pct.2) |>
+  knitr::kable(
+    digits  = 3,
+    caption = "Top 3 marker genes per cluster (gene = Seurat rowname; gene_name = curated symbol where available)"
+  )
+```
+
+### Electrocyte sub-types: stalk vs. face compartments
+
+Each electrocyte has two functionally distinct membrane regions:
+
+- **Stalk system (posterior / innervated face):** tubular processes
+  (stalklets) on the posterior face converge into a main stalk that
+  carries the electromotor nerve innervation point. Acetylcholine
+  released here initiates the action potential. PMCA-mediated Ca²⁺
+  extrusion maintains low Ca²⁺ at this heavily active membrane.
+- **Anterior face (non-innervated):** the opposite disc membrane, which
+  generates a counter-potential. Both faces are excitable and can
+  generate action potentials, but their channel complements likely
+  differ; the published literature does not yet provide a definitive
+  face-by-face ion-channel inventory.
+
+Baumann et al. (2025, *Cell & Tissue Research*,
+doi:10.1007/s00441-024-03938-y) used immunofluorescence in
+*Campylomormyrus* to show that **PMCA** (plasma membrane Ca²⁺-ATPase) is
+enriched specifically on the **stalklet membrane** — the fine tubular
+processes on the posterior (innervated) face that converge into the main
+stalk and innervation point. Na⁺/K⁺-ATPase, by contrast, labels both
+faces.
+
+Because the Baumann study used a **pan-PMCA antibody** (clone 5F10), it
+cannot identify which *atp2b* paralog is responsible. This is where the
+single-nucleus data is informative: four PMCA paralogs are present in
+the *B. brachyistius* genome — `atp2b1a`, `atp2b2`, `atp2b3b`, and
+`atp2b4` — and whichever one is most stalk-cluster-specific in the
+expression data is the best candidate for the stalk-enriched isoform.
+
+```{r stalk-featureplot, fig.width=12, fig.height=5, message=FALSE, warning=FALSE, fig.alt="Feature plots on the Harmony UMAP showing expression of the four PMCA paralogs (atp2b1a, atp2b2, atp2b3b, atp2b4) in the electric organ dataset.", fig.cap="PMCA (plasma membrane Ca2+-ATPase) expression across the EO UMAP. The stalk cluster identified in the annotation step should show enriched expression of one or more atp2b paralogs relative to the face compartment clusters. The paralog(s) with the most restricted, stalk-cluster-specific expression pattern are the most informative stalk markers."}
+# pmca_genes was defined in the marker-gene-lists chunk alongside the other markers.
+# These feature plots show which paralogs drive the PMCA module score used to
+# identify the stalk cluster during annotation.
+FeaturePlot(merged_seurat,
+  features  = pmca_genes,
+  reduction = "umap.harmony",
+  ncol      = 2,
+  order     = TRUE
+)
+```
+
+```{r stalk-dotplot, fig.width=12, fig.height=5, message=FALSE, warning=FALSE, fig.alt="Dot plot comparing PMCA stalk markers (atp2b paralogs and robo2) against general electrocyte channel markers across electrocyte sub-clusters.", fig.cap="PMCA stalk markers vs. general electrocyte markers across electrocyte sub-clusters. Clusters with high PMCA (atp2b) expression are stalk candidates; the right-hand panel shows general electrocyte channel genes (Nav1.4 paralogs, Na/K-ATPase beta2) for comparison, though published literature does not assign these specifically to one face."}
+# Compare stalk markers (PMCA + robo2) against general electrocyte markers.
+# Note: scn4aa/scn4ab and atp1b2b are general electrocyte markers — the published
+# literature does not assign them specifically to the anterior or posterior face.
+# Both faces are excitable; face-specific channel assignments are not yet established.
+stalk_panel   <- c(pmca_genes, "robo2")
+general_panel <- c("scn4ab", "atp1b2b", "igsf9ba", "LOC125742960")
+
+stalk_all_panel <- unique(c(stalk_panel, general_panel))
+stalk_all_panel <- stalk_all_panel[stalk_all_panel %in% rownames(merged_seurat)]
+
+# Identify cluster numbers assigned as Electrocyte
+elec_clusters <- as.character(
+  cluster_labels$seurat_clusters[cluster_labels$cell_type == "Electrocyte"]
+)
+
+if (length(stalk_all_panel) > 0 && length(elec_clusters) > 0) {
+  n_stalk <- length(stalk_panel[stalk_panel %in% stalk_all_panel])
+
+  DotPlot(merged_seurat,
+    features = stalk_all_panel,
+    idents   = elec_clusters,
+    group.by = "seurat_clusters"
+  ) +
+    RotatedAxis() +
+    geom_vline(
+      xintercept = n_stalk + 0.5,
+      linetype   = "dashed",
+      colour     = "grey50",
+      linewidth  = 0.8
+    ) +
+    annotate("text", x = n_stalk / 2, y = -0.5,
+             label = "← PMCA / stalk", colour = "grey40", size = 3) +
+    annotate("text", x = n_stalk + 3, y = -0.5,
+             label = "General electrocyte →", colour = "grey40", size = 3) +
+    ggtitle("PMCA stalk markers vs. general electrocyte markers within electrocyte clusters")
+}
+```
+
+::: callout-note
+## One cluster vs. many: how to refine the stalk call
+
+`AddModuleScore` identifies the electrocyte cluster with the **highest
+mean PMCA score** as the stalk candidate. In practice, stalk identity
+may be spread across more than one cluster (the EO has heterogeneous
+stalk morphology), or PMCA may be moderately expressed in all
+electrocytes. Two ways to refine:
+
+1.  **Compare the score gap.** If the top cluster's mean score is
+    substantially higher than the second-ranked cluster (e.g., \>0.1
+    difference), the call is confident. A small gap suggests the stalk
+    identity is shared across clusters or is not well-resolved at the
+    current clustering resolution.
+
+2.  **Increase resolution.** Re-run `FindClusters` on the electrocyte
+    subset alone at a higher resolution (e.g., `resolution = 1.5`).
+    Sub-clustering a single cell type often reveals finer compartmental
+    structure invisible in the whole-dataset clustering.
+:::
+
+:::: callout-important
+## What do the electrocyte sub-clusters represent?
+
+The EO UMAP likely contains several clusters all assigned "Electrocyte"
+by the marker-score approach. Using PMCA expression and the
+stalk-vs-face DotPlot from the chunks above, investigate whether you can
+sub-divide them anatomically.
+
+1.  Look at the `stalk-dotplot` output. Which electrocyte cluster shows
+    the highest expression of PMCA paralogs (`atp2b1a`, `atp2b2`,
+    `atp2b3b`, `atp2b4`) combined with `robo2`? Does any cluster show
+    both PMCA-high **and** `scn4ab`-high expression (suggesting it may
+    be the stalk+posterior-face junction)?
+2.  Look at the `cluster-tissue-map` side-by-side UMAP. Find the cluster
+    number that was assigned `Stalk_Electrocyte`. Where does it sit on
+    the UMAP — is it at the edge of the electrocyte territory or
+    centrally mixed?
+3.  Which PMCA paralog (if any) shows the most restricted,
+    stalk-specific pattern in the `stalk-featureplot`? That would be the
+    best single-gene stalk marker for future experiments.
+
+::: {.callout-tip title="Solution" collapse="true"}
+There is no single correct answer — it depends on clustering resolution
+and the specific dataset. General expectations:
+
+- **Stalk electrocytes** express `robo2` and `tenm1` (axon guidance /
+  electromotor nerve contact) together with one or more PMCA paralogs.
+  Baumann et al. 2025 shows pan-PMCA protein enrichment on the stalklet
+  membrane using a pan-antibody — the specific *atp2b* isoform
+  responsible is not yet known at the protein level. The
+  `stalk-featureplot` and `annotate-stalk` chunks are the first
+  transcript-level data that can identify which paralog is
+  stalk-enriched in *B. brachyistius*.
+- **The two non-stalk electrocyte populations** visible on the UMAP
+  likely correspond to the anterior and posterior faces, but the
+  published literature does not yet provide a definitive face-by-face
+  channel inventory. Both faces are excitable; assigning specific
+  channels to one face or the other rigorously requires spatial
+  transcriptomics or single-cell patch-clamp combined with morphological
+  identification. PMCA enrichment on the stalklet (posterior/innervated
+  face) remains the most reliable published molecular landmark.
+- **K-channel–enriched clusters** (`kcnq5a`, `kcnn2`, `kcna7`) are
+  plausible candidates for a face with a prominent repolarising
+  component — but this is an open hypothesis, not established biology.
+- If top markers in a cluster are all "uncharacterized protein," BLAST
+  the protein sequences against zebrafish or other teleost proteomes for
+  a first-pass guess.
+:::
+::::
+
+## Characterising electrocyte face populations
+
+In the mormyrid electric organ, each electrocyte is a large disc-shaped
+cell with two electrochemically distinct membranes: the **posterior
+(innervated) face**, which generates the action potential through
+voltage-gated sodium channels, and the **anterior (non-innervated)
+face**, which is largely passive but expresses a complementary set of
+potassium and calcium channels that shape the discharge waveform. The
+precise ion channel inventory of each face in *B. brachyistius* is not
+yet fully characterised at the transcript level — that is exactly what
+our snRNA-seq data can begin to address.
+
+Looking at the Harmony UMAP, the non-stalk electrocyte clusters form two
+visual groupings. The code below identifies these groups dynamically
+from the UMAP geometry, then runs a systematic marker comparison to ask:
+what molecular differences separate them, and are those differences
+coherent enough to support a face-identity interpretation?
+
+The approach proceeds in three steps: (1) assign non-stalk clusters to
+two candidate face groups using k-means on UMAP centroids; (2) find
+differentially expressed genes between those groups and scan their
+functional annotations; (3) compare within-group and between-group DEG
+counts to judge whether the sub-clustering reflects biology or residual
+technical variation.
+
+```{r elec-face-setup, message=FALSE, warning=FALSE}
+# Dynamically assign non-stalk electrocyte clusters to two face groups
+# using k-means clustering on UMAP centroids.
+if (exists("stalk_cluster") && exists("pmca_by_cluster")) {
+
+  # All electrocyte clusters except the stalk
+  face_clusters <- pmca_by_cluster |>
+    filter(as.character(seurat_clusters) != stalk_cluster) |>
+    pull(seurat_clusters) |>
+    as.character()
+
+  # UMAP coordinates for face-cluster nuclei
+  umap_mat <- Embeddings(merged_seurat, "umap.harmony")
+
+  face_centroids <- merged_seurat@meta.data |>
+    rownames_to_column("cell") |>
+    filter(as.character(seurat_clusters) %in% face_clusters) |>
+    left_join(as.data.frame(umap_mat) |> rownames_to_column("cell"), by = "cell") |>
+    group_by(seurat_clusters) |>
+    summarise(
+      U1 = mean(.data[[colnames(umap_mat)[1]]]),
+      U2 = mean(.data[[colnames(umap_mat)[2]]]),
+      .groups = "drop"
+    )
+
+  # K-means (k = 2) to split into two candidate face groups
+  set.seed(42)
+  km <- kmeans(face_centroids[, c("U1", "U2")], centers = 2)
+  face_centroids$face_group <- as.character(km$cluster)
+
+  face_A <- face_centroids |> filter(face_group == "1") |>
+    pull(seurat_clusters) |> as.character()
+  face_B <- face_centroids |> filter(face_group == "2") |>
+    pull(seurat_clusters) |> as.character()
+
+  cat("Face group A clusters:", paste(face_A, collapse = ", "), "\n")
+  cat("Face group B clusters:", paste(face_B, collapse = ", "), "\n")
+
+} else {
+  message("Stalk annotation did not complete — skipping face characterisation")
+}
+```
+
+With two candidate face groups identified, `FindMarkers` compares their
+gene expression profiles. We pass `group.by = "seurat_clusters"` and
+restrict to electrocyte nuclei only so that non-electrocyte clusters do
+not dilute the comparison.
+
+```{r elec-face-markers, message=FALSE, warning=FALSE}
+if (exists("face_A") && exists("face_B")) {
+
+  elec_cells <- rownames(merged_seurat@meta.data)[
+    merged_seurat$cell_type_go == "Electrocyte"
+  ]
+
+  face_markers <- FindMarkers(
+    merged_seurat,
+    ident.1  = face_A,
+    ident.2  = face_B,
+    group.by = "seurat_clusters",
+    cells    = elec_cells,
+    verbose  = FALSE
+  ) |>
+    tibble::rownames_to_column("gene") |>
+    left_join(gene_lookup |> dplyr::select(key, gene_name, product),
+              by = c("gene" = "key")) |>
+    arrange(desc(avg_log2FC))
+
+  cat("Top 20 markers enriched in face group A:\n")
+  print(head(face_markers |> filter(p_val_adj < 0.05), 20))
+
+  cat("\nTop 20 markers enriched in face group B:\n")
+  print(head(face_markers |> filter(p_val_adj < 0.05) |> arrange(avg_log2FC), 20))
+}
+```
+
+Rather than looking for pre-selected genes, scanning the `product` field
+for broad functional categories reveals whether the face separation is
+driven by ion channel differences, extracellular matrix composition,
+signalling state, or something else — before committing to any
+biological interpretation.
+
+```{r elec-face-categories, message=FALSE, warning=FALSE}
+if (exists("face_markers")) {
+  face_markers |>
+    filter(p_val_adj < 0.05, abs(avg_log2FC) > 0.5, !is.na(product)) |>
+    mutate(product = as.character(product)) |>
+    mutate(category = case_when(
+      str_detect(product, regex(
+        "potassium|sodium|calcium|chloride|channel|transporter",
+        ignore_case = TRUE)) ~ "Ion channel/transporter",
+      str_detect(product, regex(
+        "collagen|fibronectin|laminin|cadherin|integrin",
+        ignore_case = TRUE)) ~ "ECM/adhesion",
+      str_detect(product, regex(
+        "kinase|phosphatase|GTPase|signaling",
+        ignore_case = TRUE)) ~ "Signaling",
+      str_detect(product, regex(
+        "actin|myosin|tubulin|spectrin|cytoskeletal",
+        ignore_case = TRUE)) ~ "Cytoskeletal",
+      str_detect(product, regex(
+        "receptor|ligand",
+        ignore_case = TRUE)) ~ "Receptor/ligand",
+      TRUE ~ "Other/uncharacterized"
+    )) |>
+    dplyr::count(category, sort = TRUE) |>
+    print()
+}
+```
+
+A `DotPlot` of the top hits from each group provides a visual summary
+confirming that the groupings are clean and that the top genes are not
+cryptic pan-electrocyte markers.
+
+```{r elec-face-dotplot, fig.width=12, fig.height=5, message=FALSE, warning=FALSE, fig.alt="DotPlot showing the top 10 marker genes enriched in each of the two electrocyte face groups. Dot size encodes the fraction of nuclei expressing the gene; colour encodes mean scaled expression.", fig.cap="Top markers distinguishing the two non-stalk electrocyte groups. Genes on the left are enriched in face group A; genes on the right are enriched in face group B."}
+if (exists("face_markers") && exists("face_A") && exists("face_B")) {
+
+  top_face_A <- face_markers |>
+    filter(p_val_adj < 0.05) |>
+    slice_max(avg_log2FC, n = 10) |>
+    pull(gene)
+
+  top_face_B <- face_markers |>
+    filter(p_val_adj < 0.05) |>
+    slice_min(avg_log2FC, n = 10) |>
+    pull(gene)
+
+  DotPlot(
+    merged_seurat,
+    features = unique(c(top_face_A, top_face_B)),
+    idents   = c(face_A, face_B),
+    group.by = "seurat_clusters"
+  ) + RotatedAxis() +
+    ggtitle("Top markers distinguishing electrocyte face groups")
+}
+```
+
+Finally, comparing significant DEG counts *between* face groups vs.
+*within* a single group tests whether the k-means split captures
+something real. If between-group differences far outnumber within-group
+differences, the two groups are molecularly coherent. A comparable
+within-group signal suggests sub-structure or residual batch effects.
+
+```{r elec-face-within, message=FALSE, warning=FALSE}
+if (exists("face_A") && length(face_A) >= 2 &&
+    exists("face_markers") && exists("elec_cells")) {
+
+  within_markers <- FindMarkers(
+    merged_seurat,
+    ident.1  = face_A[1],
+    ident.2  = face_A[2],
+    group.by = "seurat_clusters",
+    cells    = elec_cells,
+    verbose  = FALSE
+  ) |>
+    tibble::rownames_to_column("gene") |>
+    left_join(gene_lookup |> dplyr::select(key, gene_name, product),
+              by = c("gene" = "key"))
+
+  n_between <- sum(face_markers$p_val_adj   < 0.05, na.rm = TRUE)
+  n_within  <- sum(within_markers$p_val_adj < 0.05, na.rm = TRUE)
+
+  cat("Significant DEGs between face groups: ", n_between, "\n")
+  cat("Significant DEGs within face group A:  ", n_within,  "\n")
+  cat("Ratio (between / within):              ",
+      round(n_between / max(n_within, 1), 1), "\n\n")
+  cat("Interpretation:",
+    if (n_between > 3 * n_within)
+      "Clean face separation — many more between-group DEGs than within-group."
+    else
+      "Possible sub-structure or residual technical effects within face group A.",
+    "\n")
+}
+```
+
+::: callout-note
+## Three reasons electrocyte clusters can split
+
+When non-stalk electrocyte clusters form two UMAP-separated groups, the
+explanation is usually one of three things:
+
+1.  **Biological — anterior vs. posterior face identity.** The posterior
+    (innervated) face is dominated by Nav channels (`scn4aa`, `scn4ab`)
+    and is depolarised by the electromotor nerve; the anterior face
+    relies on potassium and calcium channels to repolarise. If the top
+    between-group DEGs include coherent ion channel families, a
+    face-identity split is the most parsimonious explanation.
+
+2.  **Spatial/anatomical — rostral vs. caudal segments.** In some
+    mormyrids the rostral and caudal portions of the electric organ have
+    different channel densities, a form of regional specialisation along
+    the organ's long axis. Cytoskeletal or ECM differences between
+    groups (rather than ion channels) can be a first hint of this.
+
+3.  **Technical — residual sample-of-origin effects.** Even after
+    Harmony correction, mild batch effects can split a single cell type
+    into two clouds if cell recovery was uneven across samples. Check
+    the per-cluster sample composition with
+    `table(seurat_clusters, orig.ident)` filtered to electrocytes: a
+    strongly biased table suggests a technical split.
+
+**Rule of thumb:** Many between-group DEGs with coherent ion channel or
+ECM products → biological. Few DEGs or mostly uncharacterised proteins →
+likely technical. A within-group DEG count comparable to the
+between-group count → sub-structure worth exploring with sub-clustering
+at higher resolution.
+:::
+
+## Pseudobulk differential expression with DESeq2
+
+We now test whether 11-KT treatment changes gene expression within each
+cell type. This is the central analytical question of the episode.
+
+### Why pseudobulk? The pseudoreplication problem
+
+This dataset contains approximately 2,900 nuclei from four fish — two
+11-KT treated (BB48 and BB49INJ) and two vehicle controls (BB50 and
+BB50INJ). A tempting but **incorrect** approach would be to test each
+nucleus as an independent observation: run a Wilcoxon test on the
+\~1,400 11-KT nuclei vs. the \~1,400 vehicle nuclei.
+
+The problem is that nuclei from the same fish are **not independent**.
+They share fish-level variation in diet, microbiome, stress history,
+circadian state, and countless other factors that have nothing to do
+with the 11-KT treatment. Treating each nucleus as an independent
+replicate inflates the degrees of freedom by \~700-fold, deflates
+p-values accordingly, and makes results from a single unusual fish look
+like a robust, reproducible treatment effect.
+
+**Pseudobulk analysis** solves this by aggregating nuclei to the
+biological replicate level before testing. We sum raw counts per gene
+across all nuclei of the same cell type within the same sample,
+producing one count per gene per cell type per fish — four numbers in
+total. DESeq2 then models these four numbers using the negative binomial
+distribution with a treatment contrast, restoring honest degrees of
+freedom.
+
+::: callout-note
+## Why pseudobulk: the pseudoreplication problem
+
+With n=2 fish per condition, you have **2 biological replicates per
+group**, not \~1,400.
+
+- Running Wilcoxon on individual nuclei treats each of \~1,400 nuclei as
+  independent → inflated df → deflated p-values → false confidence
+- Pseudobulk collapses nuclei to the fish level before testing → correct
+  df
+- With n=2 per group, DESeq2 will produce wide confidence intervals and
+  (rightly) conservative adjusted p-values. **This is correct
+  statistical behavior**, not a failure of the method.
+- The most valuable output is a ranked gene list for follow-up
+  validation, not a definitive list of "DE genes."
+:::
+
+::: callout-note
+## Raw RNA counts for DE — never SCT residuals or Harmony values
+
+DESeq2 fits its own size-factor normalization internally. It requires
+**raw integer count data** as input.
+
+| Input                                | Appropriate for DE?             |
+|--------------------------------------|---------------------------------|
+| `AggregateExpression(assay = "RNA")` | ✅ Yes — raw UMI counts         |
+| SCT residuals (`scale.data`)         | ❌ No — continuous, not integer |
+| Log-normalized counts (`data` slot)  | ❌ No — violates count model    |
+| Harmony-corrected embeddings         | ❌ No — not counts at all       |
+
+We use `assay = "RNA"` in every `AggregateExpression` call. SCT and
+Harmony are for clustering and visualization only.
+:::
+
+```{r aggregate-expression, message=FALSE, warning=FALSE}
+# AggregateExpression sums raw RNA counts per (cell_type × sample) combination.
+# group.by takes a vector: first element = cell type column, second = sample column.
+# The result is a matrix: genes (rows) × "CellType_Sample" (columns).
+pseudobulk_counts <- AggregateExpression(
+  merged_seurat,
+  assays        = "RNA",
+  group.by      = c("cell_type_go", "orig.ident"),
+  return.seurat = FALSE
+)$RNA
+
+cat("Pseudobulk matrix dimensions:", dim(pseudobulk_counts), "\n")
+cat("Column names (cell_type × sample):\n")
+print(colnames(pseudobulk_counts))
+```
+
+```{r pseudobulk-metadata, message=FALSE, warning=FALSE}
+# Parse the column names into a sample-level metadata data frame.
+# Column names look like "Electrocyte_EO_BB48" — separate at the first underscore.
+pb_meta <- data.frame(
+  col_id = colnames(pseudobulk_counts),
+  stringsAsFactors = FALSE
+) |>
+  tidyr::separate(col_id,
+    into  = c("cell_type", "orig_ident"),
+    sep   = "_",
+    extra = "merge"   # keep everything after the first _ together
+  ) |>
+  mutate(
+    sample    = sub("EO-", "", orig_ident),
+    treatment = case_when(
+      sample %in% c("BB48", "BB49INJ") ~ "11kt",
+      TRUE                                 ~ "vehicle"
+    ),
+    # vehicle as reference level so log2FC > 0 means higher in 11kt
+    treatment = factor(treatment, levels = c("vehicle", "11kt"))
+  )
+
+rownames(pb_meta) <- colnames(pseudobulk_counts)
+print(pb_meta)
+```
+
+```{r filter-clusters, message=FALSE, warning=FALSE}
+# Only test cell types that have at least 2 samples per condition.
+# With n=2 per group this is the minimum for DESeq2 to estimate dispersion.
+sample_counts_per_ct <- pb_meta |>
+  group_by(cell_type, treatment) |>
+  summarise(n = n(), .groups = "drop") |>
+  group_by(cell_type) |>
+  filter(all(n >= 2)) |>
+  pull(cell_type) |>
+  unique()
+
+cat("Cell types with sufficient replication for DE testing:\n")
+print(sample_counts_per_ct)
+```
+
+```{r deseq2-loop, message=FALSE, warning=FALSE}
+de_results    <- list()
+dds_objects   <- list()   # kept for later visualization
+
+for (ct in sample_counts_per_ct) {
+  # Subset to columns belonging to this cell type
+  cols     <- which(pb_meta$cell_type == ct)
+  mat      <- pseudobulk_counts[, cols, drop = FALSE]
+  meta_sub <- pb_meta[cols, , drop = FALSE]
+
+  # Drop genes with zero counts across all samples
+  mat <- mat[rowSums(mat) > 0, , drop = FALSE]
+
+  # Build DESeqDataSet — design tests treatment (vehicle as reference)
+  dds <- DESeqDataSetFromMatrix(
+    countData = mat,
+    colData   = meta_sub,
+    design    = ~ treatment
+  )
+
+  # Run DESeq2 (with n=2/group, expect a dispersion warning — this is expected)
+  suppressWarnings(
+    dds <- DESeq(dds, quiet = TRUE)
+  )
+
+  # Extract results: positive log2FC = higher in 11kt vs vehicle
+  res <- results(
+    dds,
+    contrast = c("treatment", "11kt", "vehicle"),
+    alpha    = 0.05
+  )
+
+  de_results[[ct]]  <- as.data.frame(res) |>
+    tibble::rownames_to_column("gene") |>
+    mutate(cell_type = ct) |>
+    arrange(padj)
+
+  dds_objects[[ct]] <- dds
+}
+
+de_combined <- bind_rows(de_results)
+cat("Total gene × cell-type tests:", nrow(de_combined), "\n")
+```
+
+::: callout-note
+## Interpreting DESeq2 results with n=2 per group
+
+With only 2 biological replicates per condition, DESeq2 borrows
+statistical strength across genes via its shrinkage estimator, but
+uncertainty remains high. Key points for interpretation:
+
+1.  **Focus on log2FoldChange magnitude and direction**, not just padj.
+    A gene where both 11-KT fish are higher than both vehicle fish is
+    more credible than one where only BB48 drives the difference.
+2.  **Padj values will be large** — many genes will not reach 0.05. This
+    is the mathematically correct result for an n=2 experiment, not a
+    problem to work around.
+3.  **The dispersion warning** ("outliers could not be replaced") is
+    expected with n=2. DESeq2 cannot robustly estimate dispersion from
+    two points; it borrows from the genome-wide trend, which is
+    appropriate.
+4.  Think of the output as a **ranked list for follow-up**, not a
+    definitive call of DE genes.
+:::
+
+```{r de-summary-table, message=FALSE, warning=FALSE}
+de_combined |>
+  filter(!is.na(padj), padj < 0.1) |>
+  group_by(cell_type) |>
+  slice_min(padj, n = 5) |>
+  ungroup() |>
+  left_join(gene_lookup |> dplyr::select(key, product), by = c("gene" = "key")) |>
+  dplyr::select(cell_type, gene, product, log2FoldChange, lfcSE, padj) |>
+  knitr::kable(
+    digits  = 3,
+    col.names = c("Cell Type", "Gene", "Description", "log2FC", "lfcSE", "padj"),
+    caption = "Top DE genes per cell type (padj < 0.1, 11-KT vs vehicle)"
+  )
+```
+
+```{r pseudobulk-visualization, fig.width=11, fig.height=5, message=FALSE, warning=FALSE, fig.alt="Dot plots of DESeq2 size-factor-normalized counts for the top 3 DE genes in the Electrocyte cluster, with one dot per fish colored by treatment.", fig.cap="Per-fish pseudobulk expression of top DE genes in the Electrocyte cluster. Each point represents one fish (n=2 per condition). Showing individual values rather than means makes the fish-to-fish consistency of each effect transparent."}
+# Identify the electrocyte DE object (use the first testable type if Electrocyte
+# was not scored)
+ct_vis <- if ("Electrocyte" %in% sample_counts_per_ct) "Electrocyte" else
+            sample_counts_per_ct[1]
+
+dds_vis <- dds_objects[[ct_vis]]
+
+# DESeq2 size-factor-normalized counts (appropriate for visualization, NOT for DE)
+dds_vis  <- estimateSizeFactors(dds_vis)
+norm_mat <- counts(dds_vis, normalized = TRUE)
+
+# Top 3 genes by padj (at least 3 must exist; fall back gracefully)
+top_genes <- de_results[[ct_vis]] |>
+  filter(!is.na(padj), padj < 1) |>
+  slice_min(padj, n = 3) |>
+  pull(gene)
+
+if (length(top_genes) == 0) {
+  message("No DE results for ", ct_vis, " — skipping visualization")
+} else {
+  # Tidy: pivot to long format and join metadata + gene descriptions
+  norm_tidy <- norm_mat[top_genes, , drop = FALSE] |>
+    as.data.frame() |>
+    tibble::rownames_to_column("gene") |>
+    pivot_longer(-gene, names_to = "col_id", values_to = "norm_count") |>
+    left_join(pb_meta |> tibble::rownames_to_column("col_id"), by = "col_id") |>
+    left_join(gene_lookup |> dplyr::select(key, gene_name, product),
+              by = c("gene" = "key")) |>
+    mutate(
+      label = if_else(is.na(product) | product == "",
+                      gene,
+                      paste0(gene, "\n(", str_trunc(product, 40), ")"))
+    )
+
+  ggplot(norm_tidy, aes(x = treatment, y = norm_count, color = treatment)) +
+    geom_point(size = 4, position = position_jitter(width = 0.08, seed = 42)) +
+    facet_wrap(~label, scales = "free_y", nrow = 1) +
+    scale_color_manual(values = c("11kt" = "#D55E00", "vehicle" = "#0072B2")) +
+    theme_bw() +
+    theme(legend.position = "none",
+          strip.text      = element_text(size = 8)) +
+    labs(
+      title = paste("Pseudobulk normalized counts —", ct_vis, "cluster"),
+      y     = "DESeq2-normalized counts",
+      x     = "Treatment"
+    )
+}
+```
+
+::: callout-note
+## The visualization uses DESeq2 size-factor-normalized counts
+
+The plots above show `counts(dds, normalized = TRUE)` — the raw counts
+divided by DESeq2's internally estimated size factors, which correct for
+differences in total library size between pseudobulk samples. This is
+the natural scale for displaying pseudobulk results alongside DESeq2
+output.
+
+These are **not** the same as: - SCT Pearson residuals (used for
+clustering) - Log-normalized counts from `NormalizeData` -
+Harmony-corrected embeddings
+
+All of those are inappropriate inputs to DESeq2. Here, they are also
+inappropriate for visualization because they do not represent the same
+count scale that DESeq2 used for testing.
+:::
+
+:::: callout-important
+## Find DE genes in another cell type
+
+Using the `de_results` list and the `dds_objects` list, repeat the
+pseudobulk visualization for a **different cell type** in
+`sample_counts_per_ct`.
+
+``` r
+# Replace "Schwann" with any cell type from sample_counts_per_ct
+ct_alt <- "Schwann"
+
+dds_alt  <- dds_objects[[ct_alt]]
+dds_alt  <- estimateSizeFactors(dds_alt)
+norm_alt <- counts(dds_alt, normalized = TRUE)
+
+top_genes_alt <- de_results[[ct_alt]] |>
+  filter(!is.na(padj)) |>
+  slice_min(padj, n = 3) |>
+  pull(gene)
+```
+
+1.  Do the same genes appear in the top hits for both cell types?
+2.  For genes that appear in multiple cell types, is the direction of
+    change (up or down in 11-KT) consistent? What would consistent
+    direction across cell types suggest biologically?
+
+::: {.callout-tip title="Solution" collapse="true"}
+Genes involved in **systemic hormonal responses** — such as lipid
+metabolism enzymes (e.g., *elovl7a*), extracellular matrix components
+(collagens, cadherins), or stress response genes — may appear in the top
+hits for multiple cell types. A consistent direction across cell types
+suggests a broad organismal response to 11-KT.
+
+By contrast, **electrocyte-specific** genes such as potassium channel
+subunits (*kcna*, *kcnc* family) and sodium channel auxiliaries
+(*scn4b*) are unlikely to appear in Schwann or Fibroblast clusters,
+because those cell types do not express the electrocyte action potential
+machinery.
+
+If a gene appears with **opposite directions** in two cell types, treat
+that result with caution: it may reflect a real cell-type-specific
+response, or it may be a statistical artifact driven by one unusually
+high or low sample in one of the clusters. With n=2, always check
+whether both replicates within each condition agree before interpreting
+the result.
+:::
+::::
+
+## Differential cell-type abundance
+
+Beyond *which genes* change expression, we can ask whether the
+*proportions of cell types* shift between conditions. For example, if
+11-KT promotes differentiation of muscle satellite cells into
+electrocyte precursors, we might expect the Muscle cluster to shrink and
+the Electrocyte cluster to grow.
+
+```{r cell-proportions, message=FALSE, warning=FALSE}
+# Per-sample cell counts and proportions by cell type
+prop_table <- merged_seurat@meta.data |>
+  group_by(orig.ident, cell_type_go, treatment, sample) |>
+  summarise(n_cells = n(), .groups = "drop") |>
+  group_by(orig.ident) |>
+  mutate(
+    total = sum(n_cells),
+    prop  = n_cells / total
+  ) |>
+  ungroup()
+
+# Show the full table
+prop_table |>
+  dplyr::select(sample, treatment, cell_type_go, n_cells, total, prop) |>
+  arrange(treatment, cell_type_go) |>
+  knitr::kable(digits = 3,
+               caption = "Cell-type proportions per sample")
+```
+
+```{r prop-barplot, fig.width=10, fig.height=5, message=FALSE, warning=FALSE, fig.alt="Stacked bar charts showing cell type proportions for each sample, faceted by treatment condition.", fig.cap="Cell-type composition of each EO sample, stacked by cell type and faceted by treatment group. Visual differences between conditions should be interpreted cautiously given n=2 per group."}
+ggplot(prop_table,
+  aes(x = sample, y = prop, fill = cell_type_go)
+) +
+  geom_col() +
+  facet_wrap(~treatment, scales = "free_x") +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(
+    title = "Cell-type proportions per sample (faceted by treatment)",
+    y     = "Proportion",
+    x     = "Sample",
+    fill  = "Cell type"
+  )
+```
+
+```{r prop-scatter, fig.width=9, fig.height=5, message=FALSE, warning=FALSE, fig.alt="Dot plot showing individual fish cell-type proportions for each cluster, colored by treatment.", fig.cap="Individual fish cell-type proportions by cluster. Each point is one fish. With n=2 per condition, visually comparing the four individual values (not group means) is essential for honest interpretation."}
+ggplot(prop_table,
+  aes(x = cell_type_go, y = prop, color = treatment, shape = sample)
+) +
+  geom_point(size = 3.5,
+             position = position_dodge(width = 0.5)) +
+  scale_color_manual(values = c("11kt" = "#D55E00", "vehicle" = "#0072B2")) +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(
+    title = "Cell-type proportions — individual fish (n = 4)",
+    y     = "Proportion of all nuclei",
+    x     = "Cell type"
+  )
+```
+
+::: callout-note
+## Statistical testing for abundance with n=2: extreme caution required
+
+With 2 replicates per condition, formal statistical tests for
+differential abundance are severely underpowered. We include a test here
+because it is part of a complete analysis pipeline, but:
+
+1.  **Report direction and magnitude**, not the p-value alone.
+2.  **Check whether both replicates agree**: if BB48 is higher than
+    BB50, is BB49INJ also higher than BB50INJ? A result where the two
+    11-KT fish disagree with each other as much as they disagree with
+    the vehicle fish is uninformative.
+3.  **Always show the individual points** (as in the scatter plot
+    above), not means ± SE — the n is too small for a summary to be
+    meaningful.
+:::
+
+```{r propeller-or-arcsine, message=FALSE, warning=FALSE}
+if (requireNamespace("speckle", quietly = TRUE)) {
+  # --- propeller path (speckle package) ---
+  message("Running propeller (speckle package)")
+  prop_results <- speckle::propeller(
+    clusters = merged_seurat$cell_type_go,
+    sample   = merged_seurat$orig.ident,
+    group    = merged_seurat$treatment
+  )
+  print(prop_results)
+
+} else {
+  # --- fallback: arcsine-square-root transformation + limma ---
+  # This is the same transformation propeller uses internally.
+  message("speckle not available; using arcsine-limma fallback")
+
+  prop_wide <- prop_table |>
+    mutate(asin_prop = asin(sqrt(prop))) |>
+    dplyr::select(orig.ident, treatment, cell_type_go, asin_prop) |>
+    pivot_wider(
+      id_cols     = c(orig.ident, treatment),
+      names_from  = cell_type_go,
+      values_from = asin_prop,
+      values_fill = 0
+    ) |>
+    arrange(treatment)   # vehicle rows first for consistent contrast direction
+
+  design <- model.matrix(~ treatment, data = prop_wide)
+
+  # limma on cell types (columns); omit the two metadata columns
+  ct_cols <- setdiff(names(prop_wide), c("orig.ident", "treatment"))
+  fit  <- limma::lmFit(t(prop_wide[, ct_cols]), design)
+  fit  <- limma::eBayes(fit)
+  da_res <- limma::topTable(fit, coef = 2, n = Inf)
+
+  cat("Differential abundance results (arcsine-limma, 11kt vs vehicle):\n")
+  print(da_res)
+}
+```
+
+::: callout-note
+## How propeller and arcsine-limma test abundance
+
+Both approaches apply an **arcsine-square-root transformation** to the
+cell-type proportions before fitting a linear model. The transformation
+stabilizes variance — proportions near 0 or 1 have very different
+absolute variability from those near 0.5, and the arcsine transformation
+equalizes this.
+
+**propeller** (from the `speckle` package) wraps this workflow with
+additional options for handling replicates and zero-count cell types.
+
+**arcsine-limma** applies the same transformation and calls
+`limma::lmFit` directly — identical in principle, slightly less
+convenient.
+
+With n=2 per group the denominator degrees of freedom for the linear
+model are very low (df = 2 for a two-sample comparison with 4 total
+libraries). Only very large proportion differences are detectable.
+Report FDR-adjusted p-values alongside the raw proportion differences
+shown in the scatter plot.
+:::
+
+## Validation: recovering known 11-KT biology
+
+Our pseudobulk analysis is more trustworthy if it quantitatively
+recovers gene-expression changes previously observed by independent
+methods. Losilla & Gallant (2025) applied bulk RNA-seq to the electric
+organ of *B. brachyistius* under androgen treatment
+(17α-methyltestosterone, 17αMT) and identified 244 differentially
+expressed genes (\|logFC\| \> 2, FDR \< 0.001). We now have that
+complete DEG table and can perform a systematic cross-study comparison.
+
+Both studies used the same species and tissue (*B. brachyistius*
+electric organ), but differ in two important ways: the androgen used
+(17αMT vs 11-ketotestosterone) and the sequencing technology (bulk
+RNA-seq vs single-nucleus pseudobulk). The key prediction is that
+androgen-responsive genes should shift in the **same direction** in both
+datasets, and ideally the **magnitude** of those shifts should be
+correlated across studies. Direction concordance well above 50% — the
+random- chance baseline — and a positive logFC–logFC correlation are the
+two main indicators that our snRNA-seq pipeline preserved the underlying
+biology.
+
+```{r load-losilla-data, message=FALSE, warning=FALSE}
+# Named gene vectors for scatter-plot labeling (Seurat rowname convention:
+#   lowercase symbols for annotated genes, LOC IDs for unannotated ones)
+cytoskeletal <- c("actn1", "actc1c", "myh6", "acta1b", "xirp1", "myo1d",
+                  "eml6", "tubb2", "cavin4b", "mid1ip1l")
+ecm_genes    <- c("thbs4b", "cdh11", "epdl2")
+lipid_genes  <- c("elovl7a", "selenoi", "fam126a")
+kchan_genes  <- c(
+  "LOC125742960",  # scn4aa — Nav1.4a (no curated symbol in this genome build)
+  "LOC125743019",  # kcna7a — Kv1.7a (no curated symbol in this genome build)
+  "kcna1", "kcna7", "kcnc1", "kcnc2", "kcng4a", "scn4b"
+)
+# Additional named genes from the Losilla 2025 top-hits list
+label_genes <- c(cytoskeletal, ecm_genes, lipid_genes, kchan_genes,
+                 "fhl1a", "tmem26b", "alpk2", "atp1b2b")
+
+# Load the full Losilla & Gallant 2025 bulk DEG table.
+# All 244 rows are T8day vs control (sampleA = "T_8day", sampleB = "control").
+# Positive logFC = upregulated after 8 days of androgen treatment.
+losilla_bulk <- read_csv(
+  "data/ssrnaseq_data/EO/losilla_et_al_data.csv",
+  show_col_types = FALSE
+) |>
+  dplyr::rename(
+    gene_bulk  = "Gene Symbol",
+    desc_bulk  = "Gene Description",
+    logFC_bulk = "logFC",
+    FDR_bulk   = "FDR"
+  ) |>
+  mutate(
+    direction_bulk = if_else(logFC_bulk > 0, "up (androgen)", "down (androgen)")
+  )
+
+cat("Losilla & Gallant 2025 bulk DEGs (T8day vs control):", nrow(losilla_bulk), "\n")
+cat("  Up in androgen:  ", sum(losilla_bulk$logFC_bulk > 0), "\n")
+cat("  Down in androgen:", sum(losilla_bulk$logFC_bulk < 0), "\n")
+```
+
+Now we join those bulk DEGs against every gene tested in the snRNA-seq
+pseudobulk — not just the significant ones. We want to see where each
+Losilla DEG lands in the snRNA-seq effect-size landscape: was it even
+detected? If so, in which direction?
+
+```{r bulk-snrna-overlap, message=FALSE, warning=FALSE}
+# Select the target cell type (Electrocyte, or the first available)
+ct_check <- if ("Electrocyte" %in% names(de_results)) "Electrocyte" else
+              names(de_results)[1]
+
+# Inner join: keep only genes present in BOTH the Losilla bulk DEG list
+# AND the snRNA-seq pseudobulk results for this cell type.
+overlap_tbl <- de_results[[ct_check]] |>
+  inner_join(losilla_bulk, by = c("gene" = "gene_bulk")) |>
+  mutate(
+    direction_snrna = if_else(log2FoldChange > 0, "up (11-KT)", "down (11-KT)"),
+    concordant      = sign(log2FoldChange) == sign(logFC_bulk)
+  ) |>
+  left_join(
+    gene_lookup |> dplyr::select(key, gene_name, product),
+    by = c("gene" = "key")
+  )
+
+# Summary statistics
+n_detected   <- nrow(overlap_tbl)
+n_concordant <- sum(overlap_tbl$concordant, na.rm = TRUE)
+n_sig        <- sum(!is.na(overlap_tbl$padj) & overlap_tbl$padj < 0.05)
+
+cat(sprintf(
+  "Losilla DEGs detected in snRNA-seq pseudobulk (%s): %d / %d (%.0f%%)\n",
+  ct_check, n_detected, nrow(losilla_bulk),
+  100 * n_detected / nrow(losilla_bulk)
+))
+cat(sprintf(
+  "Of detected genes, direction concordant: %d / %d (%.0f%%)\n",
+  n_concordant, n_detected, 100 * n_concordant / n_detected
+))
+cat(sprintf(
+  "Nominally significant (padj < 0.05) in pseudobulk: %d\n", n_sig
+))
+
+# Show the 15 most strongly regulated genes in the bulk data and
+# how they look in the snRNA-seq pseudobulk
+overlap_tbl |>
+  dplyr::select(gene, gene_name, logFC_bulk, direction_bulk,
+                log2FoldChange, padj, concordant) |>
+  slice_max(abs(logFC_bulk), n = 15)
+```
+
+The detection rate (how many of the 244 Losilla DEGs appear in our
+pseudobulk output) reflects the shallower per-nucleus coverage of
+snRNA-seq: a gene must be expressed in enough nuclei to pass DESeq2's
+low-count filter. The direction concordance among detected genes is the
+real biological readout.
+
+For a more quantitative view, the scatter plot below shows bulk logFC
+(x-axis) vs snRNA-seq pseudobulk log2FC (y-axis) for every gene in the
+overlap. A cloud of points in the upper-right and lower-left quadrants —
+with a positive trend — indicates that both the direction **and** the
+magnitude of regulation are preserved across methods and androgens.
+
+```{r logfc-scatter, fig.width=8, fig.height=6, message=FALSE, warning=FALSE, fig.alt="Scatter plot comparing Losilla and Gallant 2025 bulk logFC (x-axis) against snRNA-seq pseudobulk log2FC (y-axis) for overlapping genes, colored green for concordant direction and pink for discordant, with key genes labeled.", fig.cap="Bulk vs single-nucleus fold-change comparison for Losilla & Gallant 2025 DEGs. Each point is one gene detected in both the bulk RNA-seq and the snRNA-seq pseudobulk. Green = same direction of regulation in both datasets (concordant); pink = opposite direction (discordant). Dashed lines mark no change. Key named genes are labeled; unlabeled points are unnamed LOC entries."}
+library(ggrepel)
+
+p_scatter <- overlap_tbl |>
+  mutate(
+    label = if_else(gene %in% label_genes, gene, NA_character_)
+  ) |>
+  ggplot(aes(x = logFC_bulk, y = log2FoldChange, color = concordant)) +
+  geom_point(size = 2.5, alpha = 0.8) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "grey50") +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "grey50") +
+  ggrepel::geom_text_repel(
+    aes(label = label),
+    na.rm        = TRUE,
+    size         = 3,
+    max.overlaps = 20,
+    box.padding  = 0.4
+  ) +
+  scale_color_manual(
+    values = c("TRUE"  = "#009E73",
+               "FALSE" = "#CC4678"),
+    labels = c("TRUE"  = "Concordant",
+               "FALSE" = "Discordant"),
+    na.value = "grey60"
+  ) +
+  labs(
+    x       = "Bulk logFC — Losilla & Gallant 2025\n(T8day vs control, 17αMT treatment)",
+    y       = "Pseudobulk log2FC — this snRNA-seq\n(11-KT vs vehicle)",
+    color   = "Direction",
+    caption = sprintf(
+      "%d genes detected in pseudobulk; %d concordant in direction (%.0f%%)",
+      n_detected, n_concordant, 100 * n_concordant / n_detected
+    )
+  ) +
+  theme_bw(base_size = 12)
+
+p_scatter
+```
+
+The top concordant genes — those significant in the pseudobulk and with
+consistent direction in both datasets — give us the strongest
+cross-study signal. The FeaturePlot and VlnPlot below visualize the two
+most concordant snRNA-seq hits on the Harmony UMAP and within
+electrocyte nuclei.
+
+```{r feature-vln-split, fig.width=12, fig.height=9, message=FALSE, warning=FALSE, fig.alt="Feature plots on the Harmony UMAP showing expression of the top two concordant hormone-responsive genes split by treatment, with accompanying violin plots in electrocyte cells.", fig.cap="Single-nucleus expression of the top two concordant bulk/snRNA-seq genes. Upper panels: Harmony UMAP split by treatment condition. Lower panels: violin plots within electrocyte nuclei. VlnPlots visualize the distribution across nuclei but cannot support statistical claims about treatment effects — use the pseudobulk results for that."}
+genes_to_show <- overlap_tbl |>
+  filter(concordant, !is.na(padj)) |>
+  arrange(padj) |>
+  pull(gene) |>
+  head(2)
+
+# Fallback: use the top Losilla bulk hits if nothing concordant passes the filter
+if (length(genes_to_show) < 2)
+  genes_to_show <- head(losilla_bulk$gene_bulk[losilla_bulk$logFC_bulk > 0], 2)
+
+# FeaturePlot split by treatment on the Harmony UMAP
+p_feat_split <- FeaturePlot(
+  merged_seurat,
+  features  = genes_to_show,
+  split.by  = "treatment",
+  reduction = "umap.harmony",
+  ncol      = 2
+)
+
+# VlnPlot within electrocyte nuclei only, grouped by treatment
+p_vln <- VlnPlot(
+  subset(merged_seurat, cell_type_go == ct_check),
+  features  = genes_to_show,
+  group.by  = "treatment",
+  cols      = c("vehicle" = "#0072B2", "11kt" = "#D55E00"),
+  pt.size   = 0.5,
+  ncol      = 2
+)
+
+p_feat_split / p_vln
+```
+
+::: callout-note
+## VlnPlot shows single-nucleus distributions; pseudobulk tests biological replicates
+
+The VlnPlot above shows expression across all individual nuclei, colored
+by treatment. It gives an intuitive sense of the distribution within
+each condition but is **not a statistical test** — nuclei are not
+independent biological replicates.
+
+Use the VlnPlot to **visualize**; use the DESeq2 pseudobulk results to
+make **statistical claims**.
+
+If a gene looks strikingly different in the VlnPlot but has a large padj
+in DESeq2, fish-to-fish variability is the most likely explanation: one
+fish drives the visual impression but the effect is not consistent
+across both replicates in each condition. That is important scientific
+information — it means the result is not yet reproducible and should not
+be reported as a treatment effect without further validation.
+:::
+
+:::: callout-important
+## Interpreting the bulk vs single-nucleus cross-study comparison
+
+The Losilla & Gallant 2025 paper (DOI:
+[10.1038/s41598-025-85637-w](https://doi.org/10.1038/s41598-025-85637-w))
+reports bulk RNA-seq results from *B. brachyistius* electric organ under
+17α-methyltestosterone (17αMT) treatment. Use the `overlap_tbl` table
+and the scatter plot above to answer the following questions.
+
+1.  **Direction concordance.** Look at the concordance rate printed by
+    the `bulk-snrna-overlap` chunk. Is it substantially above 50% (the
+    random-chance baseline)? What does that tell you about whether the
+    biological signal has been preserved through Harmony integration and
+    pseudobulk aggregation?
+
+2.  **Effect-size correlation.** Examine the scatter plot. Are genes
+    with a large bulk logFC (far from zero on the x-axis) also showing
+    larger fold changes in the snRNA-seq pseudobulk (far from zero on
+    the y-axis)? If so, what does a positive logFC–logFC trend imply
+    beyond just direction concordance?
+
+3.  **Missing genes.** Some Losilla DEGs are absent from `overlap_tbl`
+    because they were not tested in the pseudobulk analysis. Give two
+    technical reasons why a gene present in the bulk dataset might be
+    missing from the snRNA-seq pseudobulk output, without implying any
+    biological difference between 17αMT and 11-KT.
+
+4.  **Hormone comparison.** Losilla & Gallant used 17αMT while this
+    experiment used 11-ketotestosterone (11-KT). Both are androgens in
+    teleost fish, but they are not identical. Would you predict the same
+    genes responding, a subset, or an entirely different set? What two
+    biological differences between the androgens could explain any
+    discordance you observe?
+
+::: {.callout-tip title="Solution" collapse="true"}
+**Question 1:** A concordance rate well above 50% — typically 70% or
+more is considered strong — indicates that the transcriptional direction
+of androgen response is preserved across the two independent datasets.
+Because the studies used different androgens, different animals, and
+different sequencing technologies, high directional agreement provides
+compelling evidence that Harmony integration did not distort the
+biological signal and that the pseudobulk aggregation reflects genuine
+treatment differences rather than batch artifacts.
+
+**Question 2:** A positive trend in the scatter plot means that genes
+that responded strongly in the bulk experiment also tend to show larger
+effect sizes in the snRNA-seq pseudobulk. This is a stronger form of
+validation than direction alone: it suggests that the *relative
+importance* of genes in the androgen response is consistent across
+methods. Genes near the origin in both axes are responding weakly (or
+inconsistently) in both studies; genes in the concordant upper-right or
+lower-left quadrants are the most robust hits. You can quantify this
+further with
+`cor(overlap_tbl$logFC_bulk, overlap_tbl$log2FoldChange, use = "complete.obs")`.
+
+**Question 3:** Two technical explanations (before inferring biological
+differences):
+
+- **Low nuclear expression / low detection**: snRNA-seq captures only
+  nuclear RNA. Cytoplasmic transcripts — especially in highly
+  differentiated cells like electrocytes — may be abundant in bulk data
+  but largely absent from nuclear fractions, making them invisible to
+  pseudobulk aggregation.
+- **Gene naming mismatch**: the gene symbols in the Losilla 2025 GTF
+  annotation may differ from those in the RefSeq GTF used here (e.g., a
+  different NCBI LOC number for the same locus, a paralog-specific
+  suffix, or a genome assembly update that renamed or split the gene
+  model). A gene that fails to join on `gene == gene_bulk` may simply
+  have a different identifier in each annotation.
+
+**Question 4:** Most canonical androgen-responsive electric organ genes
+are expected to respond to both 17αMT and 11-KT, because both act
+through the androgen receptor. However, the specific gene set and effect
+magnitudes may differ for two reasons: (a) **Receptor selectivity** —
+11-KT is the physiologically dominant teleost androgen and may recruit
+different co-regulators or bind with higher affinity to the mormyrid
+androgen receptor than the synthetic 17αMT does; (b) **Aromatization** —
+17αMT cannot be converted to estrogens (non-aromatizable), whereas
+11-KT's aromatization potential differs; this could activate estrogen
+receptor–mediated pathways for some genes in the 17αMT study that are
+not activated by 11-KT, or vice versa.
+:::
+::::
+
+::: {.callout-tip title="Key Points"}
+- Harmony integration corrects GEM-well batch effects by adjusting the
+  PCA embedding so cells are grouped by cell type rather than capture
+  well. Use Harmony embeddings for clustering and visualization; **never
+  as input to differential expression testing**.
+
+- Pseudoreplication is a critical statistical error in single-nucleus
+  DE: nuclei from the same animal are not independent replicates.
+  `AggregateExpression` collapses nuclei to the biological replicate
+  level before testing.
+
+- DESeq2 requires raw RNA counts (`assay = "RNA"` in
+  `AggregateExpression`). SCT residuals, log-normalized values, and
+  Harmony-corrected embeddings violate the negative binomial count model
+  and must not be used as DE input.
+
+- With n=2 per group, DESeq2 will produce wide confidence intervals and
+  high adjusted p-values. This is correct statistical behavior. Report
+  log2FoldChange and direction; a result where both replicates within
+  each condition agree in direction is more credible than a low padj
+  achieved by one unusual fish.
+
+- `AggregateExpression(group.by = c("cell_type_go", "orig.ident"))`
+  builds the pseudobulk matrix. Parse the column names (format:
+  `CellType_Sample`) to reconstruct the sample-level metadata data frame
+  required by `DESeqDataSetFromMatrix`.
+
+- Differential abundance testing with propeller or arcsine-limma
+  quantifies shifts in cell-type proportions between conditions. With
+  n=2, always show individual fish values rather than group means, and
+  interpret direction and magnitude rather than p-values alone.
+
+- Recovering known hormone-responsive gene families (Losilla &
+  Gallant 2025) in the pseudobulk results — and showing fold-change
+  correlation across studies and methods — confirms that Harmony
+  integration and pseudobulk aggregation preserved the biological signal
+  of interest. Direction concordance well above 50% and a positive
+  logFC–logFC correlation are the two key quantitative indicators of
+  cross-study reproducibility.
+:::

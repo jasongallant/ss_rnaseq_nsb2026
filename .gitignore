@@ -1,3 +1,8 @@
+episodes/data/*
+
+/.quarto/
+/_site/
+
 # sandpaper files
 episodes/*html
 site/*
@@ -52,3 +57,6 @@ po/*~
 # renv sandbox needed for renv version 0.16.0
 renv/sandbox # OPTIONAL
 .positai
+
+/.quarto/
+**/*.quarto_ipynb

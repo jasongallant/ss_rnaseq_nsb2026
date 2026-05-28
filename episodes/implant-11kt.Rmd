@@ -4,14 +4,14 @@ teaching: 20
 exercises: 75
 ---
 
-:::::::::::::::::::::::::::::::::::::: objectives
+::: {.callout-tip title="Objectives"}
 
 - Prepare a 20% w/w 11-ketotestosterone (11-KT) / cocoa butter implant suitable for IP delivery.
 - Anesthetize a mormyrid fish to a stable surgical plane using buffered MS-222.
 - Perform an IP incision and deposit a single cocoa-butter dose using sterile technique.
 - Record and log a pre-treatment EOD baseline that all post-implant measurements will be normalized against.
 
-::::::::::::::::::::::::::::::::::::::::::::::::
+:::
 
 ## Background
 
@@ -25,9 +25,7 @@ This episode walks through the Day 0 implant procedure as it is run in our lab. 
 experimental schedule (acclimation, weighing, tank assignment, post-implant recording cadence) is already
 defined elsewhere in the course materials.
 
-::: callout
-
-### Why cocoa butter?
+::: {.callout-note title="Why cocoa butter?"}
 
 Cocoa butter is solid at room temperature, liquefies at 35–40 °C, and re-solidifies inside the fish — trapping
 the steroid in a slow-release depot. It is also non-reactive in the IP cavity and avoids the need for a
@@ -62,9 +60,7 @@ DMSO/oil carrier injection.
    will be normalized to (Bass et al., 1986).
 2. Confirm fish ID, weight, and tank assignment are logged before proceeding to Step 1.
 
-::: callout
-
-### Why two baselines?
+::: {.callout-note title="Why two baselines?"}
 
 Day −1 captures the fish's "settled" waveform; Day 0 confirms it has not drifted overnight. If the two
 recordings disagree by more than your normal day-to-day variability, do not implant — investigate first.
@@ -80,9 +76,7 @@ recordings disagree by more than your normal day-to-day variability, do not impl
    clear/translucent**. If particles persist after 2 min at temperature, hold longer before pipetting.
 4. Keep the dose mix on the dry bath until ready for implantation.
 
-::: callout
-
-### Don't rush dissolution
+::: {.callout-note title="Don't rush dissolution"}
 
 11-KT does dissolve fully in cocoa butter at this loading and temperature, but it isn't instantaneous.
 Pipetting before the crystals are gone gives non-uniform doses across your fish — the first fish gets a
@@ -90,14 +84,12 @@ heavy bolus, the last gets diluted vehicle.
 
 :::
 
-::: challenge
-
-### Calculating the dose
+::: {.callout-important title="Calculating the dose"}
 
 You want to implant 5 fish at 1 mg 11-KT per dose, with ~30% extra prep volume to absorb pipetting losses.
 Working at 20% w/w, how much 11-KT do you weigh out, and how much cocoa butter do you combine it with?
 
-::: solution
+:::: {.callout-tip title="Solution" collapse="true"}
 
 - Per-dose 11-KT mass: 1 mg.
 - For 5 fish + 30%: ≈ 6.5 mg of 11-KT.
@@ -106,7 +98,7 @@ Working at 20% w/w, how much 11-KT do you weigh out, and how much cocoa butter d
 
 This is the recipe used in Step 1 above.
 
-:::
+::::
 
 :::
 
@@ -117,9 +109,7 @@ This is the recipe used in Step 1 above.
 2. Spray tools with 70% ethanol and let sit for 5 minutes, then dry with a kimwipe. Alternatively, use a heat
    sterilizer — just make sure the tools are properly cooled before they touch the fish.
 
-::: callout
-
-### Surgical plane, not deep anesthesia
+::: {.callout-note title="Surgical plane, not deep anesthesia"}
 
 You want gilling to continue throughout the procedure. If gill movement stops, you have gone too deep —
 move the fish into fresh water immediately.
@@ -145,9 +135,7 @@ move the fish into fresh water immediately.
 7. Place the fish into fresh recovery water and **wait ~20 minutes** for it to return upright before
    returning it to its home tank.
 
-::: callout
-
-### Incision location matters
+::: {.callout-note title="Incision location matters"}
 
 Bass's original phrasing was "small incision was made anterior to the anal pore." Going off-midline keeps you
 out of the major ventral vessels, and staying anterior to the anal pore puts the dose into the IP cavity
@@ -155,14 +143,12 @@ proper rather than the cloacal region.
 
 :::
 
-::: challenge
-
-### Troubleshooting a failed seal
+::: {.callout-important title="Troubleshooting a failed seal"}
 
 Five minutes after implantation you notice a small bead of cocoa-butter / 11-KT solution sitting on the
 fish's belly, outside the Vetbond. What do you do, and how do you note it in the experimental log?
 
-::: solution
+:::: {.callout-tip title="Solution" collapse="true"}
 
 - Blot the surface dose off with a fresh kimwipe.
 - Apply a second layer of Vetbond and let it skin.
@@ -170,7 +156,7 @@ fish's belly, outside the Vetbond. What do you do, and how do you note it in the
   exclusion or, at minimum, tracked separately when EOD changes are analyzed — the slow-release pharmacology
   assumes the depot is fully internal.
 
-:::
+::::
 
 :::
 
@@ -179,7 +165,7 @@ fish's belly, outside the Vetbond. What do you do, and how do you note it in the
 Once each fish is upright and swimming, return it to its labeled home tank and resume the post-implant EOD
 recording schedule defined in the broader course protocol. Do not feed for 24 h.
 
-:::::::::::::::::::::::::::::::::::::: keypoints
+::: {.callout-tip title="Key Points"}
 
 - Cocoa-butter implants give a several-day, slow-release androgen exposure with a single Day 0 procedure.
 - Pre-treatment EOD recordings on Day −1 and Day 0 are the per-fish baselines — every post-implant
@@ -189,7 +175,7 @@ recording schedule defined in the broader course protocol. Do not feed for 24 h.
 - Incise anterior to the anal pore, slightly off the ventral midline, and seal cleanly with Vetbond.
 - A surface-extruded dose is not a delivered dose — flag the animal in the log.
 
-::::::::::::::::::::::::::::::::::::::::::::::::
+:::
 
 ## References
 
