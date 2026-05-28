@@ -23,6 +23,23 @@ exercises: 10
 
 :::
 
+```{=html}
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/plyr/3.8.3/plyr.min.css" />
+<video id="lecture-99" playsinline controls preload="metadata">
+  <source src="https://d18e7eu8nurr5a.cloudfront.net/lectures/introduction.mp4"
+          type="video/mp4" />
+  Your browser does not support embedded video.
+</video>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/plyr/3.8.3/plyr.polyfilled.min.js"></script>
+<script>
+  new Plyr('#Introduction', {
+    settings: ['speed'],
+    speed: { selected: 1, options: [0.75, 1, 1.25, 1.5, 1.75, 2] }
+  });
+</script>
+```
+
 ## Introduction and Overview
 
 The MSU Electric Fish Lab ([https://efish.integrativebiology.msu.edu](https://efish.integrativebiology.msu.edu)) has been leading efforts to develop genomic resources for weakly electric fish for the last 13 years. We started with the electric eel genome ([Gallant et al. 2014, *Science*](https://doi.org/10.1126/science.1254432)), and from there we've developed genomes for many of the major lineages of weakly electric fish — both South American (Gymnotiformes) and African (Mormyroidea). We've also developed techniques for genome manipulation using CRISPR/Cas9 and Tol2 transposases, though that's out of the scope of this module!
