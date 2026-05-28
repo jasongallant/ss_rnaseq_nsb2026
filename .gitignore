@@ -1,4 +1,5 @@
 episodes/data/*
+slides/
 
 /.quarto/
 /_site/
