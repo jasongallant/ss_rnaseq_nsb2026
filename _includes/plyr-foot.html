@@ -1,0 +1,11 @@
+<script src="https://cdnjs.cloudflare.com/ajax/libs/plyr/3.8.3/plyr.polyfilled.min.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('video.plyr-video').forEach(function (el) {
+      new Plyr(el, {
+        settings: ['speed'],
+        speed: { selected: 1, options: [0.75, 1, 1.25, 1.5, 1.75, 2] }
+      });
+    });
+  });
+</script>
