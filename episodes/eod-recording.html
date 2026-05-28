@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Setup – Electric Fish: Single-Nucleus RNA-seq</title>
+<title>EOD Recording: A Practical Overview – Electric Fish: Single-Nucleus RNA-seq</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -157,7 +157,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../episodes/setup.html">Setup</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../episodes/introduction.html">June 8: Introduction, EOD Recording and Injection</a></li><li class="breadcrumb-item"><a href="../episodes/eod-recording.html">EOD Recording: A Practical Overview</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -194,7 +194,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../episodes/eod-recording.html" class="sidebar-item-text sidebar-link">
+  <a href="../episodes/eod-recording.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">EOD Recording: A Practical Overview</span></a>
   </div>
 </li>
@@ -274,7 +274,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <li class="px-0"><hr class="sidebar-divider hi "></li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../episodes/setup.html" class="sidebar-item-text sidebar-link active">
+  <a href="../episodes/setup.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Setup</span></a>
   </div>
 </li>
@@ -288,24 +288,26 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#data" id="toc-data" class="nav-link active" data-scroll-target="#data">Data</a></li>
-  <li><a href="#software-setup" id="toc-software-setup" class="nav-link" data-scroll-target="#software-setup">Software Setup</a>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a></li>
+  <li><a href="#what-were-measuring" id="toc-what-were-measuring" class="nav-link" data-scroll-target="#what-were-measuring">What We’re Measuring</a></li>
+  <li><a href="#how-we-measure-it" id="toc-how-we-measure-it" class="nav-link" data-scroll-target="#how-we-measure-it">How We Measure It</a>
   <ul class="collapse">
-  <li><a href="#step-1-install-r-and-rstudio" id="toc-step-1-install-r-and-rstudio" class="nav-link" data-scroll-target="#step-1-install-r-and-rstudio">Step 1 — Install R and RStudio</a></li>
-  <li><a href="#step-2-open-the-project-and-restore-the-renv-environment" id="toc-step-2-open-the-project-and-restore-the-renv-environment" class="nav-link" data-scroll-target="#step-2-open-the-project-and-restore-the-renv-environment">Step 2 — Open the project and restore the renv environment</a></li>
-  <li><a href="#step-3-install-harmony-and-speckle-for-the-final-episode" id="toc-step-3-install-harmony-and-speckle-for-the-final-episode" class="nav-link" data-scroll-target="#step-3-install-harmony-and-speckle-for-the-final-episode">Step 3 — Install harmony and speckle (for the final episode)</a></li>
-  <li><a href="#step-4-verify-the-installation" id="toc-step-4-verify-the-installation" class="nav-link" data-scroll-target="#step-4-verify-the-installation">Step 4 — Verify the installation</a></li>
-  <li><a href="#package-version-reference" id="toc-package-version-reference" class="nav-link" data-scroll-target="#package-version-reference">Package version reference</a></li>
+  <li><a href="#electrodes-and-amplifier" id="toc-electrodes-and-amplifier" class="nav-link" data-scroll-target="#electrodes-and-amplifier">Electrodes and Amplifier</a></li>
+  <li><a href="#analog-to-digital-conversion" id="toc-analog-to-digital-conversion" class="nav-link" data-scroll-target="#analog-to-digital-conversion">Analog-to-Digital Conversion</a></li>
+  <li><a href="#ac-vs.-dc-coupling" id="toc-ac-vs.-dc-coupling" class="nav-link" data-scroll-target="#ac-vs.-dc-coupling">AC vs.&nbsp;DC Coupling</a></li>
+  <li><a href="#noise-sources-and-mitigation" id="toc-noise-sources-and-mitigation" class="nav-link" data-scroll-target="#noise-sources-and-mitigation">Noise Sources and Mitigation</a></li>
   </ul></li>
+  <li><a href="#practical-recording-guide" id="toc-practical-recording-guide" class="nav-link" data-scroll-target="#practical-recording-guide">Practical Recording Guide</a></li>
+  <li><a href="#keypoints" id="toc-keypoints" class="nav-link" data-scroll-target="#keypoints">Keypoints</a></li>
   </ul>
-<div class="toc-actions"><ul><li><a href="https://github.com/jasongallant/ss_rnaseq_nsb2026/edit/main/episodes/setup.md" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/jasongallant/ss_rnaseq_nsb2026/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
+<div class="toc-actions"><ul><li><a href="https://github.com/jasongallant/ss_rnaseq_nsb2026/edit/main/episodes/eod-recording.Rmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/jasongallant/ss_rnaseq_nsb2026/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default">
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../episodes/introduction.html">June 8: Introduction, EOD Recording and Injection</a></li><li class="breadcrumb-item"><a href="../episodes/eod-recording.html">EOD Recording: A Practical Overview</a></li></ol></nav>
 <div class="quarto-title">
-<div class="quarto-title-block"><div><h1 class="title">Setup</h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
+<div class="quarto-title-block"><div><h1 class="title">EOD Recording: A Practical Overview</h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
 </div>
 
 
@@ -322,160 +324,161 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<section id="data" class="level2">
-<h2 class="anchored" data-anchor-id="data">Data</h2>
-<p>All data for this lesson are included in the lesson repository under <code>episodes/data/</code>. No separate download is required if you have cloned or downloaded the repository.</p>
-<p>Key data directories:</p>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 37%">
-<col style="width: 62%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Path</th>
-<th>Contents</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><code>episodes/data/ssrnaseq_data/EO/</code></td>
-<td>10X Cell Ranger filtered matrices for four electric organ samples (BB48, BB49INJ, BB50, BB50INJ)</td>
-</tr>
-<tr class="even">
-<td><code>episodes/data/ssrnaseq_data/genes.gtf.gz</code></td>
-<td><em>B. brachyistius</em> RefSeq GTF for gene annotation</td>
-</tr>
-<tr class="odd">
-<td><code>episodes/data/ssrnaseq_data/gene_ontology.gaf.gz</code></td>
-<td>GO annotation file for <em>B. brachyistius</em></td>
-</tr>
-<tr class="even">
-<td><code>episodes/data/eod_duration/</code></td>
-<td>JSON files of electric organ discharge recordings</td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="software-setup" class="level2">
-<h2 class="anchored" data-anchor-id="software-setup">Software Setup</h2>
-<p>This lesson requires <strong>R</strong> (≥ 4.3) and <strong>RStudio</strong> (≥ 2023.06). All R packages are managed with <code>renv</code>; most will install automatically when you open the project. Two packages need to be installed manually before running the final episode.</p>
-<section id="step-1-install-r-and-rstudio" class="level3">
-<h3 class="anchored" data-anchor-id="step-1-install-r-and-rstudio">Step 1 — Install R and RStudio</h3>
+<div class="callout callout-style-default callout-note callout-titled" title="Questions">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Questions
+</div>
+</div>
+<div class="callout-body-container callout-body">
 <ul>
-<li><a href="https://cran.r-project.org">Download R</a> for your operating system</li>
-<li><a href="https://posit.co/download/rstudio-desktop/">Download RStudio Desktop</a></li>
+<li>What physical quantity are our electrodes actually measuring when we record an EOD?</li>
+<li>How do sampling rate and bit depth limit what we can resolve in a waveform?</li>
+<li>When does AC coupling distort an EOD, and when is it acceptable?</li>
+<li>Why does electrode position affect the measured amplitude of the signal?</li>
 </ul>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled" title="Objectives">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Objectives
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li>Describe how extracellular differential recording captures the EOD waveform.</li>
+<li>Identify the two key parameters of analog-to-digital conversion and explain how each limits signal fidelity.</li>
+<li>Distinguish AC from DC coupling and select the appropriate mode for a given recording goal.</li>
+<li>List the most common sources of noise in an EOD recording setup and the strategies used to reduce them.</li>
+</ul>
+</div>
+</div>
+<section id="introduction" class="level2">
+<h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
+<p>The <strong>electric organ discharge (EOD)</strong> is the behavior we’re trying to understand at a cellular and molecular level — but first we need to measure it reliably. Recording an EOD looks simple: put two electrodes in water with a fish and read the voltage. In practice, the choices you make about hardware, positioning, and coupling all change what you observe. This episode gives you the conceptual tools to make those choices deliberately.</p>
+<p>This is optional background material. If you are already comfortable with extracellular recording and analog-to-digital conversion, skim the keypoints and move on.</p>
 </section>
-<section id="step-2-open-the-project-and-restore-the-renv-environment" class="level3">
-<h3 class="anchored" data-anchor-id="step-2-open-the-project-and-restore-the-renv-environment">Step 2 — Open the project and restore the renv environment</h3>
-<p>Open the <code>ss_rnaseq_nsb2026.Rproj</code> file in RStudio. When prompted, run:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>renv<span class="sc">::</span><span class="fu">restore</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>This installs all packages recorded in the lockfile. It may take several minutes the first time.</p>
+<section id="what-were-measuring" class="level2">
+<h2 class="anchored" data-anchor-id="what-were-measuring">What We’re Measuring</h2>
+<p>The electric organ acts like a <strong>dipole</strong>: a separation of positive and negative charge across a distance equal to the length of the organ. When the fish fires, hundreds of flat <strong>electrocytes</strong> discharge synchronously, generating an electrostatic field that extends into the surrounding water.</p>
+<p>Our electrodes sample the potential difference between two points inside that field. A useful analogy is a topographic map: the density of contour lines represents the steepness of potential change between two nearby points. Two electrodes close together measure a small difference; the same electrodes far apart — spanning more of the gradient — measure a larger one.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="files/eod-recording/image1.png" class="img-fluid figure-img"></p>
+<figcaption>Dipole field produced by a weakly electric fish. Dashed lines show equipotential contours; arrows indicate field direction.</figcaption>
+</figure>
+</div>
+<p>This means <strong>electrode spacing must be matched to the fish size and water conductivity</strong>. There is no single “correct” amplitude — only amplitude relative to a known recording geometry.</p>
 </section>
-<section id="step-3-install-harmony-and-speckle-for-the-final-episode" class="level3">
-<h3 class="anchored" data-anchor-id="step-3-install-harmony-and-speckle-for-the-final-episode">Step 3 — Install harmony and speckle (for the final episode)</h3>
-<p>Two packages used in the “Hormone-Driven Gene Expression Changes” episode are not yet in the default lockfile and must be installed once before running that episode:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># harmony — batch correction (CRAN)</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"harmony"</span>)</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># speckle — differential cell-type abundance / propeller (Bioconductor)</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">requireNamespace</span>(<span class="st">"BiocManager"</span>, <span class="at">quietly =</span> <span class="cn">TRUE</span>))</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">install.packages</span>(<span class="st">"BiocManager"</span>)</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>BiocManager<span class="sc">::</span><span class="fu">install</span>(<span class="st">"speckle"</span>)</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Record in renv after installing</span></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>renv<span class="sc">::</span><span class="fu">snapshot</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>If <code>speckle</code> does not install cleanly in your environment, the differential abundance section of the episode includes an automatic fallback to <code>limma</code> (already installed), so the episode will still render without it.</p>
+<section id="how-we-measure-it" class="level2">
+<h2 class="anchored" data-anchor-id="how-we-measure-it">How We Measure It</h2>
+<section id="electrodes-and-amplifier" class="level3">
+<h3 class="anchored" data-anchor-id="electrodes-and-amplifier">Electrodes and Amplifier</h3>
+<p>Standard EOD recordings use three leads: a <strong>positive</strong> (red, anterior), a <strong>negative</strong> (black, posterior), and a <strong>ground</strong> (clear, placed away from the fish). By convention the red lead always goes at the head end. The ground provides a shunt for stray electromagnetic fields picked up by the recording circuit.</p>
+<p>The leads connect to a differential amplifier (typically a BMA-200 or AM Systems unit). <strong>Differential mode</strong> amplifies the difference between positive and negative inputs and suppresses signals common to both — a property called <strong>common mode rejection</strong> that is the primary defense against 60 Hz noise.</p>
 </section>
-<section id="step-4-verify-the-installation" class="level3">
-<h3 class="anchored" data-anchor-id="step-4-verify-the-installation">Step 4 — Verify the installation</h3>
-<p>Run the following in the R console to confirm key packages are available:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>required_pkgs <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Seurat"</span>, <span class="st">"DESeq2"</span>, <span class="st">"harmony"</span>, <span class="st">"limma"</span>,</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"clusterProfiler"</span>, <span class="st">"GO.db"</span>, <span class="st">"tidyverse"</span>, <span class="st">"patchwork"</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>missing_pkgs <span class="ot">&lt;-</span> required_pkgs[<span class="sc">!</span><span class="fu">sapply</span>(required_pkgs, requireNamespace,</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>                                       <span class="at">quietly =</span> <span class="cn">TRUE</span>)]</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">length</span>(missing_pkgs) <span class="sc">==</span> <span class="dv">0</span>) {</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">message</span>(<span class="st">"All required packages are installed."</span>)</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> {</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">message</span>(<span class="st">"Missing packages: "</span>, <span class="fu">paste</span>(missing_pkgs, <span class="at">collapse =</span> <span class="st">", "</span>))</span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<section id="analog-to-digital-conversion" class="level3">
+<h3 class="anchored" data-anchor-id="analog-to-digital-conversion">Analog-to-Digital Conversion</h3>
+<p>The amplifier output is an analog voltage. To store it digitally, an <strong>analog-to-digital (A/D) converter</strong> samples that voltage at a fixed rate and encodes each sample as a binary number. Two parameters govern fidelity.</p>
+<p><strong>Sample rate</strong> determines how many voltage measurements are taken per second. A signal is faithfully reconstructed only if it is sampled at more than twice its highest frequency (the Nyquist criterion). Standard mormyrid EODs are well encoded at 100 kHz; very brief species (<em>Petrocephalus</em>, some <em>Paramormyrops</em>) require 250 kHz or higher.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="files/eod-recording/image2.png" class="img-fluid figure-img"></p>
+<figcaption>Effect of sample rate on waveform reconstruction.</figcaption>
+</figure>
+</div>
+<p><strong>Resolution</strong> (bit depth) determines how finely voltage is quantized. A 16-bit converter divides a ±10 V range into 65,536 steps — roughly 0.3 mV per step. To maximize usable resolution, record at the highest amplitude that does not clip.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="files/eod-recording/image3.gif" class="img-fluid figure-img"></p>
+<figcaption>A/D conversion at low vs.&nbsp;high bit depth.</figcaption>
+</figure>
+</div>
+<div class="callout callout-style-default callout-warning callout-titled" title="Clipping">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Warning</span>Clipping
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The BMA-200 has a ±6 V output range. Amplify beyond this range and the waveform will be truncated — <strong>clipped signals cannot be recovered or analyzed</strong>. Always verify gain settings with an oscilloscope before committing a recording session.</p>
+</div>
+</div>
 </section>
-<section id="package-version-reference" class="level3">
-<h3 class="anchored" data-anchor-id="package-version-reference">Package version reference</h3>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Package</th>
-<th>Version used</th>
-<th>Source</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Seurat</td>
-<td>5.4.0</td>
-<td>CRAN</td>
-</tr>
-<tr class="even">
-<td>DESeq2</td>
-<td>1.46.0</td>
-<td>Bioconductor</td>
-</tr>
-<tr class="odd">
-<td>harmony</td>
-<td>≥ 1.2.0</td>
-<td>CRAN</td>
-</tr>
-<tr class="even">
-<td>speckle</td>
-<td>≥ 1.0.0</td>
-<td>Bioconductor</td>
-</tr>
-<tr class="odd">
-<td>limma</td>
-<td>3.62.2</td>
-<td>Bioconductor</td>
-</tr>
-<tr class="even">
-<td>clusterProfiler</td>
-<td>≥ 4.10</td>
-<td>Bioconductor</td>
-</tr>
-<tr class="odd">
-<td>GO.db</td>
-<td>≥ 3.18</td>
-<td>Bioconductor</td>
-</tr>
-<tr class="even">
-<td>tidyverse</td>
-<td>≥ 2.0</td>
-<td>CRAN</td>
-</tr>
-<tr class="odd">
-<td>patchwork</td>
-<td>≥ 1.2</td>
-<td>CRAN</td>
-</tr>
-<tr class="even">
-<td>glmGamPoi</td>
-<td>≥ 1.14</td>
-<td>Bioconductor</td>
-</tr>
-<tr class="odd">
-<td>presto</td>
-<td>≥ 1.0</td>
-<td>GitHub (immunogenomics/presto)</td>
-</tr>
-</tbody>
-</table>
+<section id="ac-vs.-dc-coupling" class="level3">
+<h3 class="anchored" data-anchor-id="ac-vs.-dc-coupling">AC vs.&nbsp;DC Coupling</h3>
+<p>Metal electrodes in water behave like a battery, creating a slow-drifting <strong>DC offset</strong> that can swamp the signal of interest. <strong>AC coupling</strong> removes this offset with a capacitor in the circuit, at the cost of slight distortion at very low frequencies.</p>
+<p>Because the EOD carries almost no energy below 20 Hz, AC coupling introduces negligible distortion for most mormyrid species. <strong>DC coupling</strong> is required only when you need to compare baseline potentials or record extremely long-duration waveforms. Sound cards (e.g., Steinberg UR22) always AC couple; National Instruments boards (NI-6211, NI-6216) do not.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="files/eod-recording/image4.png" class="img-fluid figure-img"></p>
+<figcaption>Frequency content of a passive bioelectric field versus a mormyrid EOD.</figcaption>
+</figure>
+</div>
+<div class="callout callout-style-default callout-warning callout-titled" title="AC coupling and waveform duration">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Warning</span>AC coupling and waveform duration
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Long-duration EODs (some <em>Campylomormyrus</em> species, heavily treated fish) can show baseline distortion with AC coupling. If EOD duration is a dependent variable in your experiment, verify AC coupling does not affect your waveform shape before committing to that hardware.</p>
+</div>
+</div>
+</section>
+<section id="noise-sources-and-mitigation" class="level3">
+<h3 class="anchored" data-anchor-id="noise-sources-and-mitigation">Noise Sources and Mitigation</h3>
+<p>The most common noise source is <strong>60 Hz electromagnetic interference</strong> from building electrical systems. Differential amplification and common-mode rejection reduce this substantially, but two additional strategies help.</p>
+<p>First, use <strong>shielded cables</strong> (foil or braid) to prevent external fields from being induced in the recording leads. Second, ground the shielding at one point only.</p>
+<div class="callout callout-style-default callout-warning callout-titled" title="Ground loops">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Warning</span>Ground loops
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Grounding shielding at more than one location creates a loop. Magnetic fields can induce a current in that loop that appears as low-frequency oscillation in your recording. If you see rhythmic noise that does not disappear with the amplifier gain at zero, inspect grounding continuity first.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="practical-recording-guide" class="level2">
+<h2 class="anchored" data-anchor-id="practical-recording-guide">Practical Recording Guide</h2>
+<ol type="1">
+<li><p><strong>Choose your hardware.</strong> AC coupling (sound card) is sufficient for waveform shape and duration. DC coupling (NI-DAQ board) is required for baseline comparisons. Match sample rate to the fastest EOD you expect to encounter.</p></li>
+<li><p><strong>Set up the electrodes.</strong> Place the red lead at the fish’s head and the black lead at the tail. Position the ground well away from the recording zone. Keep all cable runs as short as possible.</p></li>
+<li><p><strong>Verify with an oscilloscope first.</strong> Before recording a session, confirm the signal is clean and unclipped on an oscilloscope. Adjust gain until the EOD uses most of the amplifier’s output range without clipping.</p></li>
+</ol>
+</section>
+<section id="keypoints" class="level2">
+<h2 class="anchored" data-anchor-id="keypoints">Keypoints</h2>
+<ol type="1">
+<li>EOD recording measures the potential difference between two points in the extracellular dipole field; electrode spacing directly determines apparent amplitude.</li>
+<li>Sample rate must exceed twice the highest frequency in the EOD; 100 kHz is sufficient for most mormyrids, but brief species require 250 kHz or more.</li>
+<li>Bit depth (resolution) limits the smallest voltage step that can be resolved; record at the highest amplitude that does not clip.</li>
+<li>AC coupling removes DC offset and 60 Hz drift with minimal distortion for standard mormyrid EODs; DC coupling is required when recording long-duration waveforms or comparing baselines.</li>
+<li>Differential amplification and shielded cables reduce 60 Hz noise; ground shield cables at one point only to avoid ground loops.</li>
+</ol>
 
 
 <!-- -->
 
-</section>
 </section>
 
 </main> <!-- /main -->
@@ -948,101 +951,113 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     }
   });
   </script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> Setup</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="fu">## Data</span></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>All data for this lesson are included in the lesson repository under <span class="in">`episodes/data/`</span>.</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>No separate download is required if you have cloned or downloaded the repository.</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>Key data directories:</span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Path <span class="pp">|</span> Contents <span class="pp">|</span></span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="pp">|------|----------|</span></span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`episodes/data/ssrnaseq_data/EO/`</span> <span class="pp">|</span> 10X Cell Ranger filtered matrices for four electric organ samples (BB48, BB49INJ, BB50, BB50INJ) <span class="pp">|</span></span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`episodes/data/ssrnaseq_data/genes.gtf.gz`</span> <span class="pp">|</span> *B. brachyistius* RefSeq GTF for gene annotation <span class="pp">|</span></span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`episodes/data/ssrnaseq_data/gene_ontology.gaf.gz`</span> <span class="pp">|</span> GO annotation file for *B. brachyistius* <span class="pp">|</span></span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`episodes/data/eod_duration/`</span> <span class="pp">|</span> JSON files of electric organ discharge recordings <span class="pp">|</span></span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a><span class="fu">## Software Setup</span></span>
-<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>This lesson requires **R** (≥ 4.3) and **RStudio** (≥ 2023.06). All R packages</span>
-<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>are managed with <span class="in">`renv`</span>; most will install automatically when you open the project.</span>
-<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>Two packages need to be installed manually before running the final episode.</span>
-<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a><span class="fu">### Step 1 — Install R and RStudio</span></span>
-<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="co">[</span><span class="ot">Download R</span><span class="co">](https://cran.r-project.org)</span> for your operating system</span>
-<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="co">[</span><span class="ot">Download RStudio Desktop</span><span class="co">](https://posit.co/download/rstudio-desktop/)</span></span>
-<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a><span class="fu">### Step 2 — Open the project and restore the renv environment</span></span>
-<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>Open the <span class="in">`ss_rnaseq_nsb2026.Rproj`</span> file in RStudio. When prompted, run:</span>
-<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a><span class="in">```r</span></span>
-<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a>renv<span class="sc">::</span><span class="fu">restore</span>()</span>
-<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a>This installs all packages recorded in the lockfile. It may take several minutes the</span>
-<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a>first time.</span>
-<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a><span class="fu">### Step 3 — Install harmony and speckle (for the final episode)</span></span>
-<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a>Two packages used in the "Hormone-Driven Gene Expression Changes" episode are not yet</span>
-<span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a>in the default lockfile and must be installed once before running that episode:</span>
-<span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-46"><a href="#cb4-46" aria-hidden="true" tabindex="-1"></a><span class="in">```r</span></span>
-<span id="cb4-47"><a href="#cb4-47" aria-hidden="true" tabindex="-1"></a><span class="co"># harmony — batch correction (CRAN)</span></span>
-<span id="cb4-48"><a href="#cb4-48" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"harmony"</span>)</span>
-<span id="cb4-49"><a href="#cb4-49" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-50"><a href="#cb4-50" aria-hidden="true" tabindex="-1"></a><span class="co"># speckle — differential cell-type abundance / propeller (Bioconductor)</span></span>
-<span id="cb4-51"><a href="#cb4-51" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">requireNamespace</span>(<span class="st">"BiocManager"</span>, <span class="at">quietly =</span> <span class="cn">TRUE</span>))</span>
-<span id="cb4-52"><a href="#cb4-52" aria-hidden="true" tabindex="-1"></a>  <span class="fu">install.packages</span>(<span class="st">"BiocManager"</span>)</span>
-<span id="cb4-53"><a href="#cb4-53" aria-hidden="true" tabindex="-1"></a>BiocManager<span class="sc">::</span><span class="fu">install</span>(<span class="st">"speckle"</span>)</span>
-<span id="cb4-54"><a href="#cb4-54" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-55"><a href="#cb4-55" aria-hidden="true" tabindex="-1"></a><span class="co"># Record in renv after installing</span></span>
-<span id="cb4-56"><a href="#cb4-56" aria-hidden="true" tabindex="-1"></a>renv<span class="sc">::</span><span class="fu">snapshot</span>()</span>
-<span id="cb4-57"><a href="#cb4-57" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb4-58"><a href="#cb4-58" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-59"><a href="#cb4-59" aria-hidden="true" tabindex="-1"></a>If <span class="in">`speckle`</span> does not install cleanly in your environment, the differential abundance</span>
-<span id="cb4-60"><a href="#cb4-60" aria-hidden="true" tabindex="-1"></a>section of the episode includes an automatic fallback to <span class="in">`limma`</span> (already installed),</span>
-<span id="cb4-61"><a href="#cb4-61" aria-hidden="true" tabindex="-1"></a>so the episode will still render without it.</span>
-<span id="cb4-62"><a href="#cb4-62" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-63"><a href="#cb4-63" aria-hidden="true" tabindex="-1"></a><span class="fu">### Step 4 — Verify the installation</span></span>
-<span id="cb4-64"><a href="#cb4-64" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-65"><a href="#cb4-65" aria-hidden="true" tabindex="-1"></a>Run the following in the R console to confirm key packages are available:</span>
-<span id="cb4-66"><a href="#cb4-66" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-67"><a href="#cb4-67" aria-hidden="true" tabindex="-1"></a><span class="in">```r</span></span>
-<span id="cb4-68"><a href="#cb4-68" aria-hidden="true" tabindex="-1"></a>required_pkgs <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
-<span id="cb4-69"><a href="#cb4-69" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Seurat"</span>, <span class="st">"DESeq2"</span>, <span class="st">"harmony"</span>, <span class="st">"limma"</span>,</span>
-<span id="cb4-70"><a href="#cb4-70" aria-hidden="true" tabindex="-1"></a>  <span class="st">"clusterProfiler"</span>, <span class="st">"GO.db"</span>, <span class="st">"tidyverse"</span>, <span class="st">"patchwork"</span></span>
-<span id="cb4-71"><a href="#cb4-71" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb4-72"><a href="#cb4-72" aria-hidden="true" tabindex="-1"></a>missing_pkgs <span class="ot">&lt;-</span> required_pkgs[<span class="sc">!</span><span class="fu">sapply</span>(required_pkgs, requireNamespace,</span>
-<span id="cb4-73"><a href="#cb4-73" aria-hidden="true" tabindex="-1"></a>                                       <span class="at">quietly =</span> <span class="cn">TRUE</span>)]</span>
-<span id="cb4-74"><a href="#cb4-74" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">length</span>(missing_pkgs) <span class="sc">==</span> <span class="dv">0</span>) {</span>
-<span id="cb4-75"><a href="#cb4-75" aria-hidden="true" tabindex="-1"></a>  <span class="fu">message</span>(<span class="st">"All required packages are installed."</span>)</span>
-<span id="cb4-76"><a href="#cb4-76" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> {</span>
-<span id="cb4-77"><a href="#cb4-77" aria-hidden="true" tabindex="-1"></a>  <span class="fu">message</span>(<span class="st">"Missing packages: "</span>, <span class="fu">paste</span>(missing_pkgs, <span class="at">collapse =</span> <span class="st">", "</span>))</span>
-<span id="cb4-78"><a href="#cb4-78" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb4-79"><a href="#cb4-79" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb4-80"><a href="#cb4-80" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-81"><a href="#cb4-81" aria-hidden="true" tabindex="-1"></a><span class="fu">### Package version reference</span></span>
-<span id="cb4-82"><a href="#cb4-82" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-83"><a href="#cb4-83" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Package <span class="pp">|</span> Version used <span class="pp">|</span> Source <span class="pp">|</span></span>
-<span id="cb4-84"><a href="#cb4-84" aria-hidden="true" tabindex="-1"></a><span class="pp">|---------|-------------|--------|</span></span>
-<span id="cb4-85"><a href="#cb4-85" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Seurat <span class="pp">|</span> 5.4.0 <span class="pp">|</span> CRAN <span class="pp">|</span></span>
-<span id="cb4-86"><a href="#cb4-86" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> DESeq2 <span class="pp">|</span> 1.46.0 <span class="pp">|</span> Bioconductor <span class="pp">|</span></span>
-<span id="cb4-87"><a href="#cb4-87" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> harmony <span class="pp">|</span> ≥ 1.2.0 <span class="pp">|</span> CRAN <span class="pp">|</span></span>
-<span id="cb4-88"><a href="#cb4-88" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> speckle <span class="pp">|</span> ≥ 1.0.0 <span class="pp">|</span> Bioconductor <span class="pp">|</span></span>
-<span id="cb4-89"><a href="#cb4-89" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> limma <span class="pp">|</span> 3.62.2 <span class="pp">|</span> Bioconductor <span class="pp">|</span></span>
-<span id="cb4-90"><a href="#cb4-90" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> clusterProfiler <span class="pp">|</span> ≥ 4.10 <span class="pp">|</span> Bioconductor <span class="pp">|</span></span>
-<span id="cb4-91"><a href="#cb4-91" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> GO.db <span class="pp">|</span> ≥ 3.18 <span class="pp">|</span> Bioconductor <span class="pp">|</span></span>
-<span id="cb4-92"><a href="#cb4-92" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> tidyverse <span class="pp">|</span> ≥ 2.0 <span class="pp">|</span> CRAN <span class="pp">|</span></span>
-<span id="cb4-93"><a href="#cb4-93" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> patchwork <span class="pp">|</span> ≥ 1.2 <span class="pp">|</span> CRAN <span class="pp">|</span></span>
-<span id="cb4-94"><a href="#cb4-94" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> glmGamPoi <span class="pp">|</span> ≥ 1.14 <span class="pp">|</span> Bioconductor <span class="pp">|</span></span>
-<span id="cb4-95"><a href="#cb4-95" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> presto <span class="pp">|</span> ≥ 1.0 <span class="pp">|</span> GitHub (immunogenomics/presto) <span class="pp">|</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "EOD Recording: A Practical Overview"</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="an">teaching:</span><span class="co"> 20</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="an">exercises:</span><span class="co"> 0</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>::: {.callout-note title="Questions"}</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>What physical quantity are our electrodes actually measuring when we record an EOD?</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>How do sampling rate and bit depth limit what we can resolve in a waveform?</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>When does AC coupling distort an EOD, and when is it acceptable?</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Why does electrode position affect the measured amplitude of the signal?</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>::: {.callout-tip title="Objectives"}</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Describe how extracellular differential recording captures the EOD waveform.</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Identify the two key parameters of analog-to-digital conversion and explain how each limits signal fidelity.</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Distinguish AC from DC coupling and select the appropriate mode for a given recording goal.</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>List the most common sources of noise in an EOD recording setup and the strategies used to reduce them.</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="fu">## Introduction</span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>The **electric organ discharge (EOD)** is the behavior we're trying to understand at a cellular and molecular level — but first we need to measure it reliably. Recording an EOD looks simple: put two electrodes in water with a fish and read the voltage. In practice, the choices you make about hardware, positioning, and coupling all change what you observe. This episode gives you the conceptual tools to make those choices deliberately.</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>This is optional background material. If you are already comfortable with extracellular recording and analog-to-digital conversion, skim the keypoints and move on.</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a><span class="fu">## What We're Measuring</span></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>The electric organ acts like a **dipole**: a separation of positive and negative charge across a distance equal to the length of the organ. When the fish fires, hundreds of flat **electrocytes** discharge synchronously, generating an electrostatic field that extends into the surrounding water.</span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>Our electrodes sample the potential difference between two points inside that field. A useful analogy is a topographic map: the density of contour lines represents the steepness of potential change between two nearby points. Two electrodes close together measure a small difference; the same electrodes far apart — spanning more of the gradient — measure a larger one.</span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a><span class="al">![Dipole field produced by a weakly electric fish. Dashed lines show equipotential contours; arrows indicate field direction.](files/eod-recording/image1.png)</span></span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>This means **electrode spacing must be matched to the fish size and water conductivity**. There is no single "correct" amplitude — only amplitude relative to a known recording geometry.</span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a><span class="fu">## How We Measure It</span></span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a><span class="fu">### Electrodes and Amplifier</span></span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a>Standard EOD recordings use three leads: a **positive** (red, anterior), a **negative** (black, posterior), and a **ground** (clear, placed away from the fish). By convention the red lead always goes at the head end. The ground provides a shunt for stray electromagnetic fields picked up by the recording circuit.</span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a>The leads connect to a differential amplifier (typically a BMA-200 or AM Systems unit). **Differential mode** amplifies the difference between positive and negative inputs and suppresses signals common to both — a property called **common mode rejection** that is the primary defense against 60 Hz noise.</span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a><span class="fu">### Analog-to-Digital Conversion</span></span>
+<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a>The amplifier output is an analog voltage. To store it digitally, an **analog-to-digital (A/D) converter** samples that voltage at a fixed rate and encodes each sample as a binary number. Two parameters govern fidelity.</span>
+<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a>**Sample rate** determines how many voltage measurements are taken per second. A signal is faithfully reconstructed only if it is sampled at more than twice its highest frequency (the Nyquist criterion). Standard mormyrid EODs are well encoded at 100 kHz; very brief species (*Petrocephalus*, some *Paramormyrops*) require 250 kHz or higher.</span>
+<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a><span class="al">![Effect of sample rate on waveform reconstruction.](files/eod-recording/image2.png)</span></span>
+<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a>**Resolution** (bit depth) determines how finely voltage is quantized. A 16-bit converter divides a ±10 V range into 65,536 steps — roughly 0.3 mV per step. To maximize usable resolution, record at the highest amplitude that does not clip.</span>
+<span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-59"><a href="#cb1-59" aria-hidden="true" tabindex="-1"></a><span class="al">![A/D conversion at low vs. high bit depth.](files/eod-recording/image3.gif)</span></span>
+<span id="cb1-60"><a href="#cb1-60" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-61"><a href="#cb1-61" aria-hidden="true" tabindex="-1"></a>::: {.callout-warning title="Clipping"}</span>
+<span id="cb1-62"><a href="#cb1-62" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-63"><a href="#cb1-63" aria-hidden="true" tabindex="-1"></a>The BMA-200 has a ±6 V output range. Amplify beyond this range and the waveform will be truncated — **clipped signals cannot be recovered or analyzed**. Always verify gain settings with an oscilloscope before committing a recording session.</span>
+<span id="cb1-64"><a href="#cb1-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-65"><a href="#cb1-65" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb1-66"><a href="#cb1-66" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-67"><a href="#cb1-67" aria-hidden="true" tabindex="-1"></a><span class="fu">### AC vs. DC Coupling</span></span>
+<span id="cb1-68"><a href="#cb1-68" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-69"><a href="#cb1-69" aria-hidden="true" tabindex="-1"></a>Metal electrodes in water behave like a battery, creating a slow-drifting **DC offset** that can swamp the signal of interest. **AC coupling** removes this offset with a capacitor in the circuit, at the cost of slight distortion at very low frequencies.</span>
+<span id="cb1-70"><a href="#cb1-70" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-71"><a href="#cb1-71" aria-hidden="true" tabindex="-1"></a>Because the EOD carries almost no energy below 20 Hz, AC coupling introduces negligible distortion for most mormyrid species. **DC coupling** is required only when you need to compare baseline potentials or record extremely long-duration waveforms. Sound cards (e.g., Steinberg UR22) always AC couple; National Instruments boards (NI-6211, NI-6216) do not.</span>
+<span id="cb1-72"><a href="#cb1-72" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-73"><a href="#cb1-73" aria-hidden="true" tabindex="-1"></a><span class="al">![Frequency content of a passive bioelectric field versus a mormyrid EOD.](files/eod-recording/image4.png)</span></span>
+<span id="cb1-74"><a href="#cb1-74" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-75"><a href="#cb1-75" aria-hidden="true" tabindex="-1"></a>::: {.callout-warning title="AC coupling and waveform duration"}</span>
+<span id="cb1-76"><a href="#cb1-76" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-77"><a href="#cb1-77" aria-hidden="true" tabindex="-1"></a>Long-duration EODs (some *Campylomormyrus* species, heavily treated fish) can show baseline distortion with AC coupling. If EOD duration is a dependent variable in your experiment, verify AC coupling does not affect your waveform shape before committing to that hardware.</span>
+<span id="cb1-78"><a href="#cb1-78" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-79"><a href="#cb1-79" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb1-80"><a href="#cb1-80" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-81"><a href="#cb1-81" aria-hidden="true" tabindex="-1"></a><span class="fu">### Noise Sources and Mitigation</span></span>
+<span id="cb1-82"><a href="#cb1-82" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-83"><a href="#cb1-83" aria-hidden="true" tabindex="-1"></a>The most common noise source is **60 Hz electromagnetic interference** from building electrical systems. Differential amplification and common-mode rejection reduce this substantially, but two additional strategies help.</span>
+<span id="cb1-84"><a href="#cb1-84" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-85"><a href="#cb1-85" aria-hidden="true" tabindex="-1"></a>First, use **shielded cables** (foil or braid) to prevent external fields from being induced in the recording leads. Second, ground the shielding at one point only.</span>
+<span id="cb1-86"><a href="#cb1-86" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-87"><a href="#cb1-87" aria-hidden="true" tabindex="-1"></a>::: {.callout-warning title="Ground loops"}</span>
+<span id="cb1-88"><a href="#cb1-88" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-89"><a href="#cb1-89" aria-hidden="true" tabindex="-1"></a>Grounding shielding at more than one location creates a loop. Magnetic fields can induce a current in that loop that appears as low-frequency oscillation in your recording. If you see rhythmic noise that does not disappear with the amplifier gain at zero, inspect grounding continuity first.</span>
+<span id="cb1-90"><a href="#cb1-90" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-91"><a href="#cb1-91" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb1-92"><a href="#cb1-92" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-93"><a href="#cb1-93" aria-hidden="true" tabindex="-1"></a><span class="fu">## Practical Recording Guide</span></span>
+<span id="cb1-94"><a href="#cb1-94" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-95"><a href="#cb1-95" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**Choose your hardware.** AC coupling (sound card) is sufficient for waveform shape and duration. DC coupling (NI-DAQ board) is required for baseline comparisons. Match sample rate to the fastest EOD you expect to encounter.</span>
+<span id="cb1-96"><a href="#cb1-96" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-97"><a href="#cb1-97" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**Set up the electrodes.** Place the red lead at the fish's head and the black lead at the tail. Position the ground well away from the recording zone. Keep all cable runs as short as possible.</span>
+<span id="cb1-98"><a href="#cb1-98" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-99"><a href="#cb1-99" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**Verify with an oscilloscope first.** Before recording a session, confirm the signal is clean and unclipped on an oscilloscope. Adjust gain until the EOD uses most of the amplifier's output range without clipping.</span>
+<span id="cb1-100"><a href="#cb1-100" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-101"><a href="#cb1-101" aria-hidden="true" tabindex="-1"></a><span class="fu">## Keypoints</span></span>
+<span id="cb1-102"><a href="#cb1-102" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-103"><a href="#cb1-103" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>EOD recording measures the potential difference between two points in the extracellular dipole field; electrode spacing directly determines apparent amplitude.</span>
+<span id="cb1-104"><a href="#cb1-104" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Sample rate must exceed twice the highest frequency in the EOD; 100 kHz is sufficient for most mormyrids, but brief species require 250 kHz or more.</span>
+<span id="cb1-105"><a href="#cb1-105" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Bit depth (resolution) limits the smallest voltage step that can be resolved; record at the highest amplitude that does not clip.</span>
+<span id="cb1-106"><a href="#cb1-106" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>AC coupling removes DC offset and 60 Hz drift with minimal distortion for standard mormyrid EODs; DC coupling is required when recording long-duration waveforms or comparing baselines.</span>
+<span id="cb1-107"><a href="#cb1-107" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>Differential amplification and shielded cables reduce 60 Hz noise; ground shield cables at one point only to avoid ground loops.</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 <footer class="footer">
@@ -1052,7 +1067,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     </div>   
     <div class="nav-footer-center">
 <p>Licensed <a href="https://creativecommons.org/licenses/by/4.0/">CC-BY 4.0</a> &nbsp;|&nbsp; <a href="https://github.com/jasongallant/ss_rnaseq_nsb2026">Source on GitHub</a></p>
-<div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/jasongallant/ss_rnaseq_nsb2026/edit/main/episodes/setup.md" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/jasongallant/ss_rnaseq_nsb2026/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
+<div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/jasongallant/ss_rnaseq_nsb2026/edit/main/episodes/eod-recording.Rmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/jasongallant/ss_rnaseq_nsb2026/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
     <div class="nav-footer-right">
       &nbsp;
     </div>
