@@ -2,6 +2,7 @@
 title: 'Normalization, Dimensionality Reduction, and Clustering'
 teaching: 45
 exercises: 10
+optional: false
 ---
 
 ::: {.callout-note title="Questions"}
@@ -448,10 +449,10 @@ gene_desc <- gtf_raw |>
   filter(str_detect(X9, 'product "')) |>
   mutate(
     gene_id = str_extract(X9, 'gene_id "([^"]+)"', group = 1),
-    product = str_extract(X9, 'product "([^"]+)"',  group = 1)
+    product = str_extract(X9, 'product "([^"]+)"', group = 1)
   ) |>
   dplyr::select(gene_id, product) |>
-  distinct(gene_id, .keep_all = TRUE)  # one description per gene
+  distinct(gene_id, .keep_all = TRUE) # one description per gene
 
 nrow(gene_desc)
 head(gene_desc)
@@ -544,9 +545,9 @@ We restrict to **Biological Process** terms (aspect `"P"`) because those best re
 ```{r parse-gaf, message=FALSE, warning=FALSE}
 gaf <- read_tsv(
   "data/ssrnaseq_data/gene_ontology.gaf.gz",
-  comment       = "!",
-  col_names     = FALSE,
-  col_types     = cols(.default = "c"),
+  comment = "!",
+  col_names = FALSE,
+  col_types = cols(.default = "c"),
   show_col_types = FALSE
 )
 
@@ -561,7 +562,7 @@ term2gene_bp <- gaf |>
 
 # Retrieve human-readable GO term names from GO.db
 # Term() returns a named character vector: names = GO IDs, values = term names
-go_ids       <- unique(term2gene_bp$go_id)
+go_ids <- unique(term2gene_bp$go_id)
 term2name_bp <- tibble(
   go_id     = go_ids,
   term_name = Term(go_ids)
@@ -576,7 +577,7 @@ cat("Gene–GO associations (biological process):", nrow(term2gene_bp), "\n")
 
 ```{r go-enrichment, message=FALSE, warning=FALSE}
 # Per-cluster gene lists (significant markers only)
-sig_markers  <- annotated_markers |> filter(p_val_adj < 0.05)
+sig_markers <- annotated_markers |> filter(p_val_adj < 0.05)
 cluster_genes <- split(sig_markers$gene, sig_markers$cluster)
 
 # Background: every gene tested across all clusters
@@ -616,28 +617,40 @@ We can go one step further and convert GO enrichment results into cell-type labe
 ```{r auto-annotate, message=FALSE, warning=FALSE}
 # Discriminating GO terms for major electric organ cell types
 cell_type_signatures <- list(
-  Electrocyte = c("GO:0006814",  # sodium ion transport
-                  "GO:0006813",  # potassium ion transport
-                  "GO:0019228",  # neuronal action potential
-                  "GO:0003012",  # muscle system process
-                  "GO:0006936"), # muscle contraction
-  Muscle      = c("GO:0007519",  # skeletal muscle tissue development
-                  "GO:0060537",  # muscle tissue development
-                  "GO:0014706",  # striated muscle tissue development
-                  "GO:0030239",  # myofibril assembly
-                  "GO:0045214"), # sarcomere organization
-  Schwann     = c("GO:0042552",  # myelination
-                  "GO:0007272",  # ensheathment of neurons
-                  "GO:0008366"), # axon ensheathment
-  Neuron      = c("GO:0007268",  # chemical synaptic transmission
-                  "GO:0007271",  # synaptic transmission, cholinergic
-                  "GO:0007269"), # neurotransmitter secretion
-  Fibroblast  = c("GO:0030198",  # extracellular matrix organization
-                  "GO:0030199",  # collagen fibril organization
-                  "GO:0042060"), # wound healing
-  Endothelial = c("GO:0001568",  # blood vessel development
-                  "GO:0001944",  # vasculature development
-                  "GO:0035924")  # response to VEGF stimulus
+  Electrocyte = c(
+    "GO:0006814", # sodium ion transport
+    "GO:0006813", # potassium ion transport
+    "GO:0019228", # neuronal action potential
+    "GO:0003012", # muscle system process
+    "GO:0006936"
+  ), # muscle contraction
+  Muscle = c(
+    "GO:0007519", # skeletal muscle tissue development
+    "GO:0060537", # muscle tissue development
+    "GO:0014706", # striated muscle tissue development
+    "GO:0030239", # myofibril assembly
+    "GO:0045214"
+  ), # sarcomere organization
+  Schwann = c(
+    "GO:0042552", # myelination
+    "GO:0007272", # ensheathment of neurons
+    "GO:0008366"
+  ), # axon ensheathment
+  Neuron = c(
+    "GO:0007268", # chemical synaptic transmission
+    "GO:0007271", # synaptic transmission, cholinergic
+    "GO:0007269"
+  ), # neurotransmitter secretion
+  Fibroblast = c(
+    "GO:0030198", # extracellular matrix organization
+    "GO:0030199", # collagen fibril organization
+    "GO:0042060"
+  ), # wound healing
+  Endothelial = c(
+    "GO:0001568", # blood vessel development
+    "GO:0001944", # vasculature development
+    "GO:0035924"
+  ) # response to VEGF stimulus
 )
 
 # Flat table of all enrichment results
@@ -645,14 +658,14 @@ go_table <- as.data.frame(go_compare)
 
 # Score each cluster against each cell-type signature
 scores <- expand.grid(
-  cluster   = unique(go_table$Cluster),
+  cluster = unique(go_table$Cluster),
   cell_type = names(cell_type_signatures),
   stringsAsFactors = FALSE
 ) |>
   rowwise() |>
   mutate(
     score = sum(cell_type_signatures[[cell_type]] %in%
-                  go_table$ID[go_table$Cluster == cluster])
+      go_table$ID[go_table$Cluster == cluster])
   ) |>
   ungroup()
 

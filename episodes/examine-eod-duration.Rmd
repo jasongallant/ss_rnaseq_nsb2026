@@ -2,6 +2,7 @@
 title: 'Examining EOD Duration from Raw Recordings'
 teaching: 20
 exercises: 25
+optional: false
 ---
 
 ::: {.callout-note title="Questions"}
@@ -103,16 +104,16 @@ The Day 0 waveform for BB48 is already loaded as `eod_data`. Now load the Day 1 
 
 ```{r challenge-2-solution, eval=FALSE}
 eod_day1 <- read_json("data/eod_duration/BB_T48_DAY1_MAY8.json")
-wave1     <- unlist(eod_day1[[1]]$wave)
-p1_idx1   <- which.max(wave1)
-time1_ms  <- (seq_along(wave1) - p1_idx1) / eod_day1[[1]]$Rate * 1000
+wave1 <- unlist(eod_day1[[1]]$wave)
+p1_idx1 <- which.max(wave1)
+time1_ms <- (seq_along(wave1) - p1_idx1) / eod_day1[[1]]$Rate * 1000
 
 # Normalize each waveform to peak-to-peak = 1 so amplitudes are comparable
-wave0_norm <- wave  / (max(wave)  - min(wave))
+wave0_norm <- wave / (max(wave) - min(wave))
 wave1_norm <- wave1 / (max(wave1) - min(wave1))
 
 df_compare <- rbind(
-  data.frame(time_ms = time_ms,  voltage = wave0_norm, session = "Day 0"),
+  data.frame(time_ms = time_ms, voltage = wave0_norm, session = "Day 0"),
   data.frame(time_ms = time1_ms, voltage = wave1_norm, session = "Day 1")
 )
 

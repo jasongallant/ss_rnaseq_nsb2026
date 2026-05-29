@@ -2,7 +2,7 @@ project:
   type: website
   output-dir: site
   render:
-    - index.md
+    - index.qmd
     - episodes/*.Rmd
     - episodes/*.md
     - "!bts/" # Ignores an entire folder
@@ -34,6 +34,9 @@ website:
     style: docked
     search: true
     contents:
+      - section: "Overview"
+        contents:
+          - index.qmd
       - section: "June 8: Introduction, EOD Recording and Injection"
         contents:
           - episodes/introduction.Rmd

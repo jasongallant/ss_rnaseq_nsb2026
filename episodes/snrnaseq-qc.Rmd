@@ -2,6 +2,7 @@
 title: 'snRNA-seq Quality Control'
 teaching: 10
 exercises: 2
+optional: false
 ---
 
 
@@ -23,28 +24,28 @@ sample_names <- c("BB48", "BB49INJ", "BB50", "BB50INJ")
 list_seurat <- list()
 
 for (sample in sample_names) {
-  # Path to data directory
-  data_dir <- file.path("data/ssrnaseq_data", tissue, sample)
+    # Path to data directory
+    data_dir <- file.path("data/ssrnaseq_data", tissue, sample)
 
-  # Create a Seurat object for each sample
-  seurat_data <- Read10X(data.dir = data_dir)
-  seurat_obj <- CreateSeuratObject(
-    counts = seurat_data,
-    min.features = 1,
-    project = paste0(tissue, "_", sample)
-  )
+    # Create a Seurat object for each sample
+    seurat_data <- Read10X(data.dir = data_dir)
+    seurat_obj <- CreateSeuratObject(
+        counts = seurat_data,
+        min.features = 1,
+        project = paste0(tissue, "_", sample)
+    )
 
-  # Save seurat object to list
-  list_seurat[[sample]] <- seurat_obj
+    # Save seurat object to list
+    list_seurat[[sample]] <- seurat_obj
 }
 ```
 
 
 ```{r  inspect-data, message=FALSE, warning=FALSE}
 merged_seurat <- merge(
-  x = list_seurat[[1]],
-  y = list_seurat[2:length(list_seurat)],
-  add.cell.id = names(list_seurat)
+    x = list_seurat[[1]],
+    y = list_seurat[2:length(list_seurat)],
+    add.cell.id = names(list_seurat)
 )
 
 merged_seurat <- JoinLayers(merged_seurat)
@@ -65,32 +66,34 @@ metadata$cells <- rownames(metadata)
 metadata$sample <- metadata$orig.ident
 # Rename columns
 metadata <- metadata %>%
-        dplyr::rename(nUMI = nCount_RNA,
-                      nGene = nFeature_RNA)
+    dplyr::rename(
+        nUMI = nCount_RNA,
+        nGene = nFeature_RNA
+    )
 # Add metadata back to Seurat object
 merged_seurat@meta.data <- metadata
-                           
+
 # Create .RData object to load at any time
-save(merged_seurat, file=file.path("data/ssrnaseq_data/",tissue,paste0(tissue,"_merged_filtered_seurat.RData")))
+save(merged_seurat, file = file.path("data/ssrnaseq_data/", tissue, paste0(tissue, "_merged_filtered_seurat.RData")))
 ```
 
 
 ```{r}
 # Visualize the number of cell counts per sample
-metadata %>% 
-    ggplot(aes(x=sample, fill=sample)) + 
+metadata %>%
+    ggplot(aes(x = sample, fill = sample)) +
     geom_bar() +
     theme_classic() +
-    theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)) +
-    theme(plot.title = element_text(hjust=0.5, face="bold")) +
+    theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) +
+    theme(plot.title = element_text(hjust = 0.5, face = "bold")) +
     ggtitle("NCells")
 ```
 ```{r}
 # Visualize the number UMIs/transcripts per cell
-metadata %>% 
-    ggplot(aes(color=sample, x=nUMI, fill= sample)) + 
-    geom_density(alpha = 0.2) + 
-    scale_x_log10() + 
+metadata %>%
+    ggplot(aes(color = sample, x = nUMI, fill = sample)) +
+    geom_density(alpha = 0.2) +
+    scale_x_log10() +
     theme_classic() +
     ylab("Cell density") +
     geom_vline(xintercept = 100)
@@ -98,18 +101,18 @@ metadata %>%
 
 ```{r}
 # Visualize the distribution of genes detected per cell via histogram
-metadata %>% 
-    ggplot(aes(color=sample, x=nGene, fill= sample)) + 
-    geom_density(alpha = 0.2) + 
+metadata %>%
+    ggplot(aes(color = sample, x = nGene, fill = sample)) +
+    geom_density(alpha = 0.2) +
     theme_classic() +
-    scale_x_log10() + 
+    scale_x_log10() +
     geom_vline(xintercept = 100)
 ```
 ```{r}
-# Visualize the overall complexity of the gene expression by visualizing 
+# Visualize the overall complexity of the gene expression by visualizing
 # the genes detected per UMI (novelty score)
 metadata %>%
-    ggplot(aes(x=log10GenesPerUMI, color = sample, fill=sample)) +
+    ggplot(aes(x = log10GenesPerUMI, color = sample, fill = sample)) +
     geom_density(alpha = 0.2) +
     theme_classic() +
     geom_vline(xintercept = 0.8)
@@ -119,10 +122,10 @@ metadata %>%
 # Visualize the correlation between genes detected and number of UMIs and
 # determine whether strong presence of cells with low numbers of genes/UMIs
 metadata %>%
-    ggplot(aes(x=nUMI, y=nGene, color=log10GenesPerUMI)) +
+    ggplot(aes(x = nUMI, y = nGene, color = log10GenesPerUMI)) +
     geom_point() +
     scale_colour_gradient(low = "gray90", high = "black") +
-    stat_smooth(method=lm) +
+    stat_smooth(method = lm) +
     scale_x_log10() +
     scale_y_log10() +
     theme_classic() +

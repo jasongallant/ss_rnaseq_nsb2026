@@ -2,6 +2,7 @@
 title: "Introduction: Single-Cell Transcriptomics in Weakly Electric Fish"
 teaching: 5
 exercises: 15
+optional: false
 ---
 
 ::: {.callout-note title="Questions"}

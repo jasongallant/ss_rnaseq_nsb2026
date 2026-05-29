@@ -1,0 +1,94 @@
+---
+title: "Overview and Schedule"
+---
+
+## About This Module
+
+This module is the genomics component of the larger **Electric Fish Module** at the Neural Systems & Behavior course at MBL. The broader module examines weakly electric mormyrid fish (*Brienomyrus brachyistius*) from the perspective of sensorimotor integration, electrosensory physiology, and hormonal modulation of behavior — topics covered in depth in the accompanying physiology and behavior sessions.
+
+Here we focus on a specific question: **how does 11-ketotestosterone (11-KT) reshape gene expression across the electrosensory system at single-cell resolution?** Androgens like 11-KT are known to lengthen the electric organ discharge (EOD) waveform in mormyrids, an effect with broad consequences for electric communication and electroreception. But which cell types respond, which genes are affected, and whether the sensory and motor arms of the system are coordinately regulated — none of this can be resolved with bulk RNA-seq.
+
+Single-nucleus RNA-seq (snRNA-seq) lets us profile gene expression in thousands of individual nuclei simultaneously, distinguishing electrocytes, muscle cells, Schwann cells, fibroblasts, and endothelial cells that are intermixed in intact tissue. This module teaches you to go from raw 10X Chromium count matrices to differential expression results, using real data from fish that received either an 11-KT implant or a vehicle-only control.
+
+The lesson progresses in four stages:
+
+1. **Experimental foundation** — You will prepare 11-KT/cocoa butter implants, perform IP implantation surgery on live fish, and record EOD waveforms over multiple days to confirm the hormone treatment is working before any tissue is collected.
+
+2. **EOD data analysis** — Using R, you will load raw JSON waveform files, visualize and measure EOD duration changes, and build tidy datasets for statistical comparison across treatment groups.
+
+3. **snRNA-seq QC and normalization** — You will load 10X Cell Ranger output into Seurat, apply quality filters, normalize with SCTransform, reduce dimensionality with PCA, and cluster cells using the Louvain algorithm.
+
+4. **Differential expression** — Using Harmony for batch correction, pseudobulk aggregation, and DESeq2, you will identify genes and cell types that respond to 11-KT, then cross-validate your findings against published results (Losilla & Gallant 2025).
+
+By the end of the module you will have a reproducible snRNA-seq workflow applicable to any tissue where cell-type resolution matters.
+
+---
+
+## Schedule
+
+```{r schedule, echo=FALSE, results='asis', message=FALSE, warning=FALSE}
+library(yaml)
+library(knitr)
+
+# Read YAML frontmatter from an episode file.
+# Returns a named list with at least title, teaching, exercises.
+read_episode_meta <- function(path) {
+  if (!file.exists(path)) return(list(title = NULL, teaching = NULL, exercises = NULL))
+  lines <- readLines(path, warn = FALSE)
+  bounds <- which(lines == "---")
+  if (length(bounds) < 2) return(list(title = NULL, teaching = NULL, exercises = NULL))
+  yaml::yaml.load(paste(lines[2:(bounds[2] - 1)], collapse = "\n"))
+}
+
+fmt_time <- function(x) {
+  if (is.null(x) || (length(x) == 1 && is.na(x))) return("TBD")
+  paste0(x, " min")
+}
+
+cfg      <- yaml::read_yaml("_quarto.yml")
+sections <- cfg$website$sidebar$contents
+
+for (sec in sections) {
+  if (!is.list(sec) || is.null(sec[["section"]])) next
+
+  day      <- sec[["section"]]
+  contents <- sec[["contents"]]
+
+  # Keep only episode file paths (skip index.md, separators, etc.)
+  episode_paths <- Filter(
+    function(x) is.character(x) && grepl("^episodes/", x),
+    contents
+  )
+
+  # Skip sections whose only contents are non-episode files (e.g. the index itself)
+  if (length(contents) > 0 && length(episode_paths) == 0) next
+
+  cat("### ", day, "\n\n")
+
+  if (length(episode_paths) == 0) {
+    cat("*Episodes coming soon.*\n\n")
+    next
+  }
+
+  rows <- lapply(episode_paths, function(path) {
+    exists    <- file.exists(path)
+    meta      <- read_episode_meta(path)
+    title     <- if (!is.null(meta$title)) meta$title else sub("\\.(Rmd|qmd|md)$", "", basename(path))
+    label     <- if (isTRUE(meta$optional)) paste0("*(Optional)* ", title) else title
+    link      <- sub("\\.(Rmd|qmd)$", ".html", path)
+    ep_col    <- if (exists) paste0("[", label, "](", link, ")") else paste0("*", label, "* (coming soon)")
+    data.frame(
+      Episode   = ep_col,
+      Teaching  = fmt_time(meta$teaching),
+      Exercises = fmt_time(meta$exercises),
+      stringsAsFactors = FALSE
+    )
+  })
+
+  tbl <- do.call(rbind, rows)
+  print(kable(tbl, row.names = FALSE))
+  cat("\n\n")
+}
+```
+
+See [Setup](episodes/setup.html) for installation instructions before the lesson begins.

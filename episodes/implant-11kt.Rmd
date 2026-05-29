@@ -2,6 +2,7 @@
 title: "11-Ketotestosterone Implantation in Mormyrid Electric Fish"
 teaching: 20
 exercises: 75
+optional: false
 ---
 
 ::: {.callout-tip title="Objectives"}

@@ -2,9 +2,7 @@
 title: 'Hormone-Driven Gene Expression Changes in the Electric Organ'
 teaching: 60
 exercises: 15
-editor: 
-  markdown: 
-    wrap: 72
+optional: false
 ---
 
 ::: {.callout-note title="Questions"}
@@ -206,7 +204,7 @@ need to identify the correct mitochondrial gene names from
 depth_summary <- merged_seurat@meta.data |>
   group_by(orig.ident, treatment, sample) |>
   summarise(
-    median_UMI  = median(nCount_RNA),
+    median_UMI = median(nCount_RNA),
     median_gene = median(nFeature_RNA),
     .groups = "drop"
   )
@@ -217,14 +215,16 @@ p_umi <- ggplot(
 ) +
   geom_violin(alpha = 0.4, scale = "width") +
   geom_point(
-    data     = depth_summary,
+    data = depth_summary,
     aes(x = treatment, y = median_UMI, color = sample),
-    size     = 3,
+    size = 3,
     position = position_dodge(width = 0)
   ) +
-  scale_fill_manual(values  = c("11kt" = "#D55E00", "vehicle" = "#0072B2")) +
-  scale_color_manual(values = c(BB48 = "#E69F00", BB49INJ = "#56B4E9",
-                                BB50 = "#009E73", BB50INJ = "#F0E442")) +
+  scale_fill_manual(values = c("11kt" = "#D55E00", "vehicle" = "#0072B2")) +
+  scale_color_manual(values = c(
+    BB48 = "#E69F00", BB49INJ = "#56B4E9",
+    BB50 = "#009E73", BB50INJ = "#F0E442"
+  )) +
   theme_bw() +
   labs(title = "UMI depth by treatment", y = "nCount_RNA", x = "Treatment") +
   theme(legend.position = "none")
@@ -235,14 +235,16 @@ p_gene <- ggplot(
 ) +
   geom_violin(alpha = 0.4, scale = "width") +
   geom_point(
-    data     = depth_summary,
+    data = depth_summary,
     aes(x = treatment, y = median_gene, color = sample),
-    size     = 3,
+    size = 3,
     position = position_dodge(width = 0)
   ) +
-  scale_fill_manual(values  = c("11kt" = "#D55E00", "vehicle" = "#0072B2")) +
-  scale_color_manual(values = c(BB48 = "#E69F00", BB49INJ = "#56B4E9",
-                                BB50 = "#009E73", BB50INJ = "#F0E442")) +
+  scale_fill_manual(values = c("11kt" = "#D55E00", "vehicle" = "#0072B2")) +
+  scale_color_manual(values = c(
+    BB48 = "#E69F00", BB49INJ = "#56B4E9",
+    BB50 = "#009E73", BB50INJ = "#F0E442"
+  )) +
   theme_bw() +
   labs(title = "Gene detection by treatment", y = "nFeature_RNA", x = "Treatment") +
   theme(legend.position = "right")
@@ -522,8 +524,8 @@ gene_desc <- gtf_raw |>
   filter(str_detect(X9, 'product "')) |>
   mutate(
     gene_id   = str_extract(X9, 'gene_id "([^"]+)"', group = 1),
-    gene_name = str_extract(X9, 'gene "([^"]+)"',     group = 1),
-    product   = str_extract(X9, 'product "([^"]+)"',  group = 1)
+    gene_name = str_extract(X9, 'gene "([^"]+)"', group = 1),
+    product   = str_extract(X9, 'product "([^"]+)"', group = 1)
   ) |>
   dplyr::select(gene_id, gene_name, product) |>
   distinct(gene_id, .keep_all = TRUE)
@@ -546,7 +548,8 @@ cat("Lookup entries (by LOC ID + gene symbol):", nrow(gene_lookup), "\n")
 ```{r annotate-markers-eo, message=FALSE, warning=FALSE}
 annotated_markers_eo <- all_markers_eo |>
   left_join(gene_lookup |> dplyr::select(key, gene_name, product),
-            by = c("gene" = "key"))
+    by = c("gene" = "key")
+  )
 ```
 
 ```{r marker-gene-lists, message=FALSE, warning=FALSE}
@@ -568,83 +571,83 @@ annotated_markers_eo <- all_markers_eo |>
 marker_genes <- list(
   Electrocyte = c(
     # Sodium channels (Nav1.4 paralogs) — both present in electrocytes
-    "LOC125742960",  # scn4aa — Nav1.4a; no curated symbol in this genome build
-    "scn4ab",        # Nav1.4b
+    "LOC125742960", # scn4aa — Nav1.4a; no curated symbol in this genome build
+    "scn4ab", # Nav1.4b
     # Potassium channels — repolarisation
-    "LOC125743019",  # kcna7a — Kv1.7a; no curated symbol in this genome build
-    "kcna7",         # Kv1.7
-    "kcnq1.2",       # Kv7.1
-    "kcnq5a",        # Kv7.5
-    "kcnn2",         # SK2 Ca2+-activated K
+    "LOC125743019", # kcna7a — Kv1.7a; no curated symbol in this genome build
+    "kcna7", # Kv1.7
+    "kcnq1.2", # Kv7.1
+    "kcnq5a", # Kv7.5
+    "kcnn2", # SK2 Ca2+-activated K
     # Ion transport / electrocyte identity
-    "cnga3a",        # Cyclic nucleotide-gated channel
-    "atp1b2b",       # Na/K-ATPase β2
+    "cnga3a", # Cyclic nucleotide-gated channel
+    "atp1b2b", # Na/K-ATPase β2
     # Cell-surface and structural identity
-    "rrad",          # Ras-related; high in electrocytes across species
-    "igsf9ba",       # Ig superfamily — electrocyte cell-surface marker
-    "robo2",         # Axon guidance receptor; marks the innervated stalk region
-    "tenm1"          # Teneurin-1; electrocyte identity
+    "rrad", # Ras-related; high in electrocytes across species
+    "igsf9ba", # Ig superfamily — electrocyte cell-surface marker
+    "robo2", # Axon guidance receptor; marks the innervated stalk region
+    "tenm1" # Teneurin-1; electrocyte identity
   ),
   Muscle = c(
-    "pax7b",         # Canonical muscle satellite cell transcription factor
-    "pitx3",         # Muscle/lens TF
-    "myom2a", "myom2b",  # Myomesin heavy chain (sarcomeric)
-    "hey2",          # Notch target; satellite cell quiescence
-    "ezh2",          # Epigenetic regulator; cycling myoblasts
-    "megf10",        # Phagocytic receptor on satellite cells
-    "mcama",         # CD146; myoblast marker
-    "fgfr4",         # FGF receptor; myoblast differentiation
-    "tbx22"          # T-box transcription factor; myogenic lineage
+    "pax7b", # Canonical muscle satellite cell transcription factor
+    "pitx3", # Muscle/lens TF
+    "myom2a", "myom2b", # Myomesin heavy chain (sarcomeric)
+    "hey2", # Notch target; satellite cell quiescence
+    "ezh2", # Epigenetic regulator; cycling myoblasts
+    "megf10", # Phagocytic receptor on satellite cells
+    "mcama", # CD146; myoblast marker
+    "fgfr4", # FGF receptor; myoblast differentiation
+    "tbx22" # T-box transcription factor; myogenic lineage
   ),
   Schwann = c(
-    "col28a1a",      # Collagen XXVIII — peripheral nerve ECM
-    "smoc1",         # SPARC-related ECM; Schwann cells
-    "prss12",        # Neurotrypsin — peripheral nerve marker
-    "antxr1b",       # TEM8 — expressed in peripheral glia
-    "numb",          # Notch pathway; Schwann cell fate
-    "olfml2ba",      # Olfactomedin-like; Schwann cells
-    "col6a3",        # Collagen VI — endomysial ECM
-    "sema3bl"        # Semaphorin 3B; axon-Schwann interaction
+    "col28a1a", # Collagen XXVIII — peripheral nerve ECM
+    "smoc1", # SPARC-related ECM; Schwann cells
+    "prss12", # Neurotrypsin — peripheral nerve marker
+    "antxr1b", # TEM8 — expressed in peripheral glia
+    "numb", # Notch pathway; Schwann cell fate
+    "olfml2ba", # Olfactomedin-like; Schwann cells
+    "col6a3", # Collagen VI — endomysial ECM
+    "sema3bl" # Semaphorin 3B; axon-Schwann interaction
   ),
   Endothelial = c(
-    "cdh5",          # VE-cadherin — gold-standard pan-endothelial
-    "pecam1b",       # CD31 — pan-endothelial
-    "kdr",           # VEGFR2/Flk1 — pan-endothelial
-    "flt1",          # VEGFR1 — pan-endothelial
-    "clec14a",       # C-type lectin; capillary endothelial
-    "pcdh12",        # Protocadherin 12; vascular endothelial
-    "podxl",         # Podocalyxin
-    "adgrl4"         # Latrophilin 4 (ELTD1); angiogenic endothelial
+    "cdh5", # VE-cadherin — gold-standard pan-endothelial
+    "pecam1b", # CD31 — pan-endothelial
+    "kdr", # VEGFR2/Flk1 — pan-endothelial
+    "flt1", # VEGFR1 — pan-endothelial
+    "clec14a", # C-type lectin; capillary endothelial
+    "pcdh12", # Protocadherin 12; vascular endothelial
+    "podxl", # Podocalyxin
+    "adgrl4" # Latrophilin 4 (ELTD1); angiogenic endothelial
   ),
   Motorneuron = c(
     # Transcription factors — definitive post-mitotic motor neuron identity
     # Note: isl1/isl2 lack curated symbols in BBRACH_0.4 → LOC IDs
-    "mnx1",          # Motor neuron and pancreas homeobox 1 (HB9); definitive pan-MN TF
-    "LOC125712540",  # isl-1  — insulin gene enhancer protein Isl-1
-    "LOC125745880",  # isl-1-like — Isl-1 paralog
-    "LOC125704285",  # isl-2a — insulin gene enhancer protein Isl-2a
-    "LOC125706047",  # isl-2a-like — Isl-2a paralog
+    "mnx1", # Motor neuron and pancreas homeobox 1 (HB9); definitive pan-MN TF
+    "LOC125712540", # isl-1  — insulin gene enhancer protein Isl-1
+    "LOC125745880", # isl-1-like — Isl-1 paralog
+    "LOC125704285", # isl-2a — insulin gene enhancer protein Isl-2a
+    "LOC125706047", # isl-2a-like — Isl-2a paralog
     # Cholinergic identity — electromotor neurons are cholinergic
     # Note: in this genome the gene is named 'chata', not 'chat'
-    "chata",         # Choline O-acetyltransferase-a; ACh synthesis in all motor neurons
-    "slc18a3a",      # Vesicular acetylcholine transporter-A; cholinergic vesicles
+    "chata", # Choline O-acetyltransferase-a; ACh synthesis in all motor neurons
+    "slc18a3a", # Vesicular acetylcholine transporter-A; cholinergic vesicles
     # Pan-neuronal post-mitotic identity (marks all neurons including motor neurons)
-    "elavl3",        # HuC — ELAV-like RNA-binding protein 3; pan-neuronal, post-mitotic
-    "rbfox3a",       # NeuN — RNA-binding fox-1 homolog 3a; mature neuron nuclear marker
+    "elavl3", # HuC — ELAV-like RNA-binding protein 3; pan-neuronal, post-mitotic
+    "rbfox3a", # NeuN — RNA-binding fox-1 homolog 3a; mature neuron nuclear marker
     # Neurofilament / cytoskeletal — large-calibre motor and sensory axons
-    "nefma",         # Neurofilament medium chain-a
-    "nefla",         # Neurofilament light chain-a
-    "neflb",         # Neurofilament light chain-b
-    "LOC125751823",  # neurofilament medium polypeptide-like (nefm paralog)
-    "prph",          # Peripherin; intermediate filament of peripheral motor neurons
+    "nefma", # Neurofilament medium chain-a
+    "nefla", # Neurofilament light chain-a
+    "neflb", # Neurofilament light chain-b
+    "LOC125751823", # neurofilament medium polypeptide-like (nefm paralog)
+    "prph", # Peripherin; intermediate filament of peripheral motor neurons
     # Synaptic identity
-    "sv2a",          # Synaptic vesicle glycoprotein 2A; marks presynaptic terminals
-    "snap25a",       # SNAP-25A; SNARE protein at the cholinergic NMJ
-    "LOC125712969",  # synaptotagmin-2-like; Ca2+ sensor at fast synapses / NMJ
+    "sv2a", # Synaptic vesicle glycoprotein 2A; marks presynaptic terminals
+    "snap25a", # SNAP-25A; SNARE protein at the cholinergic NMJ
+    "LOC125712969", # synaptotagmin-2-like; Ca2+ sensor at fast synapses / NMJ
     # Axonal growth and activity markers
-    "gap43",         # Growth-associated protein 43; high in active/regenerating axons
-    "nrn1b",         # Neuritin-1b; activity-regulated; high in post-mitotic motor neurons
-    "nrxn1a"         # Neurexin-1a; presynaptic organiser; NMJ and CNS synapses
+    "gap43", # Growth-associated protein 43; high in active/regenerating axons
+    "nrn1b", # Neuritin-1b; activity-regulated; high in post-mitotic motor neurons
+    "nrxn1a" # Neurexin-1a; presynaptic organiser; NMJ and CNS synapses
   )
 )
 
@@ -707,14 +710,14 @@ for (ct in names(marker_genes)) {
     merged_seurat,
     features = list(marker_genes[[ct]]),
     name     = paste0(ct, "_score"),
-    nbin     = 12,   # default 24 fails when many genes share the same avg expression
+    nbin     = 12, # default 24 fails when many genes share the same avg expression
     seed     = 42
   )
   # AddModuleScore appends "1" to the column name — rename for clarity
   old_col <- paste0(ct, "_score1")
   new_col <- paste0(ct, "_score")
   merged_seurat@meta.data[[new_col]] <- merged_seurat@meta.data[[old_col]]
-  merged_seurat@meta.data[[old_col]]  <- NULL
+  merged_seurat@meta.data[[old_col]] <- NULL
 }
 
 score_cols <- paste0(names(marker_genes), "_score")
@@ -738,8 +741,10 @@ if (length(pmca_genes) >= 2) {
 }
 
 # Include PMCA_score in the plot alongside the five cell-type scores.
-plot_score_cols <- c(score_cols,
-                     if ("PMCA_score" %in% colnames(merged_seurat@meta.data)) "PMCA_score")
+plot_score_cols <- c(
+  score_cols,
+  if ("PMCA_score" %in% colnames(merged_seurat@meta.data)) "PMCA_score"
+)
 
 FeaturePlot(merged_seurat,
   features  = plot_score_cols,
@@ -764,8 +769,10 @@ cluster_labels <- cluster_scores |>
   dplyr::select(seurat_clusters, cell_type, mean_score) |>
   arrange(as.integer(as.character(seurat_clusters)))
 
-label_vec <- setNames(cluster_labels$cell_type,
-                      as.character(cluster_labels$seurat_clusters))
+label_vec <- setNames(
+  cluster_labels$cell_type,
+  as.character(cluster_labels$seurat_clusters)
+)
 merged_seurat$cell_type_go <- unname(label_vec[as.character(merged_seurat$seurat_clusters)])
 
 # Sub-classify clusters into Stalk_Electrocyte vs. everything else using a
@@ -781,14 +788,13 @@ merged_seurat$cell_type_go <- unname(label_vec[as.character(merged_seurat$seurat
 merged_seurat$cell_type_detail <- merged_seurat$cell_type_go
 
 if (length(pmca_genes) >= 2 && "PMCA_score" %in% colnames(merged_seurat@meta.data)) {
-
   # Stalk search: all clusters, ranked by PMCA × electrocyte co-expression
   stalk_scores <- merged_seurat@meta.data |>
     group_by(seurat_clusters) |>
     summarise(
-      mean_PMCA     = mean(PMCA_score),
-      mean_Elec     = mean(Electrocyte_score),
-      n_cells       = n(),
+      mean_PMCA = mean(PMCA_score),
+      mean_Elec = mean(Electrocyte_score),
+      n_cells = n(),
       initial_label = names(sort(table(cell_type_go), decreasing = TRUE))[1],
       .groups = "drop"
     ) |>
@@ -799,10 +805,12 @@ if (length(pmca_genes) >= 2 && "PMCA_score" %in% colnames(merged_seurat@meta.dat
   print(head(stalk_scores, 10))
 
   stalk_cluster <- as.character(stalk_scores$seurat_clusters[1])
-  cat("\nStalk candidate: cluster", stalk_cluster,
-      "(initial label:", stalk_scores$initial_label[1],
-      "| PMCA =", round(stalk_scores$mean_PMCA[1], 3),
-      "| Electrocyte =", round(stalk_scores$mean_Elec[1], 3), ")\n")
+  cat(
+    "\nStalk candidate: cluster", stalk_cluster,
+    "(initial label:", stalk_scores$initial_label[1],
+    "| PMCA =", round(stalk_scores$mean_PMCA[1], 3),
+    "| Electrocyte =", round(stalk_scores$mean_Elec[1], 3), ")\n"
+  )
 
   # pmca_by_cluster: electrocyte-labelled clusters only, kept for elec-face-setup
   # downstream which needs to identify non-stalk face groups among genuine electrocytes.
@@ -864,18 +872,20 @@ n_per_cluster <- merged_seurat@meta.data |>
 # Pull the final (stalk-refined) label for each cluster
 detail_per_cluster <- merged_seurat@meta.data |>
   group_by(seurat_clusters) |>
-  summarise(cell_type = names(sort(table(cell_type_detail), decreasing = TRUE))[1],
-            .groups = "drop")
+  summarise(
+    cell_type = names(sort(table(cell_type_detail), decreasing = TRUE))[1],
+    .groups = "drop"
+  )
 
 cluster_labels |>
   dplyr::rename(top_marker_score = mean_score) |>
-  dplyr::select(-cell_type) |>          # drop pre-stalk label; refined label comes from detail_per_cluster
+  dplyr::select(-cell_type) |> # drop pre-stalk label; refined label comes from detail_per_cluster
   left_join(detail_per_cluster, by = "seurat_clusters") |>
-  left_join(n_per_cluster,      by = "seurat_clusters") |>
+  left_join(n_per_cluster, by = "seurat_clusters") |>
   dplyr::select(seurat_clusters, cell_type, top_marker_score, n_cells) |>
   arrange(as.integer(as.character(seurat_clusters))) |>
   knitr::kable(
-    digits  = 3,
+    digits = 3,
     col.names = c("Cluster", "Cell type", "Best module score", "Nuclei"),
     caption = "Cluster → cell-type assignments. 'Best module score' is the mean score of the winning cell-type gene set. Electrocyte clusters are further refined into Stalk_Electrocyte using PMCA module scores."
   )
@@ -940,7 +950,7 @@ FeaturePlot(merged_seurat,
 # Note: scn4aa/scn4ab and atp1b2b are general electrocyte markers — the published
 # literature does not assign them specifically to the anterior or posterior face.
 # Both faces are excitable; face-specific channel assignments are not yet established.
-stalk_panel   <- c(pmca_genes, "robo2")
+stalk_panel <- c(pmca_genes, "robo2")
 general_panel <- c("scn4ab", "atp1b2b", "igsf9ba", "LOC125742960")
 
 stalk_all_panel <- unique(c(stalk_panel, general_panel))
@@ -966,10 +976,14 @@ if (length(stalk_all_panel) > 0 && length(elec_clusters) > 0) {
       colour     = "grey50",
       linewidth  = 0.8
     ) +
-    annotate("text", x = n_stalk / 2, y = -0.5,
-             label = "← PMCA / stalk", colour = "grey40", size = 3) +
-    annotate("text", x = n_stalk + 3, y = -0.5,
-             label = "General electrocyte →", colour = "grey40", size = 3) +
+    annotate("text",
+      x = n_stalk / 2, y = -0.5,
+      label = "← PMCA / stalk", colour = "grey40", size = 3
+    ) +
+    annotate("text",
+      x = n_stalk + 3, y = -0.5,
+      label = "General electrocyte →", colour = "grey40", size = 3
+    ) +
     ggtitle("PMCA stalk markers vs. general electrocyte markers within electrocyte clusters")
 }
 ```
@@ -1074,7 +1088,6 @@ technical variation.
 # Dynamically assign non-stalk electrocyte clusters to two face groups
 # using k-means clustering on UMAP centroids.
 if (exists("stalk_cluster") && exists("pmca_by_cluster")) {
-
   # All electrocyte clusters except the stalk
   face_clusters <- pmca_by_cluster |>
     filter(as.character(seurat_clusters) != stalk_cluster) |>
@@ -1100,14 +1113,17 @@ if (exists("stalk_cluster") && exists("pmca_by_cluster")) {
   km <- kmeans(face_centroids[, c("U1", "U2")], centers = 2)
   face_centroids$face_group <- as.character(km$cluster)
 
-  face_A <- face_centroids |> filter(face_group == "1") |>
-    pull(seurat_clusters) |> as.character()
-  face_B <- face_centroids |> filter(face_group == "2") |>
-    pull(seurat_clusters) |> as.character()
+  face_A <- face_centroids |>
+    filter(face_group == "1") |>
+    pull(seurat_clusters) |>
+    as.character()
+  face_B <- face_centroids |>
+    filter(face_group == "2") |>
+    pull(seurat_clusters) |>
+    as.character()
 
   cat("Face group A clusters:", paste(face_A, collapse = ", "), "\n")
   cat("Face group B clusters:", paste(face_B, collapse = ", "), "\n")
-
 } else {
   message("Stalk annotation did not complete — skipping face characterisation")
 }
@@ -1120,7 +1136,6 @@ not dilute the comparison.
 
 ```{r elec-face-markers, message=FALSE, warning=FALSE}
 if (exists("face_A") && exists("face_B")) {
-
   elec_cells <- rownames(merged_seurat@meta.data)[
     merged_seurat$cell_type_go == "Electrocyte"
   ]
@@ -1135,7 +1150,8 @@ if (exists("face_A") && exists("face_B")) {
   ) |>
     tibble::rownames_to_column("gene") |>
     left_join(gene_lookup |> dplyr::select(key, gene_name, product),
-              by = c("gene" = "key")) |>
+      by = c("gene" = "key")
+    ) |>
     arrange(desc(avg_log2FC))
 
   cat("Top 20 markers enriched in face group A:\n")
@@ -1160,19 +1176,24 @@ if (exists("face_markers")) {
     mutate(category = case_when(
       str_detect(product, regex(
         "potassium|sodium|calcium|chloride|channel|transporter",
-        ignore_case = TRUE)) ~ "Ion channel/transporter",
+        ignore_case = TRUE
+      )) ~ "Ion channel/transporter",
       str_detect(product, regex(
         "collagen|fibronectin|laminin|cadherin|integrin",
-        ignore_case = TRUE)) ~ "ECM/adhesion",
+        ignore_case = TRUE
+      )) ~ "ECM/adhesion",
       str_detect(product, regex(
         "kinase|phosphatase|GTPase|signaling",
-        ignore_case = TRUE)) ~ "Signaling",
+        ignore_case = TRUE
+      )) ~ "Signaling",
       str_detect(product, regex(
         "actin|myosin|tubulin|spectrin|cytoskeletal",
-        ignore_case = TRUE)) ~ "Cytoskeletal",
+        ignore_case = TRUE
+      )) ~ "Cytoskeletal",
       str_detect(product, regex(
         "receptor|ligand",
-        ignore_case = TRUE)) ~ "Receptor/ligand",
+        ignore_case = TRUE
+      )) ~ "Receptor/ligand",
       TRUE ~ "Other/uncharacterized"
     )) |>
     dplyr::count(category, sort = TRUE) |>
@@ -1186,7 +1207,6 @@ cryptic pan-electrocyte markers.
 
 ```{r elec-face-dotplot, fig.width=12, fig.height=5, message=FALSE, warning=FALSE, fig.alt="DotPlot showing the top 10 marker genes enriched in each of the two electrocyte face groups. Dot size encodes the fraction of nuclei expressing the gene; colour encodes mean scaled expression.", fig.cap="Top markers distinguishing the two non-stalk electrocyte groups. Genes on the left are enriched in face group A; genes on the right are enriched in face group B."}
 if (exists("face_markers") && exists("face_A") && exists("face_B")) {
-
   top_face_A <- face_markers |>
     filter(p_val_adj < 0.05) |>
     slice_max(avg_log2FC, n = 10) |>
@@ -1215,8 +1235,7 @@ within-group signal suggests sub-structure or residual batch effects.
 
 ```{r elec-face-within, message=FALSE, warning=FALSE}
 if (exists("face_A") && length(face_A) >= 2 &&
-    exists("face_markers") && exists("elec_cells")) {
-
+  exists("face_markers") && exists("elec_cells")) {
   within_markers <- FindMarkers(
     merged_seurat,
     ident.1  = face_A[1],
@@ -1227,21 +1246,27 @@ if (exists("face_A") && length(face_A) >= 2 &&
   ) |>
     tibble::rownames_to_column("gene") |>
     left_join(gene_lookup |> dplyr::select(key, gene_name, product),
-              by = c("gene" = "key"))
+      by = c("gene" = "key")
+    )
 
-  n_between <- sum(face_markers$p_val_adj   < 0.05, na.rm = TRUE)
-  n_within  <- sum(within_markers$p_val_adj < 0.05, na.rm = TRUE)
+  n_between <- sum(face_markers$p_val_adj < 0.05, na.rm = TRUE)
+  n_within <- sum(within_markers$p_val_adj < 0.05, na.rm = TRUE)
 
   cat("Significant DEGs between face groups: ", n_between, "\n")
-  cat("Significant DEGs within face group A:  ", n_within,  "\n")
-  cat("Ratio (between / within):              ",
-      round(n_between / max(n_within, 1), 1), "\n\n")
-  cat("Interpretation:",
-    if (n_between > 3 * n_within)
+  cat("Significant DEGs within face group A:  ", n_within, "\n")
+  cat(
+    "Ratio (between / within):              ",
+    round(n_between / max(n_within, 1), 1), "\n\n"
+  )
+  cat(
+    "Interpretation:",
+    if (n_between > 3 * n_within) {
       "Clean face separation — many more between-group DEGs than within-group."
-    else
-      "Possible sub-structure or residual technical effects within face group A.",
-    "\n")
+    } else {
+      "Possible sub-structure or residual technical effects within face group A."
+    },
+    "\n"
+  )
 }
 ```
 
@@ -1367,13 +1392,13 @@ pb_meta <- data.frame(
   tidyr::separate(col_id,
     into  = c("cell_type", "orig_ident"),
     sep   = "_",
-    extra = "merge"   # keep everything after the first _ together
+    extra = "merge" # keep everything after the first _ together
   ) |>
   mutate(
-    sample    = sub("EO-", "", orig_ident),
+    sample = sub("EO-", "", orig_ident),
     treatment = case_when(
       sample %in% c("BB48", "BB49INJ") ~ "11kt",
-      TRUE                                 ~ "vehicle"
+      TRUE ~ "vehicle"
     ),
     # vehicle as reference level so log2FC > 0 means higher in 11kt
     treatment = factor(treatment, levels = c("vehicle", "11kt"))
@@ -1399,13 +1424,13 @@ print(sample_counts_per_ct)
 ```
 
 ```{r deseq2-loop, message=FALSE, warning=FALSE}
-de_results    <- list()
-dds_objects   <- list()   # kept for later visualization
+de_results <- list()
+dds_objects <- list() # kept for later visualization
 
 for (ct in sample_counts_per_ct) {
   # Subset to columns belonging to this cell type
-  cols     <- which(pb_meta$cell_type == ct)
-  mat      <- pseudobulk_counts[, cols, drop = FALSE]
+  cols <- which(pb_meta$cell_type == ct)
+  mat <- pseudobulk_counts[, cols, drop = FALSE]
   meta_sub <- pb_meta[cols, , drop = FALSE]
 
   # Drop genes with zero counts across all samples
@@ -1415,7 +1440,7 @@ for (ct in sample_counts_per_ct) {
   dds <- DESeqDataSetFromMatrix(
     countData = mat,
     colData   = meta_sub,
-    design    = ~ treatment
+    design    = ~treatment
   )
 
   # Run DESeq2 (with n=2/group, expect a dispersion warning — this is expected)
@@ -1430,7 +1455,7 @@ for (ct in sample_counts_per_ct) {
     alpha    = 0.05
   )
 
-  de_results[[ct]]  <- as.data.frame(res) |>
+  de_results[[ct]] <- as.data.frame(res) |>
     tibble::rownames_to_column("gene") |>
     mutate(cell_type = ct) |>
     arrange(padj)
@@ -1472,7 +1497,7 @@ de_combined |>
   left_join(gene_lookup |> dplyr::select(key, product), by = c("gene" = "key")) |>
   dplyr::select(cell_type, gene, product, log2FoldChange, lfcSE, padj) |>
   knitr::kable(
-    digits  = 3,
+    digits = 3,
     col.names = c("Cell Type", "Gene", "Description", "log2FC", "lfcSE", "padj"),
     caption = "Top DE genes per cell type (padj < 0.1, 11-KT vs vehicle)"
   )
@@ -1481,13 +1506,16 @@ de_combined |>
 ```{r pseudobulk-visualization, fig.width=11, fig.height=5, message=FALSE, warning=FALSE, fig.alt="Dot plots of DESeq2 size-factor-normalized counts for the top 3 DE genes in the Electrocyte cluster, with one dot per fish colored by treatment.", fig.cap="Per-fish pseudobulk expression of top DE genes in the Electrocyte cluster. Each point represents one fish (n=2 per condition). Showing individual values rather than means makes the fish-to-fish consistency of each effect transparent."}
 # Identify the electrocyte DE object (use the first testable type if Electrocyte
 # was not scored)
-ct_vis <- if ("Electrocyte" %in% sample_counts_per_ct) "Electrocyte" else
-            sample_counts_per_ct[1]
+ct_vis <- if ("Electrocyte" %in% sample_counts_per_ct) {
+  "Electrocyte"
+} else {
+  sample_counts_per_ct[1]
+}
 
 dds_vis <- dds_objects[[ct_vis]]
 
 # DESeq2 size-factor-normalized counts (appropriate for visualization, NOT for DE)
-dds_vis  <- estimateSizeFactors(dds_vis)
+dds_vis <- estimateSizeFactors(dds_vis)
 norm_mat <- counts(dds_vis, normalized = TRUE)
 
 # Top 3 genes by padj (at least 3 must exist; fall back gracefully)
@@ -1506,11 +1534,13 @@ if (length(top_genes) == 0) {
     pivot_longer(-gene, names_to = "col_id", values_to = "norm_count") |>
     left_join(pb_meta |> tibble::rownames_to_column("col_id"), by = "col_id") |>
     left_join(gene_lookup |> dplyr::select(key, gene_name, product),
-              by = c("gene" = "key")) |>
+      by = c("gene" = "key")
+    ) |>
     mutate(
       label = if_else(is.na(product) | product == "",
-                      gene,
-                      paste0(gene, "\n(", str_trunc(product, 40), ")"))
+        gene,
+        paste0(gene, "\n(", str_trunc(product, 40), ")")
+      )
     )
 
   ggplot(norm_tidy, aes(x = treatment, y = norm_count, color = treatment)) +
@@ -1518,8 +1548,10 @@ if (length(top_genes) == 0) {
     facet_wrap(~label, scales = "free_y", nrow = 1) +
     scale_color_manual(values = c("11kt" = "#D55E00", "vehicle" = "#0072B2")) +
     theme_bw() +
-    theme(legend.position = "none",
-          strip.text      = element_text(size = 8)) +
+    theme(
+      legend.position = "none",
+      strip.text = element_text(size = 8)
+    ) +
     labs(
       title = paste("Pseudobulk normalized counts —", ct_vis, "cluster"),
       y     = "DESeq2-normalized counts",
@@ -1618,12 +1650,15 @@ prop_table <- merged_seurat@meta.data |>
 prop_table |>
   dplyr::select(sample, treatment, cell_type_go, n_cells, total, prop) |>
   arrange(treatment, cell_type_go) |>
-  knitr::kable(digits = 3,
-               caption = "Cell-type proportions per sample")
+  knitr::kable(
+    digits = 3,
+    caption = "Cell-type proportions per sample"
+  )
 ```
 
 ```{r prop-barplot, fig.width=10, fig.height=5, message=FALSE, warning=FALSE, fig.alt="Stacked bar charts showing cell type proportions for each sample, faceted by treatment condition.", fig.cap="Cell-type composition of each EO sample, stacked by cell type and faceted by treatment group. Visual differences between conditions should be interpreted cautiously given n=2 per group."}
-ggplot(prop_table,
+ggplot(
+  prop_table,
   aes(x = sample, y = prop, fill = cell_type_go)
 ) +
   geom_col() +
@@ -1639,11 +1674,14 @@ ggplot(prop_table,
 ```
 
 ```{r prop-scatter, fig.width=9, fig.height=5, message=FALSE, warning=FALSE, fig.alt="Dot plot showing individual fish cell-type proportions for each cluster, colored by treatment.", fig.cap="Individual fish cell-type proportions by cluster. Each point is one fish. With n=2 per condition, visually comparing the four individual values (not group means) is essential for honest interpretation."}
-ggplot(prop_table,
+ggplot(
+  prop_table,
   aes(x = cell_type_go, y = prop, color = treatment, shape = sample)
 ) +
-  geom_point(size = 3.5,
-             position = position_dodge(width = 0.5)) +
+  geom_point(
+    size = 3.5,
+    position = position_dodge(width = 0.5)
+  ) +
   scale_color_manual(values = c("11kt" = "#D55E00", "vehicle" = "#0072B2")) +
   theme_bw() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
@@ -1681,7 +1719,6 @@ if (requireNamespace("speckle", quietly = TRUE)) {
     group    = merged_seurat$treatment
   )
   print(prop_results)
-
 } else {
   # --- fallback: arcsine-square-root transformation + limma ---
   # This is the same transformation propeller uses internally.
@@ -1696,14 +1733,14 @@ if (requireNamespace("speckle", quietly = TRUE)) {
       values_from = asin_prop,
       values_fill = 0
     ) |>
-    arrange(treatment)   # vehicle rows first for consistent contrast direction
+    arrange(treatment) # vehicle rows first for consistent contrast direction
 
-  design <- model.matrix(~ treatment, data = prop_wide)
+  design <- model.matrix(~treatment, data = prop_wide)
 
   # limma on cell types (columns); omit the two metadata columns
   ct_cols <- setdiff(names(prop_wide), c("orig.ident", "treatment"))
-  fit  <- limma::lmFit(t(prop_wide[, ct_cols]), design)
-  fit  <- limma::eBayes(fit)
+  fit <- limma::lmFit(t(prop_wide[, ct_cols]), design)
+  fit <- limma::eBayes(fit)
   da_res <- limma::topTable(fit, coef = 2, n = Inf)
 
   cat("Differential abundance results (arcsine-limma, 11kt vs vehicle):\n")
@@ -1758,18 +1795,22 @@ biology.
 ```{r load-losilla-data, message=FALSE, warning=FALSE}
 # Named gene vectors for scatter-plot labeling (Seurat rowname convention:
 #   lowercase symbols for annotated genes, LOC IDs for unannotated ones)
-cytoskeletal <- c("actn1", "actc1c", "myh6", "acta1b", "xirp1", "myo1d",
-                  "eml6", "tubb2", "cavin4b", "mid1ip1l")
-ecm_genes    <- c("thbs4b", "cdh11", "epdl2")
-lipid_genes  <- c("elovl7a", "selenoi", "fam126a")
-kchan_genes  <- c(
-  "LOC125742960",  # scn4aa — Nav1.4a (no curated symbol in this genome build)
-  "LOC125743019",  # kcna7a — Kv1.7a (no curated symbol in this genome build)
+cytoskeletal <- c(
+  "actn1", "actc1c", "myh6", "acta1b", "xirp1", "myo1d",
+  "eml6", "tubb2", "cavin4b", "mid1ip1l"
+)
+ecm_genes <- c("thbs4b", "cdh11", "epdl2")
+lipid_genes <- c("elovl7a", "selenoi", "fam126a")
+kchan_genes <- c(
+  "LOC125742960", # scn4aa — Nav1.4a (no curated symbol in this genome build)
+  "LOC125743019", # kcna7a — Kv1.7a (no curated symbol in this genome build)
   "kcna1", "kcna7", "kcnc1", "kcnc2", "kcng4a", "scn4b"
 )
 # Additional named genes from the Losilla 2025 top-hits list
-label_genes <- c(cytoskeletal, ecm_genes, lipid_genes, kchan_genes,
-                 "fhl1a", "tmem26b", "alpk2", "atp1b2b")
+label_genes <- c(
+  cytoskeletal, ecm_genes, lipid_genes, kchan_genes,
+  "fhl1a", "tmem26b", "alpk2", "atp1b2b"
+)
 
 # Load the full Losilla & Gallant 2025 bulk DEG table.
 # All 244 rows are T8day vs control (sampleA = "T_8day", sampleB = "control").
@@ -1800,8 +1841,11 @@ detected? If so, in which direction?
 
 ```{r bulk-snrna-overlap, message=FALSE, warning=FALSE}
 # Select the target cell type (Electrocyte, or the first available)
-ct_check <- if ("Electrocyte" %in% names(de_results)) "Electrocyte" else
-              names(de_results)[1]
+ct_check <- if ("Electrocyte" %in% names(de_results)) {
+  "Electrocyte"
+} else {
+  names(de_results)[1]
+}
 
 # Inner join: keep only genes present in BOTH the Losilla bulk DEG list
 # AND the snRNA-seq pseudobulk results for this cell type.
@@ -1817,9 +1861,9 @@ overlap_tbl <- de_results[[ct_check]] |>
   )
 
 # Summary statistics
-n_detected   <- nrow(overlap_tbl)
+n_detected <- nrow(overlap_tbl)
 n_concordant <- sum(overlap_tbl$concordant, na.rm = TRUE)
-n_sig        <- sum(!is.na(overlap_tbl$padj) & overlap_tbl$padj < 0.05)
+n_sig <- sum(!is.na(overlap_tbl$padj) & overlap_tbl$padj < 0.05)
 
 cat(sprintf(
   "Losilla DEGs detected in snRNA-seq pseudobulk (%s): %d / %d (%.0f%%)\n",
@@ -1837,8 +1881,10 @@ cat(sprintf(
 # Show the 15 most strongly regulated genes in the bulk data and
 # how they look in the snRNA-seq pseudobulk
 overlap_tbl |>
-  dplyr::select(gene, gene_name, logFC_bulk, direction_bulk,
-                log2FoldChange, padj, concordant) |>
+  dplyr::select(
+    gene, gene_name, logFC_bulk, direction_bulk,
+    log2FoldChange, padj, concordant
+  ) |>
   slice_max(abs(logFC_bulk), n = 15)
 ```
 
@@ -1867,22 +1913,26 @@ p_scatter <- overlap_tbl |>
   geom_vline(xintercept = 0, linetype = "dashed", color = "grey50") +
   ggrepel::geom_text_repel(
     aes(label = label),
-    na.rm        = TRUE,
-    size         = 3,
+    na.rm = TRUE,
+    size = 3,
     max.overlaps = 20,
-    box.padding  = 0.4
+    box.padding = 0.4
   ) +
   scale_color_manual(
-    values = c("TRUE"  = "#009E73",
-               "FALSE" = "#CC4678"),
-    labels = c("TRUE"  = "Concordant",
-               "FALSE" = "Discordant"),
+    values = c(
+      "TRUE" = "#009E73",
+      "FALSE" = "#CC4678"
+    ),
+    labels = c(
+      "TRUE" = "Concordant",
+      "FALSE" = "Discordant"
+    ),
     na.value = "grey60"
   ) +
   labs(
-    x       = "Bulk logFC — Losilla & Gallant 2025\n(T8day vs control, 17αMT treatment)",
-    y       = "Pseudobulk log2FC — this snRNA-seq\n(11-KT vs vehicle)",
-    color   = "Direction",
+    x = "Bulk logFC — Losilla & Gallant 2025\n(T8day vs control, 17αMT treatment)",
+    y = "Pseudobulk log2FC — this snRNA-seq\n(11-KT vs vehicle)",
+    color = "Direction",
     caption = sprintf(
       "%d genes detected in pseudobulk; %d concordant in direction (%.0f%%)",
       n_detected, n_concordant, 100 * n_concordant / n_detected
@@ -1907,8 +1957,9 @@ genes_to_show <- overlap_tbl |>
   head(2)
 
 # Fallback: use the top Losilla bulk hits if nothing concordant passes the filter
-if (length(genes_to_show) < 2)
+if (length(genes_to_show) < 2) {
   genes_to_show <- head(losilla_bulk$gene_bulk[losilla_bulk$logFC_bulk > 0], 2)
+}
 
 # FeaturePlot split by treatment on the Harmony UMAP
 p_feat_split <- FeaturePlot(
@@ -1922,11 +1973,11 @@ p_feat_split <- FeaturePlot(
 # VlnPlot within electrocyte nuclei only, grouped by treatment
 p_vln <- VlnPlot(
   subset(merged_seurat, cell_type_go == ct_check),
-  features  = genes_to_show,
-  group.by  = "treatment",
-  cols      = c("vehicle" = "#0072B2", "11kt" = "#D55E00"),
-  pt.size   = 0.5,
-  ncol      = 2
+  features = genes_to_show,
+  group.by = "treatment",
+  cols = c("vehicle" = "#0072B2", "11kt" = "#D55E00"),
+  pt.size = 0.5,
+  ncol = 2
 )
 
 p_feat_split / p_vln
