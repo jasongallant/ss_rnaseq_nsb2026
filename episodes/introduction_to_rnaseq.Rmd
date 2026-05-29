@@ -1,0 +1,97 @@
+---
+title: "Introduction to Single-Nucleus RNA-seq"
+teaching: 5
+exercises: 10
+---
+
+::: {.callout-note title="Questions"}
+
+- Why is single-nucleus RNA-seq better suited to this system than bulk RNA-seq or a candidate-gene approach?
+- What does the 10x Genomics workflow produce, and what is a UMI?
+- What are the four main technical challenges in snRNA-seq data, and why do they matter for downstream analysis?
+
+:::
+
+::: {.callout-tip title="Objectives"}
+
+- Explain the central dogma rationale for measuring RNA to understand gene activity.
+- Distinguish bulk RNA-seq, single-cell RNA-seq (scRNA-seq), and single-nucleus RNA-seq (snRNA-seq), and justify the choice of snRNA-seq for frozen electric organ tissue.
+- Describe the 10x Genomics Chromium workflow from nucleus isolation to count matrix.
+- Identify the four major data quality challenges in snRNA-seq (sparsity, technical variability, high dimensionality, batch effects) and their consequences.
+
+:::
+
+## Lecture Video
+
+```{=html}
+<video class="plyr-video" playsinline controls preload="metadata">
+  <source src="https://d18e7eu8nurr5a.cloudfront.net/lectures/intro_to_rnaseq.mp4"
+          type="video/mp4" />
+  Your browser does not support embedded video.
+</video>
+```
+
+## Overview
+
+Single-nucleus RNA-seq converts RNA abundance into a count matrix that resolves gene expression at single-cell resolution — giving us a direct window into which genes are active in which cell types. For frozen archived tissue like the *B. brachyistius* electric organ, snRNA-seq is the only feasible option: single-cell methods require fresh dissociated cells, which are unavailable from banked samples. The lecture video above covers the full pipeline; this page surfaces the key concepts you will apply during the analysis episodes.
+
+## From RNA to a Count Matrix
+
+Every sequenced read is tagged with two barcodes: a **cell barcode** identifying which nucleus it came from, and a **unique molecular identifier (UMI)** representing a single RNA molecule captured before PCR amplification. After sequencing, reads are demultiplexed by cell barcode and UMIs are collapsed to remove PCR duplicates, yielding a matrix of raw molecule counts — one row per gene, one column per nucleus.
+
+The 10x Genomics Chromium platform automates this capture step by encapsulating individual nuclei in GEM (Gel Bead-in-Emulsion) droplets, each containing a barcoded bead. At the scale of a typical experiment, roughly 3,000–10,000 nuclei are captured per sample.
+
+## Why snRNA-seq Over the Alternatives
+
+| Approach | Resolution | Limitation |
+|---|---|---|
+| Candidate-gene (e.g., in-situ hybridization) | Single-cell | Low throughput; tests one gene at a time |
+| Bulk RNA-seq | Tissue-level average | Cannot distinguish which cell type drives a signal |
+| scRNA-seq | Single-cell | Requires fresh, dissociated cells — incompatible with frozen tissue |
+| **snRNA-seq** | **Single-nucleus** | **Compatible with frozen archival tissue; genome-wide** |
+
+## Four Technical Challenges
+
+Every snRNA-seq dataset shares the same four quality problems you will confront during analysis:
+
+1. **Sparsity** — Most genes are not detected in any given nucleus; ~85–95% of count matrix entries are zero. This is expected, not a sign of failure.
+2. **Technical variability** — Nuclei differ in total UMI count (library size), the fraction of reads mapping to mitochondrial genes (a proxy for damaged nuclei), and doublet rate (two nuclei captured together). QC filters address these before analysis.
+3. **High dimensionality** — A typical experiment measures 20,000+ genes per nucleus. Dimensionality reduction (PCA, UMAP) compresses this into a tractable space for clustering.
+4. **Batch effects** — Samples processed on different days or with different reagent lots can cluster by batch rather than biology. Experimental design and integration methods mitigate this.
+
+::: {.callout-important title="Challenge 1: Stop and Predict (3 min)"}
+
+A count matrix for a tissue sample has 3,000 nuclei and 20,000 genes. You notice that roughly 85% of the entries are zero. Is this a sign something went wrong in the experiment, or is it expected behavior? What does a zero actually mean in this context?
+
+:::: {.callout-tip title="Solution" collapse="true"}
+
+It is expected. Each nucleus captures only a fraction of the total RNA molecules present, and library sequencing is not deep enough to detect every expressed gene in every nucleus. A zero entry means the gene was not detected in that nucleus — not that the gene is definitively absent. This distinction matters: sparse data requires methods that can handle missingness rather than treating zeros as true negatives.
+
+::::
+
+:::
+
+::: {.callout-important title="Challenge 2: Putting It Together (7 min)"}
+
+For each of the four technical challenges listed above, name one step in the analysis pipeline that directly addresses it. The pipeline steps to draw from are: QC filtering, normalization, dimensionality reduction, and batch integration.
+
+:::: {.callout-tip title="Solution" collapse="true"}
+
+| Challenge | Analysis step that addresses it |
+|---|---|
+| Sparsity | Normalization (e.g., log-normalization, scran) stabilizes counts across nuclei despite sparse detection |
+| Technical variability | QC filtering removes low-quality nuclei (low UMI count, high % mitochondrial reads, likely doublets) |
+| High dimensionality | Dimensionality reduction (PCA → UMAP) compresses 20,000 genes into a low-dimensional embedding for clustering |
+| Batch effects | Batch integration (e.g., Harmony, scVI) aligns samples processed under different conditions |
+
+::::
+
+:::
+
+## Keypoints
+
+1. RNA abundance measured by sequencing is a proxy for gene activity; snRNA-seq applies this at single-nucleus resolution across the full transcriptome.
+2. snRNA-seq is preferred over scRNA-seq for frozen archived tissue and over bulk RNA-seq when cell-type resolution is required.
+3. The 10x Genomics Chromium platform encapsulates nuclei in GEM droplets, assigns cell barcodes, and uses UMIs to count individual RNA molecules without PCR duplication bias.
+4. snRNA-seq data are inherently sparse (~85–95% zeros); this is expected, not a sign of failure.
+5. Four major technical challenges — sparsity, technical variability, high dimensionality, and batch effects — each require specific handling steps during QC, normalization, and integration.

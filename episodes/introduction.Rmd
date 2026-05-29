@@ -23,7 +23,7 @@ exercises: 15
 ## Lecture Video
 ```{=html}
 <video class="plyr-video" playsinline controls preload="metadata">
-  <source src="https://d18e7eu8nurr5a.cloudfront.net/lectures/introduction.mp4"
+  <source src="https://d18e7eu8nurr5a.cloudfront.net/lectures/introduction_v2.mp4"
           type="video/mp4" />
   Your browser does not support embedded video.
 </video>
@@ -55,7 +55,7 @@ The brain keeps the loop coherent using a **corollary discharge (CD)** pathway: 
 
 Testosterone elongates a male's EOD and shifts the spike that knollenorgan receptors fire in response to it. Before reading further: what would have to happen *centrally* in the brain to keep the fish from confusing its own (now-longer) EOD with an EOD from another fish?
 
-:::: {.callout-tip title="Solution" collapse="true"}
+:::: {.callout-solution title="Solution" collapse="true"}
 
 The corollary discharge inhibition window must shift in both its onset and its duration to match the delayed and elongated reafferent input. Fukutomi & Carlson (2023) showed exactly this: CD inhibition timing tracks EOD duration precisely. Critically, the shift is a direct hormonal effect on the MCA circuit — not a consequence of experiencing a different EOD.
 

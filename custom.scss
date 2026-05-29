@@ -6,49 +6,40 @@ $dark-blue: #1a3a5c;
 
 /*-- scss:rules --*/
 
-// Objectives and Key Points (tip callouts) — green emphasis
+// Objectives and Key Points (tip callouts) — green
 .callout-tip {
   border-left-color: #27ae60;
 
   .callout-title-container {
     color: #1e8449;
   }
-
-  .callout-icon::before {
-    background-color: #1e8449;
-  }
 }
 
-// Challenges (important callouts) — red emphasis
+// Challenges (important callouts) — blue
 .callout-important {
-  border-left-color: #c0392b;
+  border-left-color: #2980b9;
 
   .callout-title-container {
-    color: #c0392b;
-  }
-
-  .callout-icon::before {
-    background-color: #c0392b;
+    color: #1a6fa0;
   }
 }
 
-// Interpretive pitfalls (warning callouts) — amber, matches slide .warning box
+// Interpretive pitfalls (warning callouts) — amber
 .callout-warning {
   border-left-color: #d68910;
 
   .callout-title-container {
     color: #b7770d;
   }
-
-  .callout-icon::before {
-    background-color: #d68910;
-  }
 }
 
-// Instructor notes (caution callouts) — amber, slightly muted
+// Caution callouts — yellow
 .callout-caution {
-  border-left-color: #d68910;
-  opacity: 0.9;
+  border-left-color: #f39c12;
+
+  .callout-title-container {
+    color: #d68910;
+  }
 }
 
 // Slightly smaller code blocks (episodes have a lot of code)

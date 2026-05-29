@@ -37,13 +37,14 @@ website:
       - section: "June 8: Introduction, EOD Recording and Injection"
         contents:
           - episodes/introduction.Rmd
-          - episodes/eod-recording.Rmd  # optional background
+          - episodes/eod-recording.Rmd # optional background
           - episodes/implant-11kt.Rmd
       - section: "June 9: Tissue Dissection and Analysing EOD Differences"
         contents:
           - episodes/examine-eod-duration.Rmd
       - section: "June 10: Intro to Single-Nucleus RNA-seq Analysis"
-        contents: []
+        contents:
+          - episodes/introduction_to_rnaseq.Rmd
       - section: "June 11: Isolating Single Nuclei"
         contents: []
       - section: "June 12: Data Analysis and QC"
@@ -57,11 +58,13 @@ website:
       - episodes/setup.md
 
   page-footer:
-    center: "Licensed [CC-BY 4.0](https://creativecommons.org/licenses/by/4.0/) &nbsp;|&nbsp; [Source on GitHub](https://github.com/jasongallant/ss_rnaseq_nsb2026)"
+    center: "Content by Dr. Jason R. Gallant - Michigan State University &nbsp;|&nbsp; Licensed [CC-BY 4.0](https://creativecommons.org/licenses/by/4.0/) &nbsp;|&nbsp; [Source on GitHub](https://github.com/jasongallant/ss_rnaseq_nsb2026)"
 
 format:
   html:
-    include-in-header: _includes/plyr-head.html
+    include-in-header:
+      - _includes/plyr-head.html
+      - _includes/callout-icons.html
     include-after-body: _includes/plyr-foot.html
     theme:
       - cosmo
