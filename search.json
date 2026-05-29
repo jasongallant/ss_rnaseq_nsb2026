@@ -177,293 +177,75 @@
     ]
   },
   {
-    "objectID": "episodes/implant-11kt.html",
-    "href": "episodes/implant-11kt.html",
-    "title": "11-Ketotestosterone Implantation in Mormyrid Electric Fish",
+    "objectID": "episodes/introduction.html",
+    "href": "episodes/introduction.html",
+    "title": "Introduction: Single-Cell Transcriptomics in Weakly Electric Fish",
     "section": "",
-    "text": "TipObjectives\n\n\n\n\nPrepare a 20% w/w 11-ketotestosterone (11-KT) / cocoa butter implant suitable for IP delivery.\nAnesthetize a mormyrid fish to a stable surgical plane using buffered MS-222.\nPerform an IP incision and deposit a single cocoa-butter dose using sterile technique.\nRecord and log a pre-treatment EOD baseline that all post-implant measurements will be normalized against.",
+    "text": "NoteQuestions\n\n\n\n\nHow does testosterone simultaneously change the electric organ, knollenorgans, and corollary discharge circuit?\nWhy can’t bulk RNA-seq tell us which cell types are responsible for gene expression changes in the electric organ?\nWhat questions can single-nucleus RNA-seq answer in this system that previous approaches could not?",
     "crumbs": [
       "Home",
       "June 8: Introduction, EOD Recording and Injection",
-      "11-Ketotestosterone Implantation in Mormyrid Electric Fish"
+      "Introduction: Single-Cell Transcriptomics in Weakly Electric Fish"
     ]
   },
   {
-    "objectID": "episodes/implant-11kt.html#background",
-    "href": "episodes/implant-11kt.html#background",
-    "title": "11-Ketotestosterone Implantation in Mormyrid Electric Fish",
-    "section": "Background",
-    "text": "Background\nCocoa butter melts at body temperature, which makes it a useful slow-release vehicle for lipophilic steroids implanted into the peritoneal cavity. Bass and colleagues established this approach in the 1980s for studies of androgen action on the electric organ in mormyrids (Bass et al., 1986; Bass et al., 1987). A single 20% w/w cocoa-butter implant of 11-KT yields elevated circulating androgen for several days and produces measurable shifts in EOD waveform within ~24–72 h, depending on species and dose.\nThis episode walks through the Day 0 implant procedure as it is run in our lab. It assumes that the broader experimental schedule (acclimation, weighing, tank assignment, post-implant recording cadence) is already defined elsewhere in the course materials.\n\n\n\n\n\n\nNoteWhy cocoa butter?\n\n\n\nCocoa butter is solid at room temperature, liquefies at 35–40 °C, and re-solidifies inside the fish — trapping the steroid in a slow-release depot. It is also non-reactive in the IP cavity and avoids the need for a DMSO/oil carrier injection.",
+    "objectID": "episodes/introduction.html#lecture-video",
+    "href": "episodes/introduction.html#lecture-video",
+    "title": "Introduction: Single-Cell Transcriptomics in Weakly Electric Fish",
+    "section": "Lecture Video",
+    "text": "Lecture Video\n\n  \n  Your browser does not support embedded video.",
     "crumbs": [
       "Home",
       "June 8: Introduction, EOD Recording and Injection",
-      "11-Ketotestosterone Implantation in Mormyrid Electric Fish"
+      "Introduction: Single-Cell Transcriptomics in Weakly Electric Fish"
     ]
   },
   {
-    "objectID": "episodes/implant-11kt.html#reagents",
-    "href": "episodes/implant-11kt.html#reagents",
-    "title": "11-Ketotestosterone Implantation in Mormyrid Electric Fish",
-    "section": "Reagents",
-    "text": "Reagents\n\nCocoa butter chips\n11-KT (Steraloids A6720, 25 mg vial)\nMS-222 (tricaine methanesulfonate)\nVetbond (tissue adhesive)\nRecovery water (system water with NaCl supplement)\nMaintenance-dose MS-222 (for gill drip during surgery, if used)",
+    "objectID": "episodes/introduction.html#overview",
+    "href": "episodes/introduction.html#overview",
+    "title": "Introduction: Single-Cell Transcriptomics in Weakly Electric Fish",
+    "section": "Overview",
+    "text": "Overview\nIn this module you’ll analyze real single-nucleus RNA-seq data from Brienomyrus brachyistius — a weakly electric fish from West Africa — to ask which cell types in the electric organ change gene expression when testosterone elongates the electric organ discharge (EOD). The lecture video above introduces the full biological context. This page provides the key concepts in brief and the exercises to work through after watching.\nElectric fish are an unusually tractable system for linking gene expression to behavior. The EOD is produced by a dedicated peripheral motor system, detected by specialized electroreceptors, and gated by a precisely-timed corollary discharge circuit in the brain — and all three respond to the same hormonal signal. That makes it possible to trace a behavioral change (a longer EOD) to morphological changes, physiological changes, and molecular changes in a single, well-mapped system.\nThe gap single-nucleus RNA-seq fills is cell-type resolution. Prior work used bulk RNA-seq, which averages gene expression across all the cell types in the tissue. Single-nucleus RNA-seq decomposes that average, letting us ask which genes change in which cells.",
     "crumbs": [
       "Home",
       "June 8: Introduction, EOD Recording and Injection",
-      "11-Ketotestosterone Implantation in Mormyrid Electric Fish"
+      "Introduction: Single-Cell Transcriptomics in Weakly Electric Fish"
     ]
   },
   {
-    "objectID": "episodes/implant-11kt.html#equipment",
-    "href": "episodes/implant-11kt.html#equipment",
-    "title": "11-Ketotestosterone Implantation in Mormyrid Electric Fish",
-    "section": "Equipment",
-    "text": "Equipment\n\nScalpel (sharp, fresh blade)\nKimwipes\nDry bath\nMilligram balance\nP200 pipette + tips\nDissecting tray + dissecting pins\nRecovery containers\nFish-transfer net",
+    "objectID": "episodes/introduction.html#the-sensorimotor-loop",
+    "href": "episodes/introduction.html#the-sensorimotor-loop",
+    "title": "Introduction: Single-Cell Transcriptomics in Weakly Electric Fish",
+    "section": "The Sensorimotor Loop",
+    "text": "The Sensorimotor Loop\nWhen a mormyrid fires its electric organ, the command originates in the command nucleus (CN) in the hindbrain, travels via spinal electromotor neurons, and synchronously activates hundreds of flat, coin-shaped cells called electrocytes in the electric organ. The resulting EOD waveform depends directly on electrocyte membrane area and ion channel composition: more anterior-face membrane area raises capacitance and delays spike initiation, producing a longer waveform (Bass, Denizot & Marchaterre 1986; Bass & Volman 1987; Freedman et al. 1989).\nThe incoming signal from another fish is detected by knollenorgans (KOs) — electroreceptors specialized for conspecific communication signals. Raman & Hopkins (2025) showed these are precisely tuned to the species’ own EOD frequency spectrum, functioning as matched filters. When testosterone elongates the EOD, KO tuning shifts to match — but through an indirect mechanism: the changed EOD itself drives receptor cell turnover (Bass & Hopkins 1984).\nThe brain keeps the loop coherent using a corollary discharge (CD) pathway: a copy of each motor command routes from CN through the bulbar (BCA) and mesencephalic (MCA) command-associated nuclei to the sublemniscal nucleus (slem), which inhibits the electrosensory nucleus (nELL) just as the fish’s own EOD arrives there — making the fish effectively deaf to its own signal (Bell & Grant 1989). Fukutomi & Carlson (2023) showed this CD timing window shifts under testosterone to match the elongated EOD — and it does so directly, without requiring altered sensory feedback. Jarzyna & Carlson (2026) further showed that MCA is a conserved temporal hub: the same circuit node adjusts CD timing across seasonal (days), developmental (years), and evolutionary (millions of years) timescales.\n\n\n\n\n\n\n\n\nComponent\nWhat testosterone does\nMechanism\n\n\n\n\nElectric organ (electrocytes)\nElongates EOD waveform\nDirect androgen target; membrane remodeling and ion channel retuning\n\n\nKnollenorgans (KOs)\nShifts best frequency to match new EOD\nIndirect; stimulus-driven receptor cell turnover\n\n\nCorollary discharge (MCA)\nDelays and elongates the inhibition window\nDirect androgen target; independent of sensory feedback\n\n\n\n\n\n\n\n\n\nImportantChallenge 1: Stop and Predict (3 min)\n\n\n\nTestosterone elongates a male’s EOD and shifts the spike that knollenorgan receptors fire in response to it. Before reading further: what would have to happen centrally in the brain to keep the fish from confusing its own (now-longer) EOD with an EOD from another fish?\n\nThe corollary discharge inhibition window must shift in both its onset and its duration to match the delayed and elongated reafferent input. Fukutomi & Carlson (2023) showed exactly this: CD inhibition timing tracks EOD duration precisely. Critically, the shift is a direct hormonal effect on the MCA circuit — not a consequence of experiencing a different EOD.",
     "crumbs": [
       "Home",
       "June 8: Introduction, EOD Recording and Injection",
-      "11-Ketotestosterone Implantation in Mormyrid Electric Fish"
+      "Introduction: Single-Cell Transcriptomics in Weakly Electric Fish"
     ]
   },
   {
-    "objectID": "episodes/implant-11kt.html#step-0-eod-baseline-day-1-and-day-0-pre-implant",
-    "href": "episodes/implant-11kt.html#step-0-eod-baseline-day-1-and-day-0-pre-implant",
-    "title": "11-Ketotestosterone Implantation in Mormyrid Electric Fish",
-    "section": "Step 0: EOD baseline (Day −1 and Day 0, pre-implant)",
-    "text": "Step 0: EOD baseline (Day −1 and Day 0, pre-implant)\n\nRecord an EOD waveform from each fish on Day −1 (24 h prior) and again on Day 0 immediately before implantation. These pre-treatment recordings are the per-fish baselines that all post-implant measurements will be normalized to (Bass et al., 1986).\nConfirm fish ID, weight, and tank assignment are logged before proceeding to Step 1.\n\n\n\n\n\n\n\nNoteWhy two baselines?\n\n\n\nDay −1 captures the fish’s “settled” waveform; Day 0 confirms it has not drifted overnight. If the two recordings disagree by more than your normal day-to-day variability, do not implant — investigate first.",
+    "objectID": "episodes/introduction.html#whats-missing-cell-type-resolution",
+    "href": "episodes/introduction.html#whats-missing-cell-type-resolution",
+    "title": "Introduction: Single-Cell Transcriptomics in Weakly Electric Fish",
+    "section": "What’s Missing: Cell-Type Resolution",
+    "text": "What’s Missing: Cell-Type Resolution\nBass & Hopkins (1983) established the seasonal dimorphism; the work above traced it across all three components of the loop. The next mechanistic layer is gene expression. Losilla & Gallant (2025) used bulk RNA-seq on B. brachyistius caudal peduncle tissue to identify 44 genes tracking EOD elongation — a coordinated shift in cytoskeletal, extracellular matrix, lipid-metabolism, and ion channel genes that aligns with the morphological and physiological data.\nThe limitation is resolution. Caudal peduncle tissue contains electrocytes, connective tissue, support cells, blood vessel cells, and immune cells. Bulk RNA-seq averages across all of them. A K⁺ channel gene that shifts in bulk data might be changing specifically in electrocytes — or in a support cell population with no role in action potential generation. Without cell-type resolution, mechanistic interpretation is limited. That is the gap single-nucleus RNA-seq fills, and it is the central motivation for this module.\n\n\n\n\n\n\nImportantChallenge 2: Putting It Together (10 min)\n\n\n\nSketch the full sensorimotor loop linking testosterone, the electric organ, knollenorgan electroreceptors, and the corollary discharge pathway. For each component, note (a) one change under testosterone treatment and (b) one open question that single-nucleus RNA-seq could address but bulk RNA-seq cannot.\n\n\n\n\n\n\nTipSolution\n\n\n\n\n\nPossible answers — the goal is to make the integration explicit, so yours may differ:\n\nElectric organ / electrocytes — change: anterior-face membrane area expands; K⁺ and Na⁺ channel expression shifts toward longer APs. Open question: which of the 44 differentially expressed genes change specifically in electrocytes vs. connective tissue or immune cells?\nKnollenorgan electroreceptors — change: best frequency shifts to match the elongated EOD. Open question: what transcriptional program drives KO receptor cell turnover, and is the same gene regulatory network active here as in the electric organ?\nCorollary discharge (MCA) — change: onset and duration of CD inhibition delay and elongate. Open question: which MCA cell types express androgen receptors, and what genes change in those cells under testosterone?\nLoop integration — change: all three systems stay internally coherent as EOD duration changes across seasons, development, and evolution. Open question: is there a shared androgen-responsive gene regulatory program operating across electrocytes, KO receptor cells, and MCA neurons?",
     "crumbs": [
       "Home",
       "June 8: Introduction, EOD Recording and Injection",
-      "11-Ketotestosterone Implantation in Mormyrid Electric Fish"
+      "Introduction: Single-Cell Transcriptomics in Weakly Electric Fish"
     ]
   },
   {
-    "objectID": "episodes/implant-11kt.html#step-1-prepare-11-kt-doses-20-ww-in-cocoa-butter",
-    "href": "episodes/implant-11kt.html#step-1-prepare-11-kt-doses-20-ww-in-cocoa-butter",
-    "title": "11-Ketotestosterone Implantation in Mormyrid Electric Fish",
-    "section": "Step 1: Prepare 11-KT doses (20% w/w in cocoa butter)",
-    "text": "Step 1: Prepare 11-KT doses (20% w/w in cocoa butter)\n\nMelt 1 cocoa-butter chip (≈ 1.75 mL) at 40 °C.\nWeigh out 6.5 mg 11-KT.\nCombine the 11-KT with 35 µL of melted cocoa butter and pipette up and down thoroughly while maintaining heat at 35–40 °C, until 11-KT crystals are fully dissolved and the solution appears clear/translucent. If particles persist after 2 min at temperature, hold longer before pipetting.\nKeep the dose mix on the dry bath until ready for implantation.\n\n\n\n\n\n\n\nNoteDon’t rush dissolution\n\n\n\n11-KT does dissolve fully in cocoa butter at this loading and temperature, but it isn’t instantaneous. Pipetting before the crystals are gone gives non-uniform doses across your fish — the first fish gets a heavy bolus, the last gets diluted vehicle.\n\n\n\n\n\n\n\n\nImportantCalculating the dose\n\n\n\nYou want to implant 5 fish at 1 mg 11-KT per dose, with ~30% extra prep volume to absorb pipetting losses. Working at 20% w/w, how much 11-KT do you weigh out, and how much cocoa butter do you combine it with?\n\n\n\n\n\n\nTipSolution\n\n\n\n\n\n\nPer-dose 11-KT mass: 1 mg.\nFor 5 fish + 30%: ≈ 6.5 mg of 11-KT.\nAt 20% w/w, the matching cocoa-butter mass is ≈ 26 mg, which corresponds to roughly 35 µL of melted cocoa butter (density ≈ 0.9 g/mL).\n\nThis is the recipe used in Step 1 above.",
-    "crumbs": [
-      "Home",
-      "June 8: Introduction, EOD Recording and Injection",
-      "11-Ketotestosterone Implantation in Mormyrid Electric Fish"
-    ]
-  },
-  {
-    "objectID": "episodes/implant-11kt.html#step-2-anesthetize-fish-sterilize-equipment",
-    "href": "episodes/implant-11kt.html#step-2-anesthetize-fish-sterilize-equipment",
-    "title": "11-Ketotestosterone Implantation in Mormyrid Electric Fish",
-    "section": "Step 2: Anesthetize fish & sterilize equipment",
-    "text": "Step 2: Anesthetize fish & sterilize equipment\n\nAnesthetize the fish in MS-222 (0.1–0.2 g/L) until it loses its righting response but is still actively gilling.\nSpray tools with 70% ethanol and let sit for 5 minutes, then dry with a kimwipe. Alternatively, use a heat sterilizer — just make sure the tools are properly cooled before they touch the fish.\n\n\n\n\n\n\n\nNoteSurgical plane, not deep anesthesia\n\n\n\nYou want gilling to continue throughout the procedure. If gill movement stops, you have gone too deep — move the fish into fresh water immediately.",
-    "crumbs": [
-      "Home",
-      "June 8: Introduction, EOD Recording and Injection",
-      "11-Ketotestosterone Implantation in Mormyrid Electric Fish"
-    ]
-  },
-  {
-    "objectID": "episodes/implant-11kt.html#step-3-implantation-of-11-kt",
-    "href": "episodes/implant-11kt.html#step-3-implantation-of-11-kt",
-    "title": "11-Ketotestosterone Implantation in Mormyrid Electric Fish",
-    "section": "Step 3: Implantation of 11-KT",
-    "text": "Step 3: Implantation of 11-KT\n\nRemove the fish from the anesthetic and place it in the dissecting tray, belly-up, leaning against two dissecting pins.\nBlot the surgical area dry with a kimwipe.\nWith a sharp, fresh scalpel blade, make a small incision anterior to the anal pore and slightly off the ventral midline (to avoid major vessels), passing through skin and muscle wall into the peritoneal cavity. The cut should be just wide enough to fit a P200 pipette tip, and should feel “deep” enough that you are clearly through the muscle wall.\nDraw 5 µL of the 11-KT / cocoa-butter mix from the heated solution and immediately deposit it through the incision. A successful implantation leaves all material deep within the cut, not on the surface.\nIf any blood or fluid is on the outside of the fish, blot once more with a kimwipe.\nApply a small amount of Vetbond over the incision and wait for it to skin, checking that the seal is complete. Apply more Vetbond if necessary, but take care that it is not “wicked” onto the pectoral fins or gills nearby.\nPlace the fish into fresh recovery water and wait ~20 minutes for it to return upright before returning it to its home tank.\n\n\n\n\n\n\n\nNoteIncision location matters\n\n\n\nBass’s original phrasing was “small incision was made anterior to the anal pore.” Going off-midline keeps you out of the major ventral vessels, and staying anterior to the anal pore puts the dose into the IP cavity proper rather than the cloacal region.\n\n\n\n\n\n\n\n\nImportantTroubleshooting a failed seal\n\n\n\nFive minutes after implantation you notice a small bead of cocoa-butter / 11-KT solution sitting on the fish’s belly, outside the Vetbond. What do you do, and how do you note it in the experimental log?\n\n\n\n\n\n\nTipSolution\n\n\n\n\n\n\nBlot the surface dose off with a fresh kimwipe.\nApply a second layer of Vetbond and let it skin.\nNote the partial extrusion in the log: dose delivered is uncertain. This animal should be flagged for exclusion or, at minimum, tracked separately when EOD changes are analyzed — the slow-release pharmacology assumes the depot is fully internal.",
-    "crumbs": [
-      "Home",
-      "June 8: Introduction, EOD Recording and Injection",
-      "11-Ketotestosterone Implantation in Mormyrid Electric Fish"
-    ]
-  },
-  {
-    "objectID": "episodes/implant-11kt.html#after-surgery",
-    "href": "episodes/implant-11kt.html#after-surgery",
-    "title": "11-Ketotestosterone Implantation in Mormyrid Electric Fish",
-    "section": "After surgery",
-    "text": "After surgery\nOnce each fish is upright and swimming, return it to its labeled home tank and resume the post-implant EOD recording schedule defined in the broader course protocol. Do not feed for 24 h.\n\n\n\n\n\n\nTipKey Points\n\n\n\n\nCocoa-butter implants give a several-day, slow-release androgen exposure with a single Day 0 procedure.\nPre-treatment EOD recordings on Day −1 and Day 0 are the per-fish baselines — every post-implant measurement is interpreted relative to them.\nFull dissolution of 11-KT in warm cocoa butter is what makes the dose uniform across animals; rushing this step is the most common avoidable source of variance.\nIncise anterior to the anal pore, slightly off the ventral midline, and seal cleanly with Vetbond.\nA surface-extruded dose is not a delivered dose — flag the animal in the log.",
-    "crumbs": [
-      "Home",
-      "June 8: Introduction, EOD Recording and Injection",
-      "11-Ketotestosterone Implantation in Mormyrid Electric Fish"
-    ]
-  },
-  {
-    "objectID": "episodes/implant-11kt.html#references",
-    "href": "episodes/implant-11kt.html#references",
-    "title": "11-Ketotestosterone Implantation in Mormyrid Electric Fish",
-    "section": "References",
-    "text": "References\n\nBass, A. H., et al. (1986). Androgen binding in the brain and electric organ of a mormyrid fish.\nBass, A. H., et al. (1987). From behavior to membranes: testosterone-induced changes in action potential duration in electric organs.",
-    "crumbs": [
-      "Home",
-      "June 8: Introduction, EOD Recording and Injection",
-      "11-Ketotestosterone Implantation in Mormyrid Electric Fish"
-    ]
-  },
-  {
-    "objectID": "episodes/examine-eod-duration.html",
-    "href": "episodes/examine-eod-duration.html",
-    "title": "Examining EOD Duration from Raw Recordings",
-    "section": "",
-    "text": "NoteQuestions\n\n\n\n\nHow do we load JSON EOD recordings into R?\nHow is EOD duration measured from a raw waveform?\nDid 11-ketotestosterone treatment change EOD duration over time?",
-    "crumbs": [
-      "Home",
-      "June 9: Tissue Dissection and Analysing EOD Differences",
-      "Examining EOD Duration from Raw Recordings"
-    ]
-  },
-  {
-    "objectID": "episodes/examine-eod-duration.html#introduction",
-    "href": "episodes/examine-eod-duration.html#introduction",
-    "title": "Examining EOD Duration from Raw Recordings",
-    "section": "Introduction",
-    "text": "Introduction\nIn the previous episodes, you learned how testosterone shapes the electric organ discharge (EOD) in Brienomyrus brachyistius, and you performed the implantation procedure yourself. Now it’s time to analyze the data.\nEOD recordings were captured daily over 5 days for animals implanted with either 11-ketotestosterone (11-kt) or a blank control. Each recording session is stored as a JSON file containing multiple trials. Our goal is to:\n\nLoad a raw EOD waveform and visualize it\nWrite a function that measures EOD duration from any recording file\nApply that function across all recording sessions to build a dataset\nVisualize how EOD duration changes over time for each treatment group",
-    "crumbs": [
-      "Home",
-      "June 9: Tissue Dissection and Analysing EOD Differences",
-      "Examining EOD Duration from Raw Recordings"
-    ]
-  },
-  {
-    "objectID": "episodes/examine-eod-duration.html#loading-eod-recording-files-in-r",
-    "href": "episodes/examine-eod-duration.html#loading-eod-recording-files-in-r",
-    "title": "Examining EOD Duration from Raw Recordings",
-    "section": "Loading EOD Recording Files in R",
-    "text": "Loading EOD Recording Files in R\nJSON files can be read in R using the jsonlite package. The read_json() function returns a list that maps directly onto the file structure.\n\nlibrary(jsonlite)\n\neod_data &lt;- read_json(\"data/eod_duration/BB_T48_DAY0_MAY7.json\")\n\ncat(\"Number of recordings:\", length(eod_data), \"\\n\")\n\nNumber of recordings: 11 \n\n\nEach element of eod_data is one recording trial, stored as a named list. Use names(eod_data[[1]]) to see the available fields and $ to access them.\n\n\n\n\n\n\nImportantChallenge 1: Explore the recording metadata (5 min)\n\n\n\nUsing the eod_data object already loaded, print the specimen number, species, temperature, sampling rate, and number of waveform samples for the first recording trial.\nHint: names(eod_data[[1]]) shows the available fields.\n\n\n\n\n\n\nTipSolution\n\n\n\n\n\n\nnames(eod_data[[1]])\ncat(\"Specimen:\", eod_data[[1]]$specimenno, \"\\n\")\ncat(\"Species: \", eod_data[[1]]$species, \"\\n\")\ncat(\"Temp:    \", eod_data[[1]]$temp, \"\\n\")\ncat(\"Rate:    \", eod_data[[1]]$Rate, \"\\n\")\ncat(\"Samples: \", length(eod_data[[1]]$wave), \"\\n\")",
-    "crumbs": [
-      "Home",
-      "June 9: Tissue Dissection and Analysing EOD Differences",
-      "Examining EOD Duration from Raw Recordings"
-    ]
-  },
-  {
-    "objectID": "episodes/examine-eod-duration.html#visualizing-an-eod-waveform",
-    "href": "episodes/examine-eod-duration.html#visualizing-an-eod-waveform",
-    "title": "Examining EOD Duration from Raw Recordings",
-    "section": "Visualizing an EOD Waveform",
-    "text": "Visualizing an EOD Waveform\nWe convert sample indices to milliseconds using the sampling rate stored in the file, then plot with ggplot2.\n\nlibrary(ggplot2)\n\nrate_hz &lt;- eod_data[[1]]$Rate\nwave &lt;- unlist(eod_data[[1]]$wave)\np1_idx &lt;- which.max(wave)\ntime_ms &lt;- (seq_along(wave) - p1_idx) / rate_hz * 1000\n\nwaveform_df &lt;- data.frame(time_ms = time_ms, voltage = wave)\n\nggplot(waveform_df, aes(x = time_ms, y = voltage)) +\n  geom_line(linewidth = 0.6) +\n  coord_cartesian(xlim = c(-2, 2)) +\n  theme_classic() +\n  labs(\n    x = \"Time (ms)\",\n    y = \"Voltage (V)\",\n    title = paste(\"Raw EOD waveform —\", eod_data[[1]]$specimenno, \"Day 0\")\n  )\n\n\n\n\nA single raw EOD waveform recorded from B. brachyistius. The biphasic waveform is characteristic of mormyrid electric fish.\n\n\n\n\n\n\n\n\n\n\nImportantChallenge 2: Compare waveforms across recording sessions (5 min)\n\n\n\nThe Day 0 waveform for BB48 is already loaded as eod_data. Now load the Day 1 recording (data/eod_duration/BB_T48_DAY1_MAY8.json) and plot both waveforms together. Do the shapes look similar?\n\n\n\n\n\n\nTipSolution\n\n\n\n\n\n\neod_day1 &lt;- read_json(\"data/eod_duration/BB_T48_DAY1_MAY8.json\")\nwave1     &lt;- unlist(eod_day1[[1]]$wave)\np1_idx1   &lt;- which.max(wave1)\ntime1_ms  &lt;- (seq_along(wave1) - p1_idx1) / eod_day1[[1]]$Rate * 1000\n\n# Normalize each waveform to peak-to-peak = 1 so amplitudes are comparable\nwave0_norm &lt;- wave  / (max(wave)  - min(wave))\nwave1_norm &lt;- wave1 / (max(wave1) - min(wave1))\n\ndf_compare &lt;- rbind(\n  data.frame(time_ms = time_ms,  voltage = wave0_norm, session = \"Day 0\"),\n  data.frame(time_ms = time1_ms, voltage = wave1_norm, session = \"Day 1\")\n)\n\nggplot(df_compare, aes(x = time_ms, y = voltage, color = session)) +\n  geom_line(linewidth = 0.6) +\n  coord_cartesian(xlim = c(-2, 2)) +\n  theme_classic() +\n  scale_colour_manual(values = c(\"Day 0\" = \"grey50\", \"Day 1\" = \"tomato\")) +\n  labs(\n    x = \"Time (ms)\", y = \"Normalized voltage\",\n    title = \"BB48 EOD waveforms — Day 0 vs Day 1\",\n    color = NULL\n  )\n\nThese are the first two days of recording for BB48, before treatment has had time to act. The waveform shapes should be very similar.",
-    "crumbs": [
-      "Home",
-      "June 9: Tissue Dissection and Analysing EOD Differences",
-      "Examining EOD Duration from Raw Recordings"
-    ]
-  },
-  {
-    "objectID": "episodes/examine-eod-duration.html#measuring-eod-duration",
-    "href": "episodes/examine-eod-duration.html#measuring-eod-duration",
-    "title": "Examining EOD Duration from Raw Recordings",
-    "section": "Measuring EOD Duration",
-    "text": "Measuring EOD Duration\nEOD duration is not read directly from the file — it must be calculated from the waveform. The standard approach is:\n\nNormalize the waveform so that the peak-to-peak amplitude = 1\nApply a threshold (typically 10% of the maximum absolute value) to define where the EOD “starts” and “ends”\nCalculate duration as the time elapsed between the first and last threshold crossings\n\n\n# 1. Normalize to peak-to-peak = 1\nwave_norm &lt;- wave / (max(wave) - min(wave))\n\n# 2. Apply 10% threshold\nthreshold &lt;- 0.1 * max(abs(wave_norm))\nabove_thresh &lt;- which(abs(wave_norm) &gt; threshold)\n\nstart_idx &lt;- min(above_thresh)\nend_idx &lt;- max(above_thresh)\n\n# 3. Duration in milliseconds\nduration_ms &lt;- (end_idx - start_idx) / rate_hz * 1000\ncat(\"EOD duration (10% threshold):\", round(duration_ms, 3), \"ms\\n\")\n\nEOD duration (10% threshold): 0.25 ms\n\n\nWe can visualize the threshold on the normalized waveform to see exactly which part of the signal is being measured:\n\nnorm_df &lt;- data.frame(time_ms = time_ms, voltage = wave_norm)\n\nggplot(norm_df, aes(x = time_ms, y = voltage)) +\n  geom_line(linewidth = 0.6) +\n  geom_hline(\n    yintercept = c(threshold, -threshold),\n    linetype = \"dashed\", color = \"steelblue\", linewidth = 0.5\n  ) +\n  geom_vline(\n    xintercept = c(time_ms[start_idx], time_ms[end_idx]),\n    linetype = \"dashed\", color = \"tomato\", linewidth = 0.5\n  ) +\n  coord_cartesian(xlim = c(-2, 2)) +\n  theme_classic() +\n  labs(\n    x     = \"Time (ms)\",\n    y     = \"Normalized voltage\",\n    title = \"EOD duration measurement (10% threshold)\"\n  )\n\n\n\n\nThreshold-based EOD duration measurement on the normalized waveform.\n\n\n\n\n\n\n\n\n\n\nImportantChallenge 3: Sensitivity of the threshold (5 min)\n\n\n\nRepeat the duration calculation using a 20% threshold instead of 10%. How does the measured duration change, and why?\nThis is important: the choice of threshold is an analytical decision that must be reported in any publication.\n\n\n\n\n\n\nTipSolution\n\n\n\n\n\n\nthreshold_20 &lt;- 0.2 * max(abs(wave_norm))\nabove_20 &lt;- which(abs(wave_norm) &gt; threshold_20)\n\nduration_20ms &lt;- (max(above_20) - min(above_20)) / rate_hz * 1000\ncat(\"Duration at 20% threshold:\", round(duration_20ms, 3), \"ms\\n\")\ncat(\"Duration at 10% threshold:\", round(duration_ms, 3), \"ms\\n\")\n\nA higher threshold excludes the low-amplitude tails of the waveform, making the measured duration shorter. Neither threshold is “wrong” — but the choice must be consistent across all animals in a study and clearly reported.",
-    "crumbs": [
-      "Home",
-      "June 9: Tissue Dissection and Analysing EOD Differences",
-      "Examining EOD Duration from Raw Recordings"
-    ]
-  },
-  {
-    "objectID": "episodes/examine-eod-duration.html#building-a-dataset-across-all-recording-sessions",
-    "href": "episodes/examine-eod-duration.html#building-a-dataset-across-all-recording-sessions",
-    "title": "Examining EOD Duration from Raw Recordings",
-    "section": "Building a Dataset Across All Recording Sessions",
-    "text": "Building a Dataset Across All Recording Sessions\nNow that we know how to measure EOD duration from a single file, we can apply the same logic to every recording session in the study. Rather than computing durations by hand for each file, we write a function and let R do the work.\nThe study metadata is stored in recordings.csv, which maps each JSON file to its animal, day, and treatment group:\n\nlibrary(dplyr)\n\nmetadata &lt;- read.csv(\"data/eod_duration/all_surviving_recordings.csv\")\nmetadata$Treatment &lt;- as.factor(metadata$Treatment)\n\nmetadata\n\n                        file specimenno day Treatment Comment\n1      BB_T48_DAY0_MAY7.json       BB48   0     11-kt      NA\n2      BB_T48_DAY1_MAY8.json       BB48   1     11-kt      NA\n3      BB_T48_DAY2_MAY9.json       BB48   2     11-kt      NA\n4     BB_T48_DAY3_MAY10.json       BB48   3     11-kt      NA\n5     BB_T48_DAY4_MAY11.json       BB48   4     11-kt      NA\n6  BB_T49INJ_DAY0_MAY12.json    BB49INJ   0     11-kt      NA\n7  BB_T49INJ_DAY1_MAY13.json    BB49INJ   1     11-kt      NA\n8  BB_T49INJ_DAY2_MAY14.json    BB49INJ   2     11-kt      NA\n9  BB_T49INJ_DAY3_MAY15.json    BB49INJ   3     11-kt      NA\n10 BB_T49INJ_DAY4_MAY16.json    BB49INJ   4     11-kt      NA\n11     BB_T50_DAY0_MAY7.json       BB50   0   control      NA\n12     BB_T50_DAY1_MAY8.json       BB50   1   control      NA\n13     BB_T50_DAY2_MAY9.json       BB50   2   control      NA\n14    BB_T50_DAY3_MAY10.json       BB50   3   control      NA\n15    BB_T50_DAY4_MAY11.json       BB50   4   control      NA\n16 BB_T51INJ_DAY0_MAY12.json    BB51INJ   0   control      NA\n17 BB_T51INJ_DAY1_MAY13.json    BB51INJ   1   control      NA\n18 BB_T51INJ_DAY2_MAY14.json    BB51INJ   2   control      NA\n19 BB_T51INJ_DAY3_MAY15.json    BB51INJ   3   control      NA\n20 BB_T51INJ_DAY4_MAY16.json    BB51INJ   4   control      NA\n\n\nWe write a small function that takes a file path, loads the JSON, computes EOD duration for every trial, and returns the mean:\n\nmean_eod_duration &lt;- function(file_path, threshold = 0.1) {\n  recs &lt;- read_json(file_path)\n  durations &lt;- sapply(recs, function(rec) {\n    w &lt;- unlist(rec$wave)\n    rate &lt;- rec$Rate\n    w_norm &lt;- w / (max(w) - min(w))\n    thresh &lt;- threshold * max(abs(w_norm))\n    above &lt;- which(abs(w_norm) &gt; thresh)\n    (max(above) - min(above)) / rate * 1000\n  })\n  mean(durations)\n}\n\nWe then apply this function to every row in the metadata table:\n\nmetadata$EOD &lt;- sapply(\n  file.path(\"data/eod_duration\", metadata$file),\n  mean_eod_duration\n)\n\nhead(metadata)\n\n                       file specimenno day Treatment Comment       EOD\n1     BB_T48_DAY0_MAY7.json       BB48   0     11-kt      NA 0.2472727\n2     BB_T48_DAY1_MAY8.json       BB48   1     11-kt      NA 0.2480000\n3     BB_T48_DAY2_MAY9.json       BB48   2     11-kt      NA 0.2963636\n4    BB_T48_DAY3_MAY10.json       BB48   3     11-kt      NA 0.3650000\n5    BB_T48_DAY4_MAY11.json       BB48   4     11-kt      NA 0.4009091\n6 BB_T49INJ_DAY0_MAY12.json    BB49INJ   0     11-kt      NA 0.2030769\n\n\n\nLongitudinal trajectory\nWith the full dataset assembled, we can visualize how EOD duration changes across the 5-day experiment for each treatment group. Points show the group mean; error bars show ±1 standard deviation.\n\nggplot(metadata, aes(x = day, y = EOD, group = Treatment, color = Treatment)) +\n  stat_summary(\n    fun = \"mean\",\n    geom = \"pointrange\",\n    fun.max = function(x) mean(x) + sd(x),\n    fun.min = function(x) mean(x) - sd(x),\n    position = position_dodge(width = 0.2, preserve = \"total\"),\n    size = 0.7,\n    fatten = 0.5\n  ) +\n  scale_x_continuous(name = \"Day\", breaks = 0:4) +\n  scale_y_continuous(\n    name   = \"EOD duration (ms)\",\n    breaks = scales::breaks_pretty(10)\n  ) +\n  scale_colour_manual(values = c(\"11-kt\" = \"tomato\", \"control\" = \"grey40\")) +\n  theme_classic() +\n  theme(\n    axis.text    = element_text(size = 9),\n    legend.text  = element_text(size = 8),\n    legend.title = element_text(size = 9)\n  )\n\n\n\n\nMean EOD duration (±SD) across experimental days by treatment group.",
-    "crumbs": [
-      "Home",
-      "June 9: Tissue Dissection and Analysing EOD Differences",
-      "Examining EOD Duration from Raw Recordings"
-    ]
-  },
-  {
-    "objectID": "episodes/examine-eod-duration.html#visualizing-waveform-shape-change-by-individual",
-    "href": "episodes/examine-eod-duration.html#visualizing-waveform-shape-change-by-individual",
-    "title": "Examining EOD Duration from Raw Recordings",
-    "section": "Visualizing Waveform Shape Change by Individual",
-    "text": "Visualizing Waveform Shape Change by Individual\nLooking at the raw waveforms makes the treatment effect intuitive. Here we load the Day 0 and Day 4 recordings for each fish, normalize every waveform to a peak-to-peak amplitude of 1, and centre on the P1 peak. Overlaying the two traces for each animal shows directly how the waveform lengthens — or stays the same — depending on treatment.\n\nload_waveform_norm &lt;- function(file_path) {\n  recs &lt;- read_json(file_path)\n  rec &lt;- recs[[1]]\n  w &lt;- unlist(rec$wave)\n  rate &lt;- rec$Rate\n  p1_idx &lt;- which.max(w)\n  w_norm &lt;- w / (max(w) - min(w))\n  data.frame(\n    time_ms      = (seq_along(w) - p1_idx) / rate * 1000,\n    voltage_norm = w_norm\n  )\n}\n\nd0d2 &lt;- metadata %&gt;% filter(day %in% c(0, 4))\n\nwaveform_overlay &lt;- bind_rows(lapply(seq_len(nrow(d0d2)), function(i) {\n  fp &lt;- file.path(\"data/eod_duration\", d0d2$file[i])\n  df &lt;- load_waveform_norm(fp)\n  df$fish_label &lt;- paste0(d0d2$specimenno[i], \" (\", d0d2$Treatment[i], \")\")\n  df$Day &lt;- paste0(\"Day \", d0d2$day[i])\n  df\n}))\n\nggplot(waveform_overlay, aes(x = time_ms, y = voltage_norm, color = Day)) +\n  geom_line(linewidth = 0.6, alpha = 0.85) +\n  coord_cartesian(xlim = c(-1.5, 3)) +\n  facet_wrap(~fish_label, ncol = 2) +\n  scale_colour_manual(values = c(\"Day 0\" = \"grey50\", \"Day 4\" = \"tomato\")) +\n  theme_classic() +\n  theme(\n    strip.background = element_blank(),\n    strip.text       = element_text(face = \"bold\"),\n    legend.position  = \"top\"\n  ) +\n  labs(\n    x     = \"Time (ms)\",\n    y     = \"Normalized voltage\",\n    color = NULL,\n    title = \"EOD waveforms by individual: Day 0 vs Day 4\"\n  )\n\n\n\n\nDay 0 (grey) and Day 4 (red) EOD waveforms for each individual fish, normalized to peak-to-peak amplitude and centred on P1. Waveforms from the 11-kt-treated fish (BB48, BB49INJ) show a lengthened P2 phase by Day 4; control fish (BB50, BB51INJ) are largely unchanged.\n\n\n\n\n\n\n\n\n\n\nTipKey Points\n\n\n\n\njsonlite::read_json() loads JSON files as nested R lists; each recording trial is a named list with fields like wave, Rate, temp, and specimenno\nEOD duration is defined by a threshold criterion applied to the normalized waveform — the choice of threshold is an analytical decision that must be reported\nA metadata CSV that maps files to experimental conditions lets you build a tidy dataset by applying a duration function across all recording sessions",
-    "crumbs": [
-      "Home",
-      "June 9: Tissue Dissection and Analysing EOD Differences",
-      "Examining EOD Duration from Raw Recordings"
-    ]
-  },
-  {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "Electric Fish: Single-Nucleus RNA-seq",
-    "section": "",
-    "text": "This lesson uses weakly electric mormyrid fish as a model to teach single-nucleus RNA-seq analysis end to end — from sample preparation and implant surgery through Seurat clustering, pseudobulk differential expression, and cross-study validation."
-  },
-  {
-    "objectID": "index.html#lesson-overview",
-    "href": "index.html#lesson-overview",
-    "title": "Electric Fish: Single-Nucleus RNA-seq",
-    "section": "Lesson overview",
-    "text": "Lesson overview\n\n\n\nEpisode\nTopic\nTeaching\nExercises\n\n\n\n\n1\nBiological Introduction\n30 min\n10 min\n\n\n2\n11-KT Implantation Protocol\n20 min\n75 min\n\n\n3\nExamining EOD Duration\n20 min\n25 min\n\n\n4\nsnRNA-seq QC\n10 min\n2 min\n\n\n5\nNormalization & Clustering\n45 min\n10 min\n\n\n6\nGene Expression Changes\n60 min\n15 min\n\n\n\nSee Setup for installation instructions before the lesson."
-  },
-  {
-    "objectID": "episodes/eod-recording.html",
-    "href": "episodes/eod-recording.html",
-    "title": "EOD Recording: A Practical Overview",
-    "section": "",
-    "text": "NoteQuestions\n\n\n\n\nWhat physical quantity are our electrodes actually measuring when we record an EOD?\nHow do sampling rate and bit depth limit what we can resolve in a waveform?\nWhen does AC coupling distort an EOD, and when is it acceptable?\nWhy does electrode position affect the measured amplitude of the signal?",
-    "crumbs": [
-      "Home",
-      "June 8: Introduction, EOD Recording and Injection",
-      "EOD Recording: A Practical Overview"
-    ]
-  },
-  {
-    "objectID": "episodes/eod-recording.html#introduction",
-    "href": "episodes/eod-recording.html#introduction",
-    "title": "EOD Recording: A Practical Overview",
-    "section": "Introduction",
-    "text": "Introduction\nThe electric organ discharge (EOD) is the behavior we’re trying to understand at a cellular and molecular level — but first we need to measure it reliably. Recording an EOD looks simple: put two electrodes in water with a fish and read the voltage. In practice, the choices you make about hardware, positioning, and coupling all change what you observe. This episode gives you the conceptual tools to make those choices deliberately.\nThis is optional background material. If you are already comfortable with extracellular recording and analog-to-digital conversion, skim the keypoints and move on.",
-    "crumbs": [
-      "Home",
-      "June 8: Introduction, EOD Recording and Injection",
-      "EOD Recording: A Practical Overview"
-    ]
-  },
-  {
-    "objectID": "episodes/eod-recording.html#what-were-measuring",
-    "href": "episodes/eod-recording.html#what-were-measuring",
-    "title": "EOD Recording: A Practical Overview",
-    "section": "What We’re Measuring",
-    "text": "What We’re Measuring\nThe electric organ acts like a dipole: a separation of positive and negative charge across a distance equal to the length of the organ. When the fish fires, hundreds of flat electrocytes discharge synchronously, generating an electrostatic field that extends into the surrounding water.\nOur electrodes sample the potential difference between two points inside that field. A useful analogy is a topographic map: the density of contour lines represents the steepness of potential change between two nearby points. Two electrodes close together measure a small difference; the same electrodes far apart — spanning more of the gradient — measure a larger one.\n\n\n\nDipole field produced by a weakly electric fish. Dashed lines show equipotential contours; arrows indicate field direction.\n\n\nThis means electrode spacing must be matched to the fish size and water conductivity. There is no single “correct” amplitude — only amplitude relative to a known recording geometry.",
-    "crumbs": [
-      "Home",
-      "June 8: Introduction, EOD Recording and Injection",
-      "EOD Recording: A Practical Overview"
-    ]
-  },
-  {
-    "objectID": "episodes/eod-recording.html#how-we-measure-it",
-    "href": "episodes/eod-recording.html#how-we-measure-it",
-    "title": "EOD Recording: A Practical Overview",
-    "section": "How We Measure It",
-    "text": "How We Measure It\n\nElectrodes and Amplifier\nStandard EOD recordings use three leads: a positive (red, anterior), a negative (black, posterior), and a ground (clear, placed away from the fish). By convention the red lead always goes at the head end. The ground provides a shunt for stray electromagnetic fields picked up by the recording circuit.\nThe leads connect to a differential amplifier (typically a BMA-200 or AM Systems unit). Differential mode amplifies the difference between positive and negative inputs and suppresses signals common to both — a property called common mode rejection that is the primary defense against 60 Hz noise.\n\n\nAnalog-to-Digital Conversion\nThe amplifier output is an analog voltage. To store it digitally, an analog-to-digital (A/D) converter samples that voltage at a fixed rate and encodes each sample as a binary number. Two parameters govern fidelity.\nSample rate determines how many voltage measurements are taken per second. A signal is faithfully reconstructed only if it is sampled at more than twice its highest frequency (the Nyquist criterion). Standard mormyrid EODs are well encoded at 100 kHz; very brief species (Petrocephalus, some Paramormyrops) require 250 kHz or higher.\n\n\n\nEffect of sample rate on waveform reconstruction.\n\n\nResolution (bit depth) determines how finely voltage is quantized. A 16-bit converter divides a ±10 V range into 65,536 steps — roughly 0.3 mV per step. To maximize usable resolution, record at the highest amplitude that does not clip.\n\n\n\nA/D conversion at low vs. high bit depth.\n\n\n\n\n\n\n\n\nWarningClipping\n\n\n\nThe BMA-200 has a ±6 V output range. Amplify beyond this range and the waveform will be truncated — clipped signals cannot be recovered or analyzed. Always verify gain settings with an oscilloscope before committing a recording session.\n\n\n\n\nAC vs. DC Coupling\nMetal electrodes in water behave like a battery, creating a slow-drifting DC offset that can swamp the signal of interest. AC coupling removes this offset with a capacitor in the circuit, at the cost of slight distortion at very low frequencies.\nBecause the EOD carries almost no energy below 20 Hz, AC coupling introduces negligible distortion for most mormyrid species. DC coupling is required only when you need to compare baseline potentials or record extremely long-duration waveforms. Sound cards (e.g., Steinberg UR22) always AC couple; National Instruments boards (NI-6211, NI-6216) do not.\n\n\n\nFrequency content of a passive bioelectric field versus a mormyrid EOD.\n\n\n\n\n\n\n\n\nWarningAC coupling and waveform duration\n\n\n\nLong-duration EODs (some Campylomormyrus species, heavily treated fish) can show baseline distortion with AC coupling. If EOD duration is a dependent variable in your experiment, verify AC coupling does not affect your waveform shape before committing to that hardware.\n\n\n\n\nNoise Sources and Mitigation\nThe most common noise source is 60 Hz electromagnetic interference from building electrical systems. Differential amplification and common-mode rejection reduce this substantially, but two additional strategies help.\nFirst, use shielded cables (foil or braid) to prevent external fields from being induced in the recording leads. Second, ground the shielding at one point only.\n\n\n\n\n\n\nWarningGround loops\n\n\n\nGrounding shielding at more than one location creates a loop. Magnetic fields can induce a current in that loop that appears as low-frequency oscillation in your recording. If you see rhythmic noise that does not disappear with the amplifier gain at zero, inspect grounding continuity first.",
-    "crumbs": [
-      "Home",
-      "June 8: Introduction, EOD Recording and Injection",
-      "EOD Recording: A Practical Overview"
-    ]
-  },
-  {
-    "objectID": "episodes/eod-recording.html#practical-recording-guide",
-    "href": "episodes/eod-recording.html#practical-recording-guide",
-    "title": "EOD Recording: A Practical Overview",
-    "section": "Practical Recording Guide",
-    "text": "Practical Recording Guide\n\nChoose your hardware. AC coupling (sound card) is sufficient for waveform shape and duration. DC coupling (NI-DAQ board) is required for baseline comparisons. Match sample rate to the fastest EOD you expect to encounter.\nSet up the electrodes. Place the red lead at the fish’s head and the black lead at the tail. Position the ground well away from the recording zone. Keep all cable runs as short as possible.\nVerify with an oscilloscope first. Before recording a session, confirm the signal is clean and unclipped on an oscilloscope. Adjust gain until the EOD uses most of the amplifier’s output range without clipping.",
-    "crumbs": [
-      "Home",
-      "June 8: Introduction, EOD Recording and Injection",
-      "EOD Recording: A Practical Overview"
-    ]
-  },
-  {
-    "objectID": "episodes/eod-recording.html#keypoints",
-    "href": "episodes/eod-recording.html#keypoints",
-    "title": "EOD Recording: A Practical Overview",
+    "objectID": "episodes/introduction.html#keypoints",
+    "href": "episodes/introduction.html#keypoints",
+    "title": "Introduction: Single-Cell Transcriptomics in Weakly Electric Fish",
     "section": "Keypoints",
-    "text": "Keypoints\n\nEOD recording measures the potential difference between two points in the extracellular dipole field; electrode spacing directly determines apparent amplitude.\nSample rate must exceed twice the highest frequency in the EOD; 100 kHz is sufficient for most mormyrids, but brief species require 250 kHz or more.\nBit depth (resolution) limits the smallest voltage step that can be resolved; record at the highest amplitude that does not clip.\nAC coupling removes DC offset and 60 Hz drift with minimal distortion for standard mormyrid EODs; DC coupling is required when recording long-duration waveforms or comparing baselines.\nDifferential amplification and shielded cables reduce 60 Hz noise; ground shield cables at one point only to avoid ground loops.",
+    "text": "Keypoints\n\nThe mormyrid sensorimotor loop links command nucleus → electric organ → knollenorgans → corollary discharge circuit, with a copy of each motor command used to predict and cancel self-generated sensory input.\nTestosterone coordinately reshapes all three components — the electric organ (direct), knollenorgans (indirect, stimulus-driven), and the corollary discharge circuit (direct, MCA-centered) — keeping the loop coherent as the EOD changes.\nThe MCA is a conserved temporal hub: the same circuit node adjusts CD timing across seasonal, developmental, and evolutionary timescales.\nBulk RNA-seq on electric organ tissue identified 44 candidate genes but cannot resolve which genes changed in which cell types.\nSingle-nucleus RNA-seq is the natural next step: it applies to frozen archived tissue and provides cell-type-resolved gene expression across the full sensorimotor circuit.",
     "crumbs": [
       "Home",
       "June 8: Introduction, EOD Recording and Injection",
-      "EOD Recording: A Practical Overview"
+      "Introduction: Single-Cell Transcriptomics in Weakly Electric Fish"
     ]
   },
   {
@@ -611,75 +393,377 @@
     ]
   },
   {
-    "objectID": "episodes/introduction.html",
-    "href": "episodes/introduction.html",
-    "title": "Introduction: Single-Cell Transcriptomics in Weakly Electric Fish",
+    "objectID": "episodes/eod-recording.html",
+    "href": "episodes/eod-recording.html",
+    "title": "EOD Recording: A Practical Overview",
     "section": "",
-    "text": "NoteQuestions\n\n\n\n\nHow does testosterone simultaneously change the electric organ, knollenorgans, and corollary discharge circuit?\nWhy can’t bulk RNA-seq tell us which cell types are responsible for gene expression changes in the electric organ?\nWhat questions can single-nucleus RNA-seq answer in this system that previous approaches could not?",
+    "text": "NoteQuestions\n\n\n\n\nWhat physical quantity are our electrodes actually measuring when we record an EOD?\nHow do sampling rate and bit depth limit what we can resolve in a waveform?\nWhen does AC coupling distort an EOD, and when is it acceptable?\nWhy does electrode position affect the measured amplitude of the signal?",
     "crumbs": [
       "Home",
       "June 8: Introduction, EOD Recording and Injection",
-      "Introduction: Single-Cell Transcriptomics in Weakly Electric Fish"
+      "EOD Recording: A Practical Overview"
     ]
   },
   {
-    "objectID": "episodes/introduction.html#lecture-video",
-    "href": "episodes/introduction.html#lecture-video",
-    "title": "Introduction: Single-Cell Transcriptomics in Weakly Electric Fish",
+    "objectID": "episodes/eod-recording.html#introduction",
+    "href": "episodes/eod-recording.html#introduction",
+    "title": "EOD Recording: A Practical Overview",
+    "section": "Introduction",
+    "text": "Introduction\nThe electric organ discharge (EOD) is the behavior we’re trying to understand at a cellular and molecular level — but first we need to measure it reliably. Recording an EOD looks simple: put two electrodes in water with a fish and read the voltage. In practice, the choices you make about hardware, positioning, and coupling all change what you observe. This episode gives you the conceptual tools to make those choices deliberately.\nThis is optional background material. If you are already comfortable with extracellular recording and analog-to-digital conversion, skim the keypoints and move on.",
+    "crumbs": [
+      "Home",
+      "June 8: Introduction, EOD Recording and Injection",
+      "EOD Recording: A Practical Overview"
+    ]
+  },
+  {
+    "objectID": "episodes/eod-recording.html#what-were-measuring",
+    "href": "episodes/eod-recording.html#what-were-measuring",
+    "title": "EOD Recording: A Practical Overview",
+    "section": "What We’re Measuring",
+    "text": "What We’re Measuring\nThe electric organ acts like a dipole: a separation of positive and negative charge across a distance equal to the length of the organ. When the fish fires, hundreds of flat electrocytes discharge synchronously, generating an electrostatic field that extends into the surrounding water.\nOur electrodes sample the potential difference between two points inside that field. A useful analogy is a topographic map: the density of contour lines represents the steepness of potential change between two nearby points. Two electrodes close together measure a small difference; the same electrodes far apart — spanning more of the gradient — measure a larger one.\n\n\n\nDipole field produced by a weakly electric fish. Dashed lines show equipotential contours; arrows indicate field direction.\n\n\nThis means electrode spacing must be matched to the fish size and water conductivity. There is no single “correct” amplitude — only amplitude relative to a known recording geometry.",
+    "crumbs": [
+      "Home",
+      "June 8: Introduction, EOD Recording and Injection",
+      "EOD Recording: A Practical Overview"
+    ]
+  },
+  {
+    "objectID": "episodes/eod-recording.html#how-we-measure-it",
+    "href": "episodes/eod-recording.html#how-we-measure-it",
+    "title": "EOD Recording: A Practical Overview",
+    "section": "How We Measure It",
+    "text": "How We Measure It\n\nElectrodes and Amplifier\nStandard EOD recordings use three leads: a positive (red, anterior), a negative (black, posterior), and a ground (clear, placed away from the fish). By convention the red lead always goes at the head end. The ground provides a shunt for stray electromagnetic fields picked up by the recording circuit.\nThe leads connect to a differential amplifier (typically a BMA-200 or AM Systems unit). Differential mode amplifies the difference between positive and negative inputs and suppresses signals common to both — a property called common mode rejection that is the primary defense against 60 Hz noise.\n\n\nAnalog-to-Digital Conversion\nThe amplifier output is an analog voltage. To store it digitally, an analog-to-digital (A/D) converter samples that voltage at a fixed rate and encodes each sample as a binary number. Two parameters govern fidelity.\nSample rate determines how many voltage measurements are taken per second. A signal is faithfully reconstructed only if it is sampled at more than twice its highest frequency (the Nyquist criterion). Standard mormyrid EODs are well encoded at 100 kHz; very brief species (Petrocephalus, some Paramormyrops) require 250 kHz or higher.\n\n\n\nEffect of sample rate on waveform reconstruction.\n\n\nResolution (bit depth) determines how finely voltage is quantized. A 16-bit converter divides a ±10 V range into 65,536 steps — roughly 0.3 mV per step. To maximize usable resolution, record at the highest amplitude that does not clip.\n\n\n\nA/D conversion at low vs. high bit depth.\n\n\n\n\n\n\n\n\nWarningClipping\n\n\n\nThe BMA-200 has a ±6 V output range. Amplify beyond this range and the waveform will be truncated — clipped signals cannot be recovered or analyzed. Always verify gain settings with an oscilloscope before committing a recording session.\n\n\n\n\nAC vs. DC Coupling\nMetal electrodes in water behave like a battery, creating a slow-drifting DC offset that can swamp the signal of interest. AC coupling removes this offset with a capacitor in the circuit, at the cost of slight distortion at very low frequencies.\nBecause the EOD carries almost no energy below 20 Hz, AC coupling introduces negligible distortion for most mormyrid species. DC coupling is required only when you need to compare baseline potentials or record extremely long-duration waveforms. Sound cards (e.g., Steinberg UR22) always AC couple; National Instruments boards (NI-6211, NI-6216) do not.\n\n\n\nFrequency content of a passive bioelectric field versus a mormyrid EOD.\n\n\n\n\n\n\n\n\nWarningAC coupling and waveform duration\n\n\n\nLong-duration EODs (some Campylomormyrus species, heavily treated fish) can show baseline distortion with AC coupling. If EOD duration is a dependent variable in your experiment, verify AC coupling does not affect your waveform shape before committing to that hardware.\n\n\n\n\nNoise Sources and Mitigation\nThe most common noise source is 60 Hz electromagnetic interference from building electrical systems. Differential amplification and common-mode rejection reduce this substantially, but two additional strategies help.\nFirst, use shielded cables (foil or braid) to prevent external fields from being induced in the recording leads. Second, ground the shielding at one point only.\n\n\n\n\n\n\nWarningGround loops\n\n\n\nGrounding shielding at more than one location creates a loop. Magnetic fields can induce a current in that loop that appears as low-frequency oscillation in your recording. If you see rhythmic noise that does not disappear with the amplifier gain at zero, inspect grounding continuity first.",
+    "crumbs": [
+      "Home",
+      "June 8: Introduction, EOD Recording and Injection",
+      "EOD Recording: A Practical Overview"
+    ]
+  },
+  {
+    "objectID": "episodes/eod-recording.html#practical-recording-guide",
+    "href": "episodes/eod-recording.html#practical-recording-guide",
+    "title": "EOD Recording: A Practical Overview",
+    "section": "Practical Recording Guide",
+    "text": "Practical Recording Guide\n\nChoose your hardware. AC coupling (sound card) is sufficient for waveform shape and duration. DC coupling (NI-DAQ board) is required for baseline comparisons. Match sample rate to the fastest EOD you expect to encounter.\nSet up the electrodes. Place the red lead at the fish’s head and the black lead at the tail. Position the ground well away from the recording zone. Keep all cable runs as short as possible.\nVerify with an oscilloscope first. Before recording a session, confirm the signal is clean and unclipped on an oscilloscope. Adjust gain until the EOD uses most of the amplifier’s output range without clipping.",
+    "crumbs": [
+      "Home",
+      "June 8: Introduction, EOD Recording and Injection",
+      "EOD Recording: A Practical Overview"
+    ]
+  },
+  {
+    "objectID": "episodes/eod-recording.html#keypoints",
+    "href": "episodes/eod-recording.html#keypoints",
+    "title": "EOD Recording: A Practical Overview",
+    "section": "Keypoints",
+    "text": "Keypoints\n\nEOD recording measures the potential difference between two points in the extracellular dipole field; electrode spacing directly determines apparent amplitude.\nSample rate must exceed twice the highest frequency in the EOD; 100 kHz is sufficient for most mormyrids, but brief species require 250 kHz or more.\nBit depth (resolution) limits the smallest voltage step that can be resolved; record at the highest amplitude that does not clip.\nAC coupling removes DC offset and 60 Hz drift with minimal distortion for standard mormyrid EODs; DC coupling is required when recording long-duration waveforms or comparing baselines.\nDifferential amplification and shielded cables reduce 60 Hz noise; ground shield cables at one point only to avoid ground loops.",
+    "crumbs": [
+      "Home",
+      "June 8: Introduction, EOD Recording and Injection",
+      "EOD Recording: A Practical Overview"
+    ]
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Electric Fish: Single-Nucleus RNA-seq",
+    "section": "",
+    "text": "This lesson uses weakly electric mormyrid fish as a model to teach single-nucleus RNA-seq analysis end to end — from sample preparation and implant surgery through Seurat clustering, pseudobulk differential expression, and cross-study validation."
+  },
+  {
+    "objectID": "index.html#lesson-overview",
+    "href": "index.html#lesson-overview",
+    "title": "Electric Fish: Single-Nucleus RNA-seq",
+    "section": "Lesson overview",
+    "text": "Lesson overview\n\n\n\nEpisode\nTopic\nTeaching\nExercises\n\n\n\n\n1\nBiological Introduction\n30 min\n10 min\n\n\n2\n11-KT Implantation Protocol\n20 min\n75 min\n\n\n3\nExamining EOD Duration\n20 min\n25 min\n\n\n4\nsnRNA-seq QC\n10 min\n2 min\n\n\n5\nNormalization & Clustering\n45 min\n10 min\n\n\n6\nGene Expression Changes\n60 min\n15 min\n\n\n\nSee Setup for installation instructions before the lesson."
+  },
+  {
+    "objectID": "episodes/examine-eod-duration.html",
+    "href": "episodes/examine-eod-duration.html",
+    "title": "Examining EOD Duration from Raw Recordings",
+    "section": "",
+    "text": "NoteQuestions\n\n\n\n\nHow do we load JSON EOD recordings into R?\nHow is EOD duration measured from a raw waveform?\nDid 11-ketotestosterone treatment change EOD duration over time?",
+    "crumbs": [
+      "Home",
+      "June 9: Tissue Dissection and Analysing EOD Differences",
+      "Examining EOD Duration from Raw Recordings"
+    ]
+  },
+  {
+    "objectID": "episodes/examine-eod-duration.html#introduction",
+    "href": "episodes/examine-eod-duration.html#introduction",
+    "title": "Examining EOD Duration from Raw Recordings",
+    "section": "Introduction",
+    "text": "Introduction\nIn the previous episodes, you learned how testosterone shapes the electric organ discharge (EOD) in Brienomyrus brachyistius, and you performed the implantation procedure yourself. Now it’s time to analyze the data.\nEOD recordings were captured daily over 5 days for animals implanted with either 11-ketotestosterone (11-kt) or a blank control. Each recording session is stored as a JSON file containing multiple trials. Our goal is to:\n\nLoad a raw EOD waveform and visualize it\nWrite a function that measures EOD duration from any recording file\nApply that function across all recording sessions to build a dataset\nVisualize how EOD duration changes over time for each treatment group",
+    "crumbs": [
+      "Home",
+      "June 9: Tissue Dissection and Analysing EOD Differences",
+      "Examining EOD Duration from Raw Recordings"
+    ]
+  },
+  {
+    "objectID": "episodes/examine-eod-duration.html#loading-eod-recording-files-in-r",
+    "href": "episodes/examine-eod-duration.html#loading-eod-recording-files-in-r",
+    "title": "Examining EOD Duration from Raw Recordings",
+    "section": "Loading EOD Recording Files in R",
+    "text": "Loading EOD Recording Files in R\nJSON files can be read in R using the jsonlite package. The read_json() function returns a list that maps directly onto the file structure.\n\nlibrary(jsonlite)\n\neod_data &lt;- read_json(\"data/eod_duration/BB_T48_DAY0_MAY7.json\")\n\ncat(\"Number of recordings:\", length(eod_data), \"\\n\")\n\nNumber of recordings: 11 \n\n\nEach element of eod_data is one recording trial, stored as a named list. Use names(eod_data[[1]]) to see the available fields and $ to access them.\n\n\n\n\n\n\nImportantChallenge 1: Explore the recording metadata (5 min)\n\n\n\nUsing the eod_data object already loaded, print the specimen number, species, temperature, sampling rate, and number of waveform samples for the first recording trial.\nHint: names(eod_data[[1]]) shows the available fields.\n\n\n\n\n\n\nTipSolution\n\n\n\n\n\n\nnames(eod_data[[1]])\ncat(\"Specimen:\", eod_data[[1]]$specimenno, \"\\n\")\ncat(\"Species: \", eod_data[[1]]$species, \"\\n\")\ncat(\"Temp:    \", eod_data[[1]]$temp, \"\\n\")\ncat(\"Rate:    \", eod_data[[1]]$Rate, \"\\n\")\ncat(\"Samples: \", length(eod_data[[1]]$wave), \"\\n\")",
+    "crumbs": [
+      "Home",
+      "June 9: Tissue Dissection and Analysing EOD Differences",
+      "Examining EOD Duration from Raw Recordings"
+    ]
+  },
+  {
+    "objectID": "episodes/examine-eod-duration.html#visualizing-an-eod-waveform",
+    "href": "episodes/examine-eod-duration.html#visualizing-an-eod-waveform",
+    "title": "Examining EOD Duration from Raw Recordings",
+    "section": "Visualizing an EOD Waveform",
+    "text": "Visualizing an EOD Waveform\nWe convert sample indices to milliseconds using the sampling rate stored in the file, then plot with ggplot2.\n\nlibrary(ggplot2)\n\nrate_hz &lt;- eod_data[[1]]$Rate\nwave &lt;- unlist(eod_data[[1]]$wave)\np1_idx &lt;- which.max(wave)\ntime_ms &lt;- (seq_along(wave) - p1_idx) / rate_hz * 1000\n\nwaveform_df &lt;- data.frame(time_ms = time_ms, voltage = wave)\n\nggplot(waveform_df, aes(x = time_ms, y = voltage)) +\n  geom_line(linewidth = 0.6) +\n  coord_cartesian(xlim = c(-2, 2)) +\n  theme_classic() +\n  labs(\n    x = \"Time (ms)\",\n    y = \"Voltage (V)\",\n    title = paste(\"Raw EOD waveform —\", eod_data[[1]]$specimenno, \"Day 0\")\n  )\n\n\n\n\nA single raw EOD waveform recorded from B. brachyistius. The biphasic waveform is characteristic of mormyrid electric fish.\n\n\n\n\n\n\n\n\n\n\nImportantChallenge 2: Compare waveforms across recording sessions (5 min)\n\n\n\nThe Day 0 waveform for BB48 is already loaded as eod_data. Now load the Day 1 recording (data/eod_duration/BB_T48_DAY1_MAY8.json) and plot both waveforms together. Do the shapes look similar?\n\n\n\n\n\n\nTipSolution\n\n\n\n\n\n\neod_day1 &lt;- read_json(\"data/eod_duration/BB_T48_DAY1_MAY8.json\")\nwave1     &lt;- unlist(eod_day1[[1]]$wave)\np1_idx1   &lt;- which.max(wave1)\ntime1_ms  &lt;- (seq_along(wave1) - p1_idx1) / eod_day1[[1]]$Rate * 1000\n\n# Normalize each waveform to peak-to-peak = 1 so amplitudes are comparable\nwave0_norm &lt;- wave  / (max(wave)  - min(wave))\nwave1_norm &lt;- wave1 / (max(wave1) - min(wave1))\n\ndf_compare &lt;- rbind(\n  data.frame(time_ms = time_ms,  voltage = wave0_norm, session = \"Day 0\"),\n  data.frame(time_ms = time1_ms, voltage = wave1_norm, session = \"Day 1\")\n)\n\nggplot(df_compare, aes(x = time_ms, y = voltage, color = session)) +\n  geom_line(linewidth = 0.6) +\n  coord_cartesian(xlim = c(-2, 2)) +\n  theme_classic() +\n  scale_colour_manual(values = c(\"Day 0\" = \"grey50\", \"Day 1\" = \"tomato\")) +\n  labs(\n    x = \"Time (ms)\", y = \"Normalized voltage\",\n    title = \"BB48 EOD waveforms — Day 0 vs Day 1\",\n    color = NULL\n  )\n\nThese are the first two days of recording for BB48, before treatment has had time to act. The waveform shapes should be very similar.",
+    "crumbs": [
+      "Home",
+      "June 9: Tissue Dissection and Analysing EOD Differences",
+      "Examining EOD Duration from Raw Recordings"
+    ]
+  },
+  {
+    "objectID": "episodes/examine-eod-duration.html#measuring-eod-duration",
+    "href": "episodes/examine-eod-duration.html#measuring-eod-duration",
+    "title": "Examining EOD Duration from Raw Recordings",
+    "section": "Measuring EOD Duration",
+    "text": "Measuring EOD Duration\nEOD duration is not read directly from the file — it must be calculated from the waveform. The standard approach is:\n\nNormalize the waveform so that the peak-to-peak amplitude = 1\nApply a threshold (typically 10% of the maximum absolute value) to define where the EOD “starts” and “ends”\nCalculate duration as the time elapsed between the first and last threshold crossings\n\n\n# 1. Normalize to peak-to-peak = 1\nwave_norm &lt;- wave / (max(wave) - min(wave))\n\n# 2. Apply 10% threshold\nthreshold &lt;- 0.1 * max(abs(wave_norm))\nabove_thresh &lt;- which(abs(wave_norm) &gt; threshold)\n\nstart_idx &lt;- min(above_thresh)\nend_idx &lt;- max(above_thresh)\n\n# 3. Duration in milliseconds\nduration_ms &lt;- (end_idx - start_idx) / rate_hz * 1000\ncat(\"EOD duration (10% threshold):\", round(duration_ms, 3), \"ms\\n\")\n\nEOD duration (10% threshold): 0.25 ms\n\n\nWe can visualize the threshold on the normalized waveform to see exactly which part of the signal is being measured:\n\nnorm_df &lt;- data.frame(time_ms = time_ms, voltage = wave_norm)\n\nggplot(norm_df, aes(x = time_ms, y = voltage)) +\n  geom_line(linewidth = 0.6) +\n  geom_hline(\n    yintercept = c(threshold, -threshold),\n    linetype = \"dashed\", color = \"steelblue\", linewidth = 0.5\n  ) +\n  geom_vline(\n    xintercept = c(time_ms[start_idx], time_ms[end_idx]),\n    linetype = \"dashed\", color = \"tomato\", linewidth = 0.5\n  ) +\n  coord_cartesian(xlim = c(-2, 2)) +\n  theme_classic() +\n  labs(\n    x     = \"Time (ms)\",\n    y     = \"Normalized voltage\",\n    title = \"EOD duration measurement (10% threshold)\"\n  )\n\n\n\n\nThreshold-based EOD duration measurement on the normalized waveform.\n\n\n\n\n\n\n\n\n\n\nImportantChallenge 3: Sensitivity of the threshold (5 min)\n\n\n\nRepeat the duration calculation using a 20% threshold instead of 10%. How does the measured duration change, and why?\nThis is important: the choice of threshold is an analytical decision that must be reported in any publication.\n\n\n\n\n\n\nTipSolution\n\n\n\n\n\n\nthreshold_20 &lt;- 0.2 * max(abs(wave_norm))\nabove_20 &lt;- which(abs(wave_norm) &gt; threshold_20)\n\nduration_20ms &lt;- (max(above_20) - min(above_20)) / rate_hz * 1000\ncat(\"Duration at 20% threshold:\", round(duration_20ms, 3), \"ms\\n\")\ncat(\"Duration at 10% threshold:\", round(duration_ms, 3), \"ms\\n\")\n\nA higher threshold excludes the low-amplitude tails of the waveform, making the measured duration shorter. Neither threshold is “wrong” — but the choice must be consistent across all animals in a study and clearly reported.",
+    "crumbs": [
+      "Home",
+      "June 9: Tissue Dissection and Analysing EOD Differences",
+      "Examining EOD Duration from Raw Recordings"
+    ]
+  },
+  {
+    "objectID": "episodes/examine-eod-duration.html#building-a-dataset-across-all-recording-sessions",
+    "href": "episodes/examine-eod-duration.html#building-a-dataset-across-all-recording-sessions",
+    "title": "Examining EOD Duration from Raw Recordings",
+    "section": "Building a Dataset Across All Recording Sessions",
+    "text": "Building a Dataset Across All Recording Sessions\nNow that we know how to measure EOD duration from a single file, we can apply the same logic to every recording session in the study. Rather than computing durations by hand for each file, we write a function and let R do the work.\nThe study metadata is stored in recordings.csv, which maps each JSON file to its animal, day, and treatment group:\n\nlibrary(dplyr)\n\nmetadata &lt;- read.csv(\"data/eod_duration/all_surviving_recordings.csv\")\nmetadata$Treatment &lt;- as.factor(metadata$Treatment)\n\nmetadata\n\n                        file specimenno day Treatment Comment\n1      BB_T48_DAY0_MAY7.json       BB48   0     11-kt      NA\n2      BB_T48_DAY1_MAY8.json       BB48   1     11-kt      NA\n3      BB_T48_DAY2_MAY9.json       BB48   2     11-kt      NA\n4     BB_T48_DAY3_MAY10.json       BB48   3     11-kt      NA\n5     BB_T48_DAY4_MAY11.json       BB48   4     11-kt      NA\n6  BB_T49INJ_DAY0_MAY12.json    BB49INJ   0     11-kt      NA\n7  BB_T49INJ_DAY1_MAY13.json    BB49INJ   1     11-kt      NA\n8  BB_T49INJ_DAY2_MAY14.json    BB49INJ   2     11-kt      NA\n9  BB_T49INJ_DAY3_MAY15.json    BB49INJ   3     11-kt      NA\n10 BB_T49INJ_DAY4_MAY16.json    BB49INJ   4     11-kt      NA\n11     BB_T50_DAY0_MAY7.json       BB50   0   control      NA\n12     BB_T50_DAY1_MAY8.json       BB50   1   control      NA\n13     BB_T50_DAY2_MAY9.json       BB50   2   control      NA\n14    BB_T50_DAY3_MAY10.json       BB50   3   control      NA\n15    BB_T50_DAY4_MAY11.json       BB50   4   control      NA\n16 BB_T51INJ_DAY0_MAY12.json    BB51INJ   0   control      NA\n17 BB_T51INJ_DAY1_MAY13.json    BB51INJ   1   control      NA\n18 BB_T51INJ_DAY2_MAY14.json    BB51INJ   2   control      NA\n19 BB_T51INJ_DAY3_MAY15.json    BB51INJ   3   control      NA\n20 BB_T51INJ_DAY4_MAY16.json    BB51INJ   4   control      NA\n\n\nWe write a small function that takes a file path, loads the JSON, computes EOD duration for every trial, and returns the mean:\n\nmean_eod_duration &lt;- function(file_path, threshold = 0.1) {\n  recs &lt;- read_json(file_path)\n  durations &lt;- sapply(recs, function(rec) {\n    w &lt;- unlist(rec$wave)\n    rate &lt;- rec$Rate\n    w_norm &lt;- w / (max(w) - min(w))\n    thresh &lt;- threshold * max(abs(w_norm))\n    above &lt;- which(abs(w_norm) &gt; thresh)\n    (max(above) - min(above)) / rate * 1000\n  })\n  mean(durations)\n}\n\nWe then apply this function to every row in the metadata table:\n\nmetadata$EOD &lt;- sapply(\n  file.path(\"data/eod_duration\", metadata$file),\n  mean_eod_duration\n)\n\nhead(metadata)\n\n                       file specimenno day Treatment Comment       EOD\n1     BB_T48_DAY0_MAY7.json       BB48   0     11-kt      NA 0.2472727\n2     BB_T48_DAY1_MAY8.json       BB48   1     11-kt      NA 0.2480000\n3     BB_T48_DAY2_MAY9.json       BB48   2     11-kt      NA 0.2963636\n4    BB_T48_DAY3_MAY10.json       BB48   3     11-kt      NA 0.3650000\n5    BB_T48_DAY4_MAY11.json       BB48   4     11-kt      NA 0.4009091\n6 BB_T49INJ_DAY0_MAY12.json    BB49INJ   0     11-kt      NA 0.2030769\n\n\n\nLongitudinal trajectory\nWith the full dataset assembled, we can visualize how EOD duration changes across the 5-day experiment for each treatment group. Points show the group mean; error bars show ±1 standard deviation.\n\nggplot(metadata, aes(x = day, y = EOD, group = Treatment, color = Treatment)) +\n  stat_summary(\n    fun = \"mean\",\n    geom = \"pointrange\",\n    fun.max = function(x) mean(x) + sd(x),\n    fun.min = function(x) mean(x) - sd(x),\n    position = position_dodge(width = 0.2, preserve = \"total\"),\n    size = 0.7,\n    fatten = 0.5\n  ) +\n  scale_x_continuous(name = \"Day\", breaks = 0:4) +\n  scale_y_continuous(\n    name   = \"EOD duration (ms)\",\n    breaks = scales::breaks_pretty(10)\n  ) +\n  scale_colour_manual(values = c(\"11-kt\" = \"tomato\", \"control\" = \"grey40\")) +\n  theme_classic() +\n  theme(\n    axis.text    = element_text(size = 9),\n    legend.text  = element_text(size = 8),\n    legend.title = element_text(size = 9)\n  )\n\n\n\n\nMean EOD duration (±SD) across experimental days by treatment group.",
+    "crumbs": [
+      "Home",
+      "June 9: Tissue Dissection and Analysing EOD Differences",
+      "Examining EOD Duration from Raw Recordings"
+    ]
+  },
+  {
+    "objectID": "episodes/examine-eod-duration.html#visualizing-waveform-shape-change-by-individual",
+    "href": "episodes/examine-eod-duration.html#visualizing-waveform-shape-change-by-individual",
+    "title": "Examining EOD Duration from Raw Recordings",
+    "section": "Visualizing Waveform Shape Change by Individual",
+    "text": "Visualizing Waveform Shape Change by Individual\nLooking at the raw waveforms makes the treatment effect intuitive. Here we load the Day 0 and Day 4 recordings for each fish, normalize every waveform to a peak-to-peak amplitude of 1, and centre on the P1 peak. Overlaying the two traces for each animal shows directly how the waveform lengthens — or stays the same — depending on treatment.\n\nload_waveform_norm &lt;- function(file_path) {\n  recs &lt;- read_json(file_path)\n  rec &lt;- recs[[1]]\n  w &lt;- unlist(rec$wave)\n  rate &lt;- rec$Rate\n  p1_idx &lt;- which.max(w)\n  w_norm &lt;- w / (max(w) - min(w))\n  data.frame(\n    time_ms      = (seq_along(w) - p1_idx) / rate * 1000,\n    voltage_norm = w_norm\n  )\n}\n\nd0d2 &lt;- metadata %&gt;% filter(day %in% c(0, 4))\n\nwaveform_overlay &lt;- bind_rows(lapply(seq_len(nrow(d0d2)), function(i) {\n  fp &lt;- file.path(\"data/eod_duration\", d0d2$file[i])\n  df &lt;- load_waveform_norm(fp)\n  df$fish_label &lt;- paste0(d0d2$specimenno[i], \" (\", d0d2$Treatment[i], \")\")\n  df$Day &lt;- paste0(\"Day \", d0d2$day[i])\n  df\n}))\n\nggplot(waveform_overlay, aes(x = time_ms, y = voltage_norm, color = Day)) +\n  geom_line(linewidth = 0.6, alpha = 0.85) +\n  coord_cartesian(xlim = c(-1.5, 3)) +\n  facet_wrap(~fish_label, ncol = 2) +\n  scale_colour_manual(values = c(\"Day 0\" = \"grey50\", \"Day 4\" = \"tomato\")) +\n  theme_classic() +\n  theme(\n    strip.background = element_blank(),\n    strip.text       = element_text(face = \"bold\"),\n    legend.position  = \"top\"\n  ) +\n  labs(\n    x     = \"Time (ms)\",\n    y     = \"Normalized voltage\",\n    color = NULL,\n    title = \"EOD waveforms by individual: Day 0 vs Day 4\"\n  )\n\n\n\n\nDay 0 (grey) and Day 4 (red) EOD waveforms for each individual fish, normalized to peak-to-peak amplitude and centred on P1. Waveforms from the 11-kt-treated fish (BB48, BB49INJ) show a lengthened P2 phase by Day 4; control fish (BB50, BB51INJ) are largely unchanged.\n\n\n\n\n\n\n\n\n\n\nTipKey Points\n\n\n\n\njsonlite::read_json() loads JSON files as nested R lists; each recording trial is a named list with fields like wave, Rate, temp, and specimenno\nEOD duration is defined by a threshold criterion applied to the normalized waveform — the choice of threshold is an analytical decision that must be reported\nA metadata CSV that maps files to experimental conditions lets you build a tidy dataset by applying a duration function across all recording sessions",
+    "crumbs": [
+      "Home",
+      "June 9: Tissue Dissection and Analysing EOD Differences",
+      "Examining EOD Duration from Raw Recordings"
+    ]
+  },
+  {
+    "objectID": "episodes/implant-11kt.html",
+    "href": "episodes/implant-11kt.html",
+    "title": "11-Ketotestosterone Implantation in Mormyrid Electric Fish",
+    "section": "",
+    "text": "TipObjectives\n\n\n\n\nPrepare a 20% w/w 11-ketotestosterone (11-KT) / cocoa butter implant suitable for IP delivery.\nAnesthetize a mormyrid fish to a stable surgical plane using buffered MS-222.\nPerform an IP incision and deposit a single cocoa-butter dose using sterile technique.\nRecord and log a pre-treatment EOD baseline that all post-implant measurements will be normalized against.",
+    "crumbs": [
+      "Home",
+      "June 8: Introduction, EOD Recording and Injection",
+      "11-Ketotestosterone Implantation in Mormyrid Electric Fish"
+    ]
+  },
+  {
+    "objectID": "episodes/implant-11kt.html#background",
+    "href": "episodes/implant-11kt.html#background",
+    "title": "11-Ketotestosterone Implantation in Mormyrid Electric Fish",
+    "section": "Background",
+    "text": "Background\nCocoa butter melts at body temperature, which makes it a useful slow-release vehicle for lipophilic steroids implanted into the peritoneal cavity. Bass and colleagues established this approach in the 1980s for studies of androgen action on the electric organ in mormyrids (Bass et al., 1986; Bass et al., 1987). A single 20% w/w cocoa-butter implant of 11-KT yields elevated circulating androgen for several days and produces measurable shifts in EOD waveform within ~24–72 h, depending on species and dose.\nThis episode walks through the Day 0 implant procedure as it is run in our lab. It assumes that the broader experimental schedule (acclimation, weighing, tank assignment, post-implant recording cadence) is already defined elsewhere in the course materials.\n\n\n\n\n\n\nNoteWhy cocoa butter?\n\n\n\nCocoa butter is solid at room temperature, liquefies at 35–40 °C, and re-solidifies inside the fish — trapping the steroid in a slow-release depot. It is also non-reactive in the IP cavity and avoids the need for a DMSO/oil carrier injection.",
+    "crumbs": [
+      "Home",
+      "June 8: Introduction, EOD Recording and Injection",
+      "11-Ketotestosterone Implantation in Mormyrid Electric Fish"
+    ]
+  },
+  {
+    "objectID": "episodes/implant-11kt.html#reagents",
+    "href": "episodes/implant-11kt.html#reagents",
+    "title": "11-Ketotestosterone Implantation in Mormyrid Electric Fish",
+    "section": "Reagents",
+    "text": "Reagents\n\nCocoa butter chips\n11-KT (Steraloids A6720, 25 mg vial)\nMS-222 (tricaine methanesulfonate)\nVetbond (tissue adhesive)\nRecovery water (system water with NaCl supplement)\nMaintenance-dose MS-222 (for gill drip during surgery, if used)",
+    "crumbs": [
+      "Home",
+      "June 8: Introduction, EOD Recording and Injection",
+      "11-Ketotestosterone Implantation in Mormyrid Electric Fish"
+    ]
+  },
+  {
+    "objectID": "episodes/implant-11kt.html#equipment",
+    "href": "episodes/implant-11kt.html#equipment",
+    "title": "11-Ketotestosterone Implantation in Mormyrid Electric Fish",
+    "section": "Equipment",
+    "text": "Equipment\n\nScalpel (sharp, fresh blade)\nKimwipes\nDry bath\nMilligram balance\nP200 pipette + tips\nDissecting tray + dissecting pins\nRecovery containers\nFish-transfer net",
+    "crumbs": [
+      "Home",
+      "June 8: Introduction, EOD Recording and Injection",
+      "11-Ketotestosterone Implantation in Mormyrid Electric Fish"
+    ]
+  },
+  {
+    "objectID": "episodes/implant-11kt.html#step-0-eod-baseline-day-1-and-day-0-pre-implant",
+    "href": "episodes/implant-11kt.html#step-0-eod-baseline-day-1-and-day-0-pre-implant",
+    "title": "11-Ketotestosterone Implantation in Mormyrid Electric Fish",
+    "section": "Step 0: EOD baseline (Day −1 and Day 0, pre-implant)",
+    "text": "Step 0: EOD baseline (Day −1 and Day 0, pre-implant)\n\nRecord an EOD waveform from each fish on Day −1 (24 h prior) and again on Day 0 immediately before implantation. These pre-treatment recordings are the per-fish baselines that all post-implant measurements will be normalized to (Bass et al., 1986).\nConfirm fish ID, weight, and tank assignment are logged before proceeding to Step 1.\n\n\n\n\n\n\n\nNoteWhy two baselines?\n\n\n\nDay −1 captures the fish’s “settled” waveform; Day 0 confirms it has not drifted overnight. If the two recordings disagree by more than your normal day-to-day variability, do not implant — investigate first.",
+    "crumbs": [
+      "Home",
+      "June 8: Introduction, EOD Recording and Injection",
+      "11-Ketotestosterone Implantation in Mormyrid Electric Fish"
+    ]
+  },
+  {
+    "objectID": "episodes/implant-11kt.html#step-1-prepare-11-kt-doses-20-ww-in-cocoa-butter",
+    "href": "episodes/implant-11kt.html#step-1-prepare-11-kt-doses-20-ww-in-cocoa-butter",
+    "title": "11-Ketotestosterone Implantation in Mormyrid Electric Fish",
+    "section": "Step 1: Prepare 11-KT doses (20% w/w in cocoa butter)",
+    "text": "Step 1: Prepare 11-KT doses (20% w/w in cocoa butter)\n\nMelt 1 cocoa-butter chip (≈ 1.75 mL) at 40 °C.\nWeigh out 6.5 mg 11-KT.\nCombine the 11-KT with 35 µL of melted cocoa butter and pipette up and down thoroughly while maintaining heat at 35–40 °C, until 11-KT crystals are fully dissolved and the solution appears clear/translucent. If particles persist after 2 min at temperature, hold longer before pipetting.\nKeep the dose mix on the dry bath until ready for implantation.\n\n\n\n\n\n\n\nNoteDon’t rush dissolution\n\n\n\n11-KT does dissolve fully in cocoa butter at this loading and temperature, but it isn’t instantaneous. Pipetting before the crystals are gone gives non-uniform doses across your fish — the first fish gets a heavy bolus, the last gets diluted vehicle.\n\n\n\n\n\n\n\n\nImportantCalculating the dose\n\n\n\nYou want to implant 5 fish at 1 mg 11-KT per dose, with ~30% extra prep volume to absorb pipetting losses. Working at 20% w/w, how much 11-KT do you weigh out, and how much cocoa butter do you combine it with?\n\n\n\n\n\n\nTipSolution\n\n\n\n\n\n\nPer-dose 11-KT mass: 1 mg.\nFor 5 fish + 30%: ≈ 6.5 mg of 11-KT.\nAt 20% w/w, the matching cocoa-butter mass is ≈ 26 mg, which corresponds to roughly 35 µL of melted cocoa butter (density ≈ 0.9 g/mL).\n\nThis is the recipe used in Step 1 above.",
+    "crumbs": [
+      "Home",
+      "June 8: Introduction, EOD Recording and Injection",
+      "11-Ketotestosterone Implantation in Mormyrid Electric Fish"
+    ]
+  },
+  {
+    "objectID": "episodes/implant-11kt.html#step-2-anesthetize-fish-sterilize-equipment",
+    "href": "episodes/implant-11kt.html#step-2-anesthetize-fish-sterilize-equipment",
+    "title": "11-Ketotestosterone Implantation in Mormyrid Electric Fish",
+    "section": "Step 2: Anesthetize fish & sterilize equipment",
+    "text": "Step 2: Anesthetize fish & sterilize equipment\n\nAnesthetize the fish in MS-222 (0.1–0.2 g/L) until it loses its righting response but is still actively gilling.\nSpray tools with 70% ethanol and let sit for 5 minutes, then dry with a kimwipe. Alternatively, use a heat sterilizer — just make sure the tools are properly cooled before they touch the fish.\n\n\n\n\n\n\n\nNoteSurgical plane, not deep anesthesia\n\n\n\nYou want gilling to continue throughout the procedure. If gill movement stops, you have gone too deep — move the fish into fresh water immediately.",
+    "crumbs": [
+      "Home",
+      "June 8: Introduction, EOD Recording and Injection",
+      "11-Ketotestosterone Implantation in Mormyrid Electric Fish"
+    ]
+  },
+  {
+    "objectID": "episodes/implant-11kt.html#step-3-implantation-of-11-kt",
+    "href": "episodes/implant-11kt.html#step-3-implantation-of-11-kt",
+    "title": "11-Ketotestosterone Implantation in Mormyrid Electric Fish",
+    "section": "Step 3: Implantation of 11-KT",
+    "text": "Step 3: Implantation of 11-KT\n\nRemove the fish from the anesthetic and place it in the dissecting tray, belly-up, leaning against two dissecting pins.\nBlot the surgical area dry with a kimwipe.\nWith a sharp, fresh scalpel blade, make a small incision anterior to the anal pore and slightly off the ventral midline (to avoid major vessels), passing through skin and muscle wall into the peritoneal cavity. The cut should be just wide enough to fit a P200 pipette tip, and should feel “deep” enough that you are clearly through the muscle wall.\nDraw 5 µL of the 11-KT / cocoa-butter mix from the heated solution and immediately deposit it through the incision. A successful implantation leaves all material deep within the cut, not on the surface.\nIf any blood or fluid is on the outside of the fish, blot once more with a kimwipe.\nApply a small amount of Vetbond over the incision and wait for it to skin, checking that the seal is complete. Apply more Vetbond if necessary, but take care that it is not “wicked” onto the pectoral fins or gills nearby.\nPlace the fish into fresh recovery water and wait ~20 minutes for it to return upright before returning it to its home tank.\n\n\n\n\n\n\n\nNoteIncision location matters\n\n\n\nBass’s original phrasing was “small incision was made anterior to the anal pore.” Going off-midline keeps you out of the major ventral vessels, and staying anterior to the anal pore puts the dose into the IP cavity proper rather than the cloacal region.\n\n\n\n\n\n\n\n\nImportantTroubleshooting a failed seal\n\n\n\nFive minutes after implantation you notice a small bead of cocoa-butter / 11-KT solution sitting on the fish’s belly, outside the Vetbond. What do you do, and how do you note it in the experimental log?\n\n\n\n\n\n\nTipSolution\n\n\n\n\n\n\nBlot the surface dose off with a fresh kimwipe.\nApply a second layer of Vetbond and let it skin.\nNote the partial extrusion in the log: dose delivered is uncertain. This animal should be flagged for exclusion or, at minimum, tracked separately when EOD changes are analyzed — the slow-release pharmacology assumes the depot is fully internal.",
+    "crumbs": [
+      "Home",
+      "June 8: Introduction, EOD Recording and Injection",
+      "11-Ketotestosterone Implantation in Mormyrid Electric Fish"
+    ]
+  },
+  {
+    "objectID": "episodes/implant-11kt.html#after-surgery",
+    "href": "episodes/implant-11kt.html#after-surgery",
+    "title": "11-Ketotestosterone Implantation in Mormyrid Electric Fish",
+    "section": "After surgery",
+    "text": "After surgery\nOnce each fish is upright and swimming, return it to its labeled home tank and resume the post-implant EOD recording schedule defined in the broader course protocol. Do not feed for 24 h.\n\n\n\n\n\n\nTipKey Points\n\n\n\n\nCocoa-butter implants give a several-day, slow-release androgen exposure with a single Day 0 procedure.\nPre-treatment EOD recordings on Day −1 and Day 0 are the per-fish baselines — every post-implant measurement is interpreted relative to them.\nFull dissolution of 11-KT in warm cocoa butter is what makes the dose uniform across animals; rushing this step is the most common avoidable source of variance.\nIncise anterior to the anal pore, slightly off the ventral midline, and seal cleanly with Vetbond.\nA surface-extruded dose is not a delivered dose — flag the animal in the log.",
+    "crumbs": [
+      "Home",
+      "June 8: Introduction, EOD Recording and Injection",
+      "11-Ketotestosterone Implantation in Mormyrid Electric Fish"
+    ]
+  },
+  {
+    "objectID": "episodes/implant-11kt.html#references",
+    "href": "episodes/implant-11kt.html#references",
+    "title": "11-Ketotestosterone Implantation in Mormyrid Electric Fish",
+    "section": "References",
+    "text": "References\n\nBass, A. H., et al. (1986). Androgen binding in the brain and electric organ of a mormyrid fish.\nBass, A. H., et al. (1987). From behavior to membranes: testosterone-induced changes in action potential duration in electric organs.",
+    "crumbs": [
+      "Home",
+      "June 8: Introduction, EOD Recording and Injection",
+      "11-Ketotestosterone Implantation in Mormyrid Electric Fish"
+    ]
+  },
+  {
+    "objectID": "episodes/introduction_to_rnaseq.html",
+    "href": "episodes/introduction_to_rnaseq.html",
+    "title": "Introduction to Single-Nucleus RNA-seq",
+    "section": "",
+    "text": "NoteQuestions\n\n\n\n\nWhy is single-nucleus RNA-seq better suited to this system than bulk RNA-seq or a candidate-gene approach?\nWhat does the 10x Genomics workflow produce, and what is a UMI?\nWhat are the four main technical challenges in snRNA-seq data, and why do they matter for downstream analysis?",
+    "crumbs": [
+      "Home",
+      "June 10: Intro to Single-Nucleus RNA-seq Analysis",
+      "Introduction to Single-Nucleus RNA-seq"
+    ]
+  },
+  {
+    "objectID": "episodes/introduction_to_rnaseq.html#lecture-video",
+    "href": "episodes/introduction_to_rnaseq.html#lecture-video",
+    "title": "Introduction to Single-Nucleus RNA-seq",
     "section": "Lecture Video",
     "text": "Lecture Video\n\n  \n  Your browser does not support embedded video.",
     "crumbs": [
       "Home",
-      "June 8: Introduction, EOD Recording and Injection",
-      "Introduction: Single-Cell Transcriptomics in Weakly Electric Fish"
+      "June 10: Intro to Single-Nucleus RNA-seq Analysis",
+      "Introduction to Single-Nucleus RNA-seq"
     ]
   },
   {
-    "objectID": "episodes/introduction.html#overview",
-    "href": "episodes/introduction.html#overview",
-    "title": "Introduction: Single-Cell Transcriptomics in Weakly Electric Fish",
+    "objectID": "episodes/introduction_to_rnaseq.html#overview",
+    "href": "episodes/introduction_to_rnaseq.html#overview",
+    "title": "Introduction to Single-Nucleus RNA-seq",
     "section": "Overview",
-    "text": "Overview\nIn this module you’ll analyze real single-nucleus RNA-seq data from Brienomyrus brachyistius — a weakly electric fish from West Africa — to ask which cell types in the electric organ change gene expression when testosterone elongates the electric organ discharge (EOD). The lecture video above introduces the full biological context. This page provides the key concepts in brief and the exercises to work through after watching.\nElectric fish are an unusually tractable system for linking gene expression to behavior. The EOD is produced by a dedicated peripheral motor system, detected by specialized electroreceptors, and gated by a precisely-timed corollary discharge circuit in the brain — and all three respond to the same hormonal signal. That makes it possible to trace a behavioral change (a longer EOD) to morphological changes, physiological changes, and molecular changes in a single, well-mapped system.\nThe gap single-nucleus RNA-seq fills is cell-type resolution. Prior work used bulk RNA-seq, which averages gene expression across all the cell types in the tissue. Single-nucleus RNA-seq decomposes that average, letting us ask which genes change in which cells.",
+    "text": "Overview\nSingle-nucleus RNA-seq converts RNA abundance into a count matrix that resolves gene expression at single-cell resolution — giving us a direct window into which genes are active in which cell types. For frozen archived tissue like the B. brachyistius electric organ, snRNA-seq is the only feasible option: single-cell methods require fresh dissociated cells, which are unavailable from banked samples. The lecture video above covers the full pipeline; this page surfaces the key concepts you will apply during the analysis episodes.",
     "crumbs": [
       "Home",
-      "June 8: Introduction, EOD Recording and Injection",
-      "Introduction: Single-Cell Transcriptomics in Weakly Electric Fish"
+      "June 10: Intro to Single-Nucleus RNA-seq Analysis",
+      "Introduction to Single-Nucleus RNA-seq"
     ]
   },
   {
-    "objectID": "episodes/introduction.html#the-sensorimotor-loop",
-    "href": "episodes/introduction.html#the-sensorimotor-loop",
-    "title": "Introduction: Single-Cell Transcriptomics in Weakly Electric Fish",
-    "section": "The Sensorimotor Loop",
-    "text": "The Sensorimotor Loop\nWhen a mormyrid fires its electric organ, the command originates in the command nucleus (CN) in the hindbrain, travels via spinal electromotor neurons, and synchronously activates hundreds of flat, coin-shaped cells called electrocytes in the electric organ. The resulting EOD waveform depends directly on electrocyte membrane area and ion channel composition: more anterior-face membrane area raises capacitance and delays spike initiation, producing a longer waveform (Bass, Denizot & Marchaterre 1986; Bass & Volman 1987; Freedman et al. 1989).\nThe incoming signal from another fish is detected by knollenorgans (KOs) — electroreceptors specialized for conspecific communication signals. Raman & Hopkins (2025) showed these are precisely tuned to the species’ own EOD frequency spectrum, functioning as matched filters. When testosterone elongates the EOD, KO tuning shifts to match — but through an indirect mechanism: the changed EOD itself drives receptor cell turnover (Bass & Hopkins 1984).\nThe brain keeps the loop coherent using a corollary discharge (CD) pathway: a copy of each motor command routes from CN through the bulbar (BCA) and mesencephalic (MCA) command-associated nuclei to the sublemniscal nucleus (slem), which inhibits the electrosensory nucleus (nELL) just as the fish’s own EOD arrives there — making the fish effectively deaf to its own signal (Bell & Grant 1989). Fukutomi & Carlson (2023) showed this CD timing window shifts under testosterone to match the elongated EOD — and it does so directly, without requiring altered sensory feedback. Jarzyna & Carlson (2026) further showed that MCA is a conserved temporal hub: the same circuit node adjusts CD timing across seasonal (days), developmental (years), and evolutionary (millions of years) timescales.\n\n\n\n\n\n\n\n\nComponent\nWhat testosterone does\nMechanism\n\n\n\n\nElectric organ (electrocytes)\nElongates EOD waveform\nDirect androgen target; membrane remodeling and ion channel retuning\n\n\nKnollenorgans (KOs)\nShifts best frequency to match new EOD\nIndirect; stimulus-driven receptor cell turnover\n\n\nCorollary discharge (MCA)\nDelays and elongates the inhibition window\nDirect androgen target; independent of sensory feedback\n\n\n\n\n\n\n\n\n\nImportantChallenge 1: Stop and Predict (3 min)\n\n\n\nTestosterone elongates a male’s EOD and shifts the spike that knollenorgan receptors fire in response to it. Before reading further: what would have to happen centrally in the brain to keep the fish from confusing its own (now-longer) EOD with an EOD from another fish?\n\n\n\n\n\n\nTipSolution\n\n\n\n\n\nThe corollary discharge inhibition window must shift in both its onset and its duration to match the delayed and elongated reafferent input. Fukutomi & Carlson (2023) showed exactly this: CD inhibition timing tracks EOD duration precisely. Critically, the shift is a direct hormonal effect on the MCA circuit — not a consequence of experiencing a different EOD.",
+    "objectID": "episodes/introduction_to_rnaseq.html#from-rna-to-a-count-matrix",
+    "href": "episodes/introduction_to_rnaseq.html#from-rna-to-a-count-matrix",
+    "title": "Introduction to Single-Nucleus RNA-seq",
+    "section": "From RNA to a Count Matrix",
+    "text": "From RNA to a Count Matrix\nEvery sequenced read is tagged with two barcodes: a cell barcode identifying which nucleus it came from, and a unique molecular identifier (UMI) representing a single RNA molecule captured before PCR amplification. After sequencing, reads are demultiplexed by cell barcode and UMIs are collapsed to remove PCR duplicates, yielding a matrix of raw molecule counts — one row per gene, one column per nucleus.\nThe 10x Genomics Chromium platform automates this capture step by encapsulating individual nuclei in GEM (Gel Bead-in-Emulsion) droplets, each containing a barcoded bead. At the scale of a typical experiment, roughly 3,000–10,000 nuclei are captured per sample.",
     "crumbs": [
       "Home",
-      "June 8: Introduction, EOD Recording and Injection",
-      "Introduction: Single-Cell Transcriptomics in Weakly Electric Fish"
+      "June 10: Intro to Single-Nucleus RNA-seq Analysis",
+      "Introduction to Single-Nucleus RNA-seq"
     ]
   },
   {
-    "objectID": "episodes/introduction.html#whats-missing-cell-type-resolution",
-    "href": "episodes/introduction.html#whats-missing-cell-type-resolution",
-    "title": "Introduction: Single-Cell Transcriptomics in Weakly Electric Fish",
-    "section": "What’s Missing: Cell-Type Resolution",
-    "text": "What’s Missing: Cell-Type Resolution\nBass & Hopkins (1983) established the seasonal dimorphism; the work above traced it across all three components of the loop. The next mechanistic layer is gene expression. Losilla & Gallant (2025) used bulk RNA-seq on B. brachyistius caudal peduncle tissue to identify 44 genes tracking EOD elongation — a coordinated shift in cytoskeletal, extracellular matrix, lipid-metabolism, and ion channel genes that aligns with the morphological and physiological data.\nThe limitation is resolution. Caudal peduncle tissue contains electrocytes, connective tissue, support cells, blood vessel cells, and immune cells. Bulk RNA-seq averages across all of them. A K⁺ channel gene that shifts in bulk data might be changing specifically in electrocytes — or in a support cell population with no role in action potential generation. Without cell-type resolution, mechanistic interpretation is limited. That is the gap single-nucleus RNA-seq fills, and it is the central motivation for this module.\n\n\n\n\n\n\nImportantChallenge 2: Putting It Together (10 min)\n\n\n\nSketch the full sensorimotor loop linking testosterone, the electric organ, knollenorgan electroreceptors, and the corollary discharge pathway. For each component, note (a) one change under testosterone treatment and (b) one open question that single-nucleus RNA-seq could address but bulk RNA-seq cannot.\n\n\n\n\n\n\nTipSolution\n\n\n\n\n\nPossible answers — the goal is to make the integration explicit, so yours may differ:\n\nElectric organ / electrocytes — change: anterior-face membrane area expands; K⁺ and Na⁺ channel expression shifts toward longer APs. Open question: which of the 44 differentially expressed genes change specifically in electrocytes vs. connective tissue or immune cells?\nKnollenorgan electroreceptors — change: best frequency shifts to match the elongated EOD. Open question: what transcriptional program drives KO receptor cell turnover, and is the same gene regulatory network active here as in the electric organ?\nCorollary discharge (MCA) — change: onset and duration of CD inhibition delay and elongate. Open question: which MCA cell types express androgen receptors, and what genes change in those cells under testosterone?\nLoop integration — change: all three systems stay internally coherent as EOD duration changes across seasons, development, and evolution. Open question: is there a shared androgen-responsive gene regulatory program operating across electrocytes, KO receptor cells, and MCA neurons?",
+    "objectID": "episodes/introduction_to_rnaseq.html#why-snrna-seq-over-the-alternatives",
+    "href": "episodes/introduction_to_rnaseq.html#why-snrna-seq-over-the-alternatives",
+    "title": "Introduction to Single-Nucleus RNA-seq",
+    "section": "Why snRNA-seq Over the Alternatives",
+    "text": "Why snRNA-seq Over the Alternatives\n\n\n\n\n\n\n\n\nApproach\nResolution\nLimitation\n\n\n\n\nCandidate-gene (e.g., in-situ hybridization)\nSingle-cell\nLow throughput; tests one gene at a time\n\n\nBulk RNA-seq\nTissue-level average\nCannot distinguish which cell type drives a signal\n\n\nscRNA-seq\nSingle-cell\nRequires fresh, dissociated cells — incompatible with frozen tissue\n\n\nsnRNA-seq\nSingle-nucleus\nCompatible with frozen archival tissue; genome-wide",
     "crumbs": [
       "Home",
-      "June 8: Introduction, EOD Recording and Injection",
-      "Introduction: Single-Cell Transcriptomics in Weakly Electric Fish"
+      "June 10: Intro to Single-Nucleus RNA-seq Analysis",
+      "Introduction to Single-Nucleus RNA-seq"
     ]
   },
   {
-    "objectID": "episodes/introduction.html#keypoints",
-    "href": "episodes/introduction.html#keypoints",
-    "title": "Introduction: Single-Cell Transcriptomics in Weakly Electric Fish",
+    "objectID": "episodes/introduction_to_rnaseq.html#four-technical-challenges",
+    "href": "episodes/introduction_to_rnaseq.html#four-technical-challenges",
+    "title": "Introduction to Single-Nucleus RNA-seq",
+    "section": "Four Technical Challenges",
+    "text": "Four Technical Challenges\nEvery snRNA-seq dataset shares the same four quality problems you will confront during analysis:\n\nSparsity — Most genes are not detected in any given nucleus; ~85–95% of count matrix entries are zero. This is expected, not a sign of failure.\nTechnical variability — Nuclei differ in total UMI count (library size), the fraction of reads mapping to mitochondrial genes (a proxy for damaged nuclei), and doublet rate (two nuclei captured together). QC filters address these before analysis.\nHigh dimensionality — A typical experiment measures 20,000+ genes per nucleus. Dimensionality reduction (PCA, UMAP) compresses this into a tractable space for clustering.\nBatch effects — Samples processed on different days or with different reagent lots can cluster by batch rather than biology. Experimental design and integration methods mitigate this.\n\n\n\n\n\n\n\nImportantChallenge 1: Stop and Predict (3 min)\n\n\n\nA count matrix for a tissue sample has 3,000 nuclei and 20,000 genes. You notice that roughly 85% of the entries are zero. Is this a sign something went wrong in the experiment, or is it expected behavior? What does a zero actually mean in this context?\n\n\n\n\n\n\nTipSolution\n\n\n\n\n\nIt is expected. Each nucleus captures only a fraction of the total RNA molecules present, and library sequencing is not deep enough to detect every expressed gene in every nucleus. A zero entry means the gene was not detected in that nucleus — not that the gene is definitively absent. This distinction matters: sparse data requires methods that can handle missingness rather than treating zeros as true negatives.\n\n\n\n\n\n\n\n\n\n\n\nImportantChallenge 2: Putting It Together (7 min)\n\n\n\nFor each of the four technical challenges listed above, name one step in the analysis pipeline that directly addresses it. The pipeline steps to draw from are: QC filtering, normalization, dimensionality reduction, and batch integration.\n\n\n\n\n\n\nTipSolution\n\n\n\n\n\n\n\n\n\n\n\n\nChallenge\nAnalysis step that addresses it\n\n\n\n\nSparsity\nNormalization (e.g., log-normalization, scran) stabilizes counts across nuclei despite sparse detection\n\n\nTechnical variability\nQC filtering removes low-quality nuclei (low UMI count, high % mitochondrial reads, likely doublets)\n\n\nHigh dimensionality\nDimensionality reduction (PCA → UMAP) compresses 20,000 genes into a low-dimensional embedding for clustering\n\n\nBatch effects\nBatch integration (e.g., Harmony, scVI) aligns samples processed under different conditions",
+    "crumbs": [
+      "Home",
+      "June 10: Intro to Single-Nucleus RNA-seq Analysis",
+      "Introduction to Single-Nucleus RNA-seq"
+    ]
+  },
+  {
+    "objectID": "episodes/introduction_to_rnaseq.html#keypoints",
+    "href": "episodes/introduction_to_rnaseq.html#keypoints",
+    "title": "Introduction to Single-Nucleus RNA-seq",
     "section": "Keypoints",
-    "text": "Keypoints\n\nThe mormyrid sensorimotor loop links command nucleus → electric organ → knollenorgans → corollary discharge circuit, with a copy of each motor command used to predict and cancel self-generated sensory input.\nTestosterone coordinately reshapes all three components — the electric organ (direct), knollenorgans (indirect, stimulus-driven), and the corollary discharge circuit (direct, MCA-centered) — keeping the loop coherent as the EOD changes.\nThe MCA is a conserved temporal hub: the same circuit node adjusts CD timing across seasonal, developmental, and evolutionary timescales.\nBulk RNA-seq on electric organ tissue identified 44 candidate genes but cannot resolve which genes changed in which cell types.\nSingle-nucleus RNA-seq is the natural next step: it applies to frozen archived tissue and provides cell-type-resolved gene expression across the full sensorimotor circuit.",
+    "text": "Keypoints\n\nRNA abundance measured by sequencing is a proxy for gene activity; snRNA-seq applies this at single-nucleus resolution across the full transcriptome.\nsnRNA-seq is preferred over scRNA-seq for frozen archived tissue and over bulk RNA-seq when cell-type resolution is required.\nThe 10x Genomics Chromium platform encapsulates nuclei in GEM droplets, assigns cell barcodes, and uses UMIs to count individual RNA molecules without PCR duplication bias.\nsnRNA-seq data are inherently sparse (~85–95% zeros); this is expected, not a sign of failure.\nFour major technical challenges — sparsity, technical variability, high dimensionality, and batch effects — each require specific handling steps during QC, normalization, and integration.",
     "crumbs": [
       "Home",
-      "June 8: Introduction, EOD Recording and Injection",
-      "Introduction: Single-Cell Transcriptomics in Weakly Electric Fish"
+      "June 10: Intro to Single-Nucleus RNA-seq Analysis",
+      "Introduction to Single-Nucleus RNA-seq"
     ]
   },
   {
