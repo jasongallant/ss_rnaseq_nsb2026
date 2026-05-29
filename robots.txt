@@ -1,1 +1,1 @@
-Sitemap: https://jasongallant.github.io/ss_rnaseq_nsb2026/sitemap.xml
+Sitemap: https://tutorials.efishgenomics.com/sitemap.xml

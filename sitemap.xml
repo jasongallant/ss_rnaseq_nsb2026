@@ -1,43 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://jasongallant.github.io/ss_rnaseq_nsb2026/episodes/setup.html</loc>
+    <loc>https://tutorials.efishgenomics.com/episodes/setup.html</loc>
     <lastmod>2026-05-29T02:26:20.159Z</lastmod>
   </url>
   <url>
-    <loc>https://jasongallant.github.io/ss_rnaseq_nsb2026/episodes/normalize-reduce-cluster.html</loc>
+    <loc>https://tutorials.efishgenomics.com/episodes/normalize-reduce-cluster.html</loc>
     <lastmod>2026-05-29T02:26:20.158Z</lastmod>
   </url>
   <url>
-    <loc>https://jasongallant.github.io/ss_rnaseq_nsb2026/episodes/introduction.html</loc>
+    <loc>https://tutorials.efishgenomics.com/episodes/introduction.html</loc>
     <lastmod>2026-05-29T02:26:20.155Z</lastmod>
   </url>
   <url>
-    <loc>https://jasongallant.github.io/ss_rnaseq_nsb2026/episodes/gene-expression-change.html</loc>
+    <loc>https://tutorials.efishgenomics.com/episodes/gene-expression-change.html</loc>
     <lastmod>2026-05-29T02:26:20.152Z</lastmod>
   </url>
   <url>
-    <loc>https://jasongallant.github.io/ss_rnaseq_nsb2026/episodes/eod-recording.html</loc>
+    <loc>https://tutorials.efishgenomics.com/episodes/eod-recording.html</loc>
     <lastmod>2026-05-29T02:26:20.083Z</lastmod>
   </url>
   <url>
-    <loc>https://jasongallant.github.io/ss_rnaseq_nsb2026/index.html</loc>
+    <loc>https://tutorials.efishgenomics.com/index.html</loc>
     <lastmod>2026-05-29T02:26:20.161Z</lastmod>
   </url>
   <url>
-    <loc>https://jasongallant.github.io/ss_rnaseq_nsb2026/episodes/examine-eod-duration.html</loc>
+    <loc>https://tutorials.efishgenomics.com/episodes/examine-eod-duration.html</loc>
     <lastmod>2026-05-29T02:26:20.085Z</lastmod>
   </url>
   <url>
-    <loc>https://jasongallant.github.io/ss_rnaseq_nsb2026/episodes/implant-11kt.html</loc>
+    <loc>https://tutorials.efishgenomics.com/episodes/implant-11kt.html</loc>
     <lastmod>2026-05-29T02:26:20.154Z</lastmod>
   </url>
   <url>
-    <loc>https://jasongallant.github.io/ss_rnaseq_nsb2026/episodes/introduction_to_rnaseq.html</loc>
+    <loc>https://tutorials.efishgenomics.com/episodes/introduction_to_rnaseq.html</loc>
     <lastmod>2026-05-29T02:26:20.157Z</lastmod>
   </url>
   <url>
-    <loc>https://jasongallant.github.io/ss_rnaseq_nsb2026/episodes/snrnaseq-qc.html</loc>
+    <loc>https://tutorials.efishgenomics.com/episodes/snrnaseq-qc.html</loc>
     <lastmod>2026-05-29T02:26:20.159Z</lastmod>
   </url>
 </urlset>
