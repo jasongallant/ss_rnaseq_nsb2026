@@ -1,6 +1,8 @@
 project:
   type: website
   output-dir: site
+  resources:
+    - CNAME
   render:
     - index.qmd
     - episodes/*.Rmd
