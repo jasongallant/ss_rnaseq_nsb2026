@@ -1,0 +1,233 @@
+---
+title: "11-Ketotestosterone Injection in Mormyrid Electric Fish"
+teaching: 20
+exercises: 75
+optional: false
+---
+
+::: {.callout-tip title="Objectives"}
+
+- Prepare an injectable 11-ketotestosterone (11-KT) / cocoa butter dose (~20 µg/µL) from an ethanol stock,
+  driving off the ethanol so the dose sets as a depot once delivered.
+- Anesthetize a mormyrid fish to a stable anesthetic plane using buffered MS-222.
+- Deliver a single intraperitoneal (IP) dose of warm cocoa butter with a Hamilton syringe.
+- Record and log a pre-treatment EOD baseline that all post-treatment measurements will be normalized against.
+
+:::
+
+## Background
+
+Cocoa butter melts at body temperature, which makes it a useful slow-release vehicle for lipophilic steroids
+delivered into the peritoneal cavity. Implant-based steroid delivery of this kind is well established across
+fish taxa — for example, cocoa-butter implants in brown trout (Hoogenboom et al., 2011) and Silastic-capsule
+steroid implants in three-spined stickleback (Roufidou et al., 2019). Androgen action on the mormyrid electric
+organ was established by the
+Bass lab in the 1980s (Bass & Hopkins, 1983, 1985), and intraperitoneal cocoa-butter pellets of 11-KT were
+used to drive EOD change in Freedman et al. (1989). A single 11-KT cocoa-butter dose yields elevated
+circulating androgen for several days and produces measurable shifts in EOD waveform within ~24–72 h,
+depending on species and dose.
+
+This episode walks through the Day 0 procedure as it is run in our lab. Rather than surgically implanting a
+solid pellet, we deliver the cocoa butter as a warm IP **injection** through a Hamilton syringe. The steroid
+is the same and the depot behaves the same once it sets, but the delivery is faster and far less invasive — no
+incision, no closure. It assumes that the broader experimental schedule (acclimation, weighing, tank
+assignment, post-treatment recording cadence) is already defined elsewhere in the course materials.
+
+::: {.callout-note title="Why cocoa butter?"}
+
+Cocoa butter is solid at room temperature, liquefies at ~35–40 °C, and re-solidifies inside the fish —
+trapping the steroid in a slow-release depot. It is non-reactive in the IP cavity and avoids the need for a
+DMSO/oil carrier injection.
+
+:::
+
+::: {.callout-note title="Why inject instead of implant?"}
+
+The injectable dose is roughly **10× more dilute** than the old surgical pellet (~20 µg/µL versus the ~200
+µg/µL of a 20% w/w plug), and delivered in a larger volume (30–40 µL versus ~5 µL). The reason is mechanical:
+a near-solid 20% w/w plug can be deposited through an incision but will not pass through a needle. Diluting the
+steroid into a fluid cocoa-butter mix lets the same depot chemistry be delivered by injection. The trade-off is
+that the per-fish dose is set by the injection *volume*, so volume control matters more here than it did with a
+hand-cut pellet.
+
+:::
+
+## Reagents
+
+- Cocoa butter chips
+- 11-KT (Steraloids A6720, 25 mg vial)
+- 100% (200 proof) ethanol — for the stock solution
+- 70% ethanol — for needle wiping and between-fish syringe cleaning
+- 1× sterile PBS — for between-fish syringe cleaning
+- MS-222 (tricaine methanesulfonate)
+- Recovery water (system water with NaCl supplement)
+
+## Equipment
+
+- Hamilton syringe (e.g., 50–100 µL, gas-tight) with `[needle gauge validated in your hands]`
+- Dry bath (used at both ~40 °C for melting/holding and ~70 °C for ethanol evaporation)
+- Milligram balance (for stock preparation)
+- P20 / P200 pipette + tips (for dose preparation)
+- Kimwipes
+- Damp bench surface or foam fish holder (for restraint during injection)
+- Recovery containers
+- Fish-transfer net
+
+## Step 0: EOD baseline (Day −1 and Day 0, pre-injection)
+
+1. Record an EOD waveform from each fish on Day −1 (24 h prior) and again on Day 0 immediately before
+   injection. These pre-treatment recordings are the per-fish baselines that all post-treatment measurements
+   will be normalized to.
+2. Confirm fish ID, weight, and tank assignment are logged before proceeding to Step 1.
+
+::: {.callout-note title="Why two baselines?"}
+
+Day −1 captures the fish's "settled" waveform; Day 0 confirms it has not drifted overnight. If the two
+recordings disagree by more than your normal day-to-day variability, do not inject — investigate first.
+
+:::
+
+## Step 1: Prepare 11-KT injection doses (~20 µg/µL in cocoa butter)
+
+1. Confirm or prepare the 11-KT stock: **20 µg/µL in 100% ethanol** (e.g., 7 mg dissolved in 350 µL ethanol).
+2. Melt cocoa butter at ~40 °C on the dry bath.
+3. For each batch, pipette your chosen volume of ethanol stock into a tube, then add an **approximately equal
+   volume of melted cocoa butter**. Equal volumes hold the final concentration at ~20 µg/µL because the stock
+   is already at that concentration (see the dose calculation below).
+4. **Evaporate the ethanol at 70 °C** until it is fully gone — no ethanol odor remains, and the volume
+   stabilizes at roughly the cocoa-butter volume you added. 70 °C sits just below ethanol's boil, so it drives
+   the ethanol off briskly without spattering cocoa butter out of the tube, and is well above the cocoa-butter
+   melt point so the mix stays liquid.
+5. Cool to **just above the cocoa-butter melt point (~37–40 °C)** and hold on the dry bath until injection.
+
+::: {.callout-important title="Drive the ethanol off completely"}
+
+Residual ethanol does two bad things: it adds volume (diluting your dose below target) and it can irritate the
+fish on injection. Confirm by odor and by a stable volume before you cool down — the volume should settle at
+the cocoa-butter volume you added, not somewhere between that and the original stock-plus-butter volume.
+
+:::
+
+::: {.callout-important title="Calculating the dose"}
+
+You want to inject **2 fish at ~0.7 mg 11-KT each**, ~35 µL per injection, with a little extra to cover the
+syringe dead volume. Starting from a **20 µg/µL** ethanol stock, how much stock and cocoa butter do you
+combine, and what is your final concentration?
+
+:::: {.callout-tip title="Solution" collapse="true"}
+
+- Required final concentration: 0.7 mg ÷ 35 µL = **20 µg/µL** — the same as the stock. So the goal is simply to
+  *hold* the concentration where it is, not to dilute or concentrate.
+- Combine **equal volumes** of ethanol stock and melted cocoa butter, then evaporate the ethanol. The steroid
+  mass stays put while the ethanol leaves, and the final volume ≈ the cocoa-butter volume → concentration is
+  unchanged at ~20 µg/µL.
+- For 2 × 35 µL plus margin (~100 µL final), use ~100 µL stock (= 2 mg 11-KT) + ~100 µL (~90 mg) cocoa butter →
+  ~100 µL final dose at 20 µg/µL.
+- Two 30–40 µL injections then deliver **0.6–0.8 mg/fish**; the small remainder is dead volume you discard.
+
+::::
+
+:::
+
+::: {.callout-note title="Keep it warm, work fast"}
+
+Cocoa butter sets at ~34–38 °C, so it will solidify inside a cold needle. Pre-warm the syringe, draw and inject
+one fish at a time, and return the dose tube to the dry bath between animals.
+
+:::
+
+## Step 2: Anesthetize fish & prepare the needle
+
+1. Anesthetize the fish in MS-222 (**0.1–0.2 g/L**) until it loses its righting response but is still actively
+   gilling.
+2. Wipe the Hamilton needle with 70% ethanol and let it dry before use.
+
+::: {.callout-note title="Anesthetic plane, not deep anesthesia"}
+
+You want gilling to continue throughout the procedure. If gill movement stops, you have gone too deep — move
+the fish into fresh water immediately.
+
+:::
+
+## Step 3: Inject 11-KT
+
+1. Draw **30–40 µL** of the warm dose into the pre-warmed Hamilton syringe. Work quickly so the cocoa butter
+   does not set in the needle.
+2. Lift the fish from the anesthetic and restrain it belly-up on a damp surface (or in a wet gloved hand / foam
+   holder). Blot the injection site dry with a kimwipe.
+3. Insert the needle at a shallow angle into the peritoneal cavity — **anterior to the anal pore and slightly
+   off the ventral midline** (to avoid major ventral vessels) — just through the body wall.
+4. Inject the bolus smoothly, then pause a moment before withdrawing.
+5. Withdraw the needle slowly and hold gentle pressure with a kimwipe over the site for a few seconds to limit
+   backflow through the needle track.
+6. Place the fish into fresh recovery water and **wait ~20 minutes** for it to return upright before returning
+   it to its home tank.
+7. **Between fish, clear the syringe** (you can do this while the injected fish recovers). Cocoa butter sets in
+   the barrel and needle between animals and will clog the syringe over a run.
+   - Pull and expel ~3 quick volumes of 70% ethanol (onto a kimwipe or into the sink) to dissolve residual
+     cocoa butter.
+   - Follow with ~3 quick pulls/expels of 1× sterile PBS to flush out the ethanol.
+   - Re-warm and reload for the next fish.
+
+::: {.callout-note title="Injection site matters"}
+
+Anterior to the anal pore, slightly off the ventral midline, keeps the needle clear of the major ventral
+vessels and deposits the dose into the IP cavity proper rather than the cloacal region.
+
+:::
+
+::: {.callout-important title="Troubleshooting backflow"}
+
+A minute after injecting you notice a small bead of cocoa-butter / 11-KT mix sitting at the needle entry site
+on the fish's belly. What do you do, and how do you note it in the experimental log?
+
+:::: {.callout-tip title="Solution" collapse="true"}
+
+- Blot the surface material off with a fresh kimwipe; do not try to push it back in.
+- Note the partial backflow in the log: the delivered dose is uncertain. This animal should be flagged for
+  exclusion or, at minimum, tracked separately when EOD changes are analyzed — the slow-release pharmacology
+  assumes the depot is fully internal.
+- For subsequent fish, withdraw the needle more slowly and hold brief pressure on the site to reduce backflow.
+
+::::
+
+:::
+
+## Recovery
+
+Once each fish is upright and swimming, return it to its labeled home tank and resume the post-treatment EOD
+recording schedule defined in the broader course protocol. Do not feed for 24 h.
+
+::: {.callout-tip title="Key Points"}
+
+- Cocoa-butter doses give a several-day, slow-release androgen exposure from a single Day 0 procedure.
+- Pre-treatment EOD recordings on Day −1 and Day 0 are the per-fish baselines — every post-treatment
+  measurement is interpreted relative to them.
+- Because the stock is already at the target concentration (~20 µg/µL), combining equal volumes of stock and
+  cocoa butter — with the ethanol evaporated off — holds the dose where you want it; the **injection volume**
+  then sets the per-fish dose.
+- Keep the dose warm and work quickly: cocoa butter sets in a cold needle.
+- Between fish, flush the syringe (70% ethanol, then 1× PBS) — cocoa butter will clog the works over a run.
+- Inject IP anterior to the anal pore, slightly off the ventral midline, with a warm Hamilton syringe.
+- A dose that backflows to the surface is not a delivered dose — flag the animal in the log.
+
+:::
+
+## References
+
+- Bass, A. H., & Hopkins, C. D. (1983). Hormonal control of sexual differentiation: changes in electric organ
+  discharge waveform. *Science* 220:971–974.
+- Bass, A. H., & Hopkins, C. D. (1985). Hormonal control of sex differences in the electric organ discharge
+  (EOD) of mormyrid fishes. *Journal of Comparative Physiology A* 156:587–604.
+- Bass, A. H., Segil, N., & Kelley, D. B. (1986). Androgen binding in the brain and electric organ of a
+  mormyrid fish. *Journal of Comparative Physiology A* 159:535–544.
+- Bass, A. H., & Volman, S. F. (1987). From behavior to membranes: testosterone-induced changes in action
+  potential duration in electric organs. *PNAS* 84:9295–9298.
+- Freedman, E. G., Olyarchuk, J., Marchaterre, M. A., & Bass, A. H. (1989). A temporal analysis of
+  testosterone-induced changes in electric organs and electric organ discharges of mormyrid fishes.
+  *Journal of Neurobiology* 20(7):619–634.
+- Hoogenboom, M. O., Armstrong, J. D., Miles, M. S., Burton, T., Groothuis, T. G. G., & Metcalfe, N. B. (2011).
+  Implantation of cocoa butter reduces egg and hatchling size in *Salmo trutta*. *Journal of Fish Biology*
+  79(3):587–596.
+- Roufidou, C., et al. (2019). Ovarian fluid in the three-spined stickleback *Gasterosteus aculeatus*: effects
+  of egg overripening and sex steroid treatment. *Journal of Fish Biology* 94:446–457.
