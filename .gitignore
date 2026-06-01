@@ -61,3 +61,7 @@ renv/sandbox # OPTIONAL
 
 /.quarto/
 **/*.quarto_ipynb
+
+# Workshop infrastructure (instructor-only)
+bts/infrastructure/build.log
+workshop-creds.txt

@@ -1,0 +1,108 @@
+#cloud-config
+#
+# cloud_init.yaml — day-of user-data for the workshop EC2 instance.
+#
+# Passed via `aws ec2 run-instances --user-data file://cloud_init.yaml` when
+# launching the r6i.4xlarge from the baked AMI. Performs three jobs at first boot:
+#
+#   1. Create 6 student PAM accounts + 1 instructor account with random passwords.
+#   2. rsync /opt/lesson/ into each user's home as ~/ssrnaseq/.
+#   3. Render the nginx config with the workshop domain and issue a Let's Encrypt cert.
+#
+# Before launching, REPLACE these placeholders in this file:
+#   __WORKSHOP_DOMAIN__   the FQDN you'll point at the Elastic IP (e.g. workshop.example.org)
+#   __ADMIN_EMAIL__       email used for Let's Encrypt registration / expiry notices
+#
+# Credentials are written to /root/credentials.txt — SSH in immediately after
+# boot, copy them out, then `shred -u /root/credentials.txt`.
+
+write_files:
+  - path: /etc/workshop.env
+    permissions: "0600"
+    content: |
+      WORKSHOP_DOMAIN=__WORKSHOP_DOMAIN__
+      ADMIN_EMAIL=__ADMIN_EMAIL__
+
+  - path: /usr/local/sbin/create-workshop-users.sh
+    permissions: "0755"
+    content: |
+      #!/usr/bin/env bash
+      # Idempotent: re-running won't reset existing users' passwords.
+      set -euo pipefail
+      CRED_FILE=/root/credentials.txt
+      : > "$CRED_FILE"
+      chmod 0600 "$CRED_FILE"
+
+      printf 'NS&B 2026 snRNA-seq workshop credentials\n' >> "$CRED_FILE"
+      printf 'Generated: %s\n\n' "$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> "$CRED_FILE"
+
+      for user in student1 student2 student3 student4 student5 student6 instructor; do
+          if id "$user" &>/dev/null; then
+              printf '%s: (exists, password unchanged)\n' "$user" >> "$CRED_FILE"
+              continue
+          fi
+          pw=$(pwgen -s 16 1)
+          adduser --disabled-password --gecos "" "$user"
+          echo "${user}:${pw}" | chpasswd
+          printf '%s: %s\n' "$user" "$pw" >> "$CRED_FILE"
+          /usr/local/sbin/provision-student.sh "$user"
+      done
+
+      # instructor gets sudo so you can administer without SSH-as-root.
+      usermod -aG sudo instructor || true
+
+  - path: /usr/local/sbin/setup-nginx-tls.sh
+    permissions: "0755"
+    content: |
+      #!/usr/bin/env bash
+      set -euo pipefail
+      source /etc/workshop.env
+
+      # Write the nginx site config directly with the real domain. (We used
+      # to bake a template into the AMI and sed-substitute __WORKSHOP_DOMAIN__
+      # here at boot, but that sentinel collided with the launch-time sed
+      # over cloud_init.yaml itself and silently no-op'd. Direct write is
+      # simpler and collision-free.)
+      #
+      # In this heredoc: $WORKSHOP_DOMAIN is a SHELL variable (expanded now)
+      # and \$scheme / \$host / etc. are NGINX runtime variables (the backslash
+      # stops bash from expanding them so they reach nginx literally).
+      cat > /etc/nginx/sites-available/rstudio <<NGINX
+      # Reverse proxy: HTTPS on :443 -> RStudio Server on 127.0.0.1:8787
+      # certbot --nginx will append SSL directives + a :80 -> :443 redirect.
+      server {
+          listen 80;
+          server_name ${WORKSHOP_DOMAIN};
+          location / {
+              proxy_pass http://127.0.0.1:8787;
+              proxy_redirect http://127.0.0.1:8787/ \$scheme://\$host/;
+              proxy_http_version 1.1;
+              proxy_set_header Upgrade \$http_upgrade;
+              proxy_set_header Connection "upgrade";
+              proxy_set_header Host \$host;
+              proxy_set_header X-Real-IP \$remote_addr;
+              proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+              proxy_set_header X-Forwarded-Proto \$scheme;
+              proxy_read_timeout 20d;
+              client_max_body_size 500M;
+          }
+      }
+      NGINX
+      ln -sf /etc/nginx/sites-available/rstudio /etc/nginx/sites-enabled/rstudio
+
+      nginx -t
+      systemctl reload nginx
+
+      # Obtain TLS cert. --nginx plugin will rewrite the server block to add
+      # listen 443 ssl + ssl_certificate paths and a :80 -> :443 redirect.
+      certbot --nginx \
+          --domain "${WORKSHOP_DOMAIN}" \
+          --email "${ADMIN_EMAIL}" \
+          --agree-tos --no-eff-email --non-interactive --redirect
+
+      systemctl reload nginx
+
+runcmd:
+  - /usr/local/sbin/create-workshop-users.sh
+  - /usr/local/sbin/setup-nginx-tls.sh
+  - systemctl restart rstudio-server
