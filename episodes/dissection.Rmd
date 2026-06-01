@@ -1,0 +1,190 @@
+---
+title: "Dissection of Electric Organ, Skin, and Brain for snRNA-seq"
+teaching: 15
+exercises: 60
+---
+
+::: {.callout-note title="Questions"}
+
+- Why does dissection technique determine the quality of an snRNA-seq library before a single nucleus is ever isolated?
+- What workspace and tool preparation actually keeps RNA intact during a dissection?
+- How do I isolate the electric organ, the opercular skin, and the brain from a mormyrid without contaminating each tissue with the others?
+- Which steps in each dissection are the ones where transcripts are most likely to be lost?
+
+:::
+
+::: {.callout-tip title="Objectives"}
+
+- Prepare an RNase-free dissection field using ethanol, RNase-ZAP, and RNase-free water in the correct order.
+- Euthanize a mormyrid with a buffered MS-222 overdose and transfer it to the dissection tray.
+- Isolate the electric organ from the caudal peduncle with the spinal column attached, then trim cleanly.
+- Remove a uniform piece of opercular skin without underlying muscle or mucus carryover.
+- Open the cranium and lift the brain out intact, separating the valvula before subdividing regions.
+- Flash freeze each tissue in liquid nitrogen at the moment of isolation to lock the transcriptome.
+
+:::
+
+## Introduction
+
+You have already injected 11-KT and watched the EOD waveform shift over the following days. The next question — *what changed at the level of gene expression?* — depends entirely on the tissue that lands in the cryovial. snRNA-seq is unforgiving: every minute a tissue spends warm and bleeding is a minute its transcriptome is decaying, and every surface that has been touched by an ungloved finger is a surface coated in **RNases** (ribonucleases) that will silently chew up your library while you work.
+
+This episode walks through the three dissections you will perform on the same fish — **electric organ**, **opercular skin**, and **brain** — in the order you will do them on the bench. Each dissection is a small protocol on its own, but they all sit on top of the same two rules: work cold and fast to limit RNA degradation, and work in an RNase-free field to limit RNA destruction. Get those two right and the molecular work downstream becomes a matter of execution; get them wrong and no amount of sequencing depth will recover what was lost.
+
+::: {.callout-tip title="Scenario"}
+
+You will be handed a freshly euthanized fish and roughly ten minutes per tissue before the cumulative warm time starts to show up as elevated mitochondrial reads and depressed gene counts in the data you analyze later in the week. The bench in front of you needs to be ready *before* the fish arrives — tools out, RNase-ZAP wiped down, liquid nitrogen open, cryovials labeled.
+
+:::
+
+## Theory of Operation
+
+This is a dissection protocol for single-nucleus RNA sequencing (snRNA-seq) of mormyrid tissues, and every design choice serves the integrity of the RNA you will later sequence. Two principles govern the work.
+
+First, **speed**. RNA degrades the moment tissue loses its blood supply, so each dissection is done quickly and the sample is flash frozen in liquid nitrogen as soon as the target tissue is isolated, locking the transcriptome in place.
+
+Second, an **RNase-free field**. Ambient RNases will silently chew up transcripts, so all tools and surfaces are decontaminated with RNase-ZAP and rinsed in RNase-free water before any tissue is touched. The procedures that follow — electric organ, skin, and brain — share this same discipline: work cold, work clean, and work fast.
+
+::: {.callout-warning title="What RNase contamination actually looks like in your data"}
+
+You will not see "contamination" as a single failed sample. You will see it as a gradient: lower transcripts per nucleus, shifted gene-detection distributions, and a quality-control plot in the next episode that pushes you to set thresholds you would not otherwise need. By the time the data tell you the dissection was sloppy, the experiment is already over.
+
+:::
+
+## Reagents
+
+- 70–75% ethanol (surface decontamination)
+- RNase-ZAP (or equivalent RNase decontamination spray)
+- RNase-free water
+- MS-222 (tricaine methanesulfonate), 1 g/L for euthanasia
+- Liquid nitrogen
+- Pre-labeled cryogenic vials, one per tissue per fish
+
+## Equipment
+
+- Dissection tray
+- Sharp scalpel and fine scalpel
+- Sturdy forceps
+- Fine forceps
+- Sharp scissors (sturdy pair for skin/spinal cord; fine pair for cranium)
+- Small scoop or spatula (for lifting the brain)
+- Petri dishes (one per tissue)
+- Kimwipes
+- Liquid-nitrogen-rated Dewar or transport vessel
+
+## Step 1: Prepare the dissection field
+
+The bench is prepared *before* the fish leaves its tank. Do not start the clock on a freshly euthanized animal and then look for your forceps.
+
+1. Wipe down the dissection tray and any surfaces you will work on with 70–75% ethanol.
+2. Spray your tools with RNase-ZAP and allow to sit for ~30 seconds.
+3. Rinse tools in RNase-free water and dry with a Kimwipe.
+4. Euthanize the fish with an MS-222 overdose (1 g/L).
+5. Transfer the fish to the dissecting tray.
+
+::: {.callout-warning title="Order matters: RNase-ZAP before water, not after"}
+
+RNase-ZAP denatures the RNases that are already on your tools. The RNase-free water rinses the denatured enzymes off so they cannot redeposit on tissue. Skipping the water rinse leaves a film that interferes with downstream steps; doing the water first wastes the RNase-ZAP step.
+
+:::
+
+::: {.callout-caution title="Instructor Note"}
+
+Students new to this protocol almost always underestimate prep time. Walk them through Step 1 with the fish still in the tank, then verify that *every* tool they will touch with tissue has been through ethanol → RNase-ZAP → RNase-free water. The most common failure isn't a missed step in the dissection itself — it's a "clean" scalpel that was set down on an uncleaned tray.
+
+:::
+
+## Step 2: Electric organ
+
+The electric organ sits in the caudal peduncle, posterior to the muscle bulk and immediately ventral to the spinal column. The skin over it is thin and the boundary with surrounding muscle is sharp, so a clean isolation is achievable with two scissor cuts and a careful trim. Work directly on the dissection tray, then move the tissue to a petri dish for the final cleanup.
+
+![Electric organ dissection landmarks: incisions just anterior to the caudal peduncle, skin pulled laterally to expose the organ, and the spinal column cut anterior and posterior to free the columns for transfer.](files/dissection/eo_dissection.png)
+
+1. With a sharp scalpel, make an incision just prior to the caudal peduncle, continuing to the fork. Flip the fish over and repeat the incision on the other side.
+2. With sturdy forceps, dig into the muscle of the fish anterior to the caudal peduncle and pull laterally apart — the skin should easily pull away from the fish. Repeat for the other side.
+3. Cut the spinal cord anterior and posterior to the electric organ.
+4. Transfer to a petri dish and remove any contaminating tissues (skin, residual muscle, fat).
+5. With a sharp pair of scissors, cut the electric organ columns away from the spinal column, hugging the spinal column as close as possible.
+6. Transfer to a pre-labeled cryogenic vial and **flash freeze in liquid nitrogen immediately**.
+
+::: {.callout-warning title="Hug the spinal column"}
+
+The spinal column is the largest non-electric-organ tissue you can accidentally include, and it has a very different transcriptional profile from the electrocytes you are trying to sequence. A loose trim that leaves vertebral fragments in the cryovial will show up later as a population of contaminating cells in the clustering analysis.
+
+:::
+
+::: {.callout-important title="Challenge 1: Why flash freeze, and why now? (5 min)"}
+
+You have just dropped the electric organ into a petri dish for trimming. A labmate suggests pooling the trimmed tissue with the skin sample (next step) and freezing them together at the end. Why is this a bad idea?
+
+:::: {.callout-tip title="Solution" collapse="true"}
+
+Every additional minute the electric organ spends warm and disconnected from a blood supply is a minute its transcriptome is degrading. The whole point of flash freezing in liquid nitrogen *the moment* the tissue is isolated is to halt enzymatic activity — RNases, proteases, and ATP-dependent processes — before the molecular state drifts away from what was true *in vivo*. Pooling samples to "save a freezing step" trades a few seconds of convenience for a measurable degradation signal in your sequencing data. Freeze each tissue at the moment you finish trimming it.
+
+::::
+
+:::
+
+## Step 3: Skin
+
+The opercular skin is thin and overlies facial muscle and mucus glands. A clean dissection lifts the skin off as a single piece, leaving fascia and muscle behind on the fish. Cutting into the muscle, or trapping mucus inside the sample, will both contaminate the library with non-skin transcripts.
+
+![Opercular skin dissection landmarks: contour traced along the opercular margin, scalpel slid parallel to the fish surface to free skin from underlying fascia and muscle, lifted away as a single uniform piece.](files/dissection/skin_dissection.png)
+
+1. Using a fine scalpel, trace a contour along the opercular area of the face as shown in the figure.
+2. Parallel to the surface of the fish, insert the scalpel underneath the skin to be removed, slowly cutting away the fascia and muscle. A good dissection will come off in a uniform single piece.
+3. Transfer to a petri dish and remove the mucosal layer.
+4. Transfer to a pre-labeled cryogenic vial and flash freeze.
+
+::: {.callout-warning title="Keep the scalpel parallel to the body wall"}
+
+Angling the blade into the fish is the most common error. The blade should ride almost flat against the body surface, separating skin from fascia rather than cutting through muscle. If the dissected piece comes off in fragments, or has pink muscle attached to its underside, the angle was wrong — start the next fish with a deliberately shallower approach.
+
+:::
+
+## Step 4: Brain
+
+The brain sits inside a small cranium directly under the dorsal surface of the skull, and in mormyrids it is dominated by an extremely large, fatty **valvula cerebelli** that overlies the brain proper. The dissection is a sequence of careful cuts: locate the back of the cranium, follow the spinal cord forward through the skull, then peel the skull open. The brain is delicate and the cranial bone is thin, so the danger is going either too shallow (cutting only skin) or too deep (slicing the brain).
+
+![Brain dissection landmarks: slit cut at the back of the cranium, scissors followed forward along the spinal cord through the skull case to the nose, skull pulled apart with forceps to expose the brain, valvula cerebelli lifted away to reveal the underlying brain regions.](files/dissection/brain_dissection.png)
+
+1. With a sharp pair of scissors, find the back of the cranium by poking into the fish's dorsal surface. Once located, make a cut perpendicular to the spinal cord, creating a "slit" in the fish's neck.
+2. With the scissors, follow the spinal cord, cutting through the cranial case. Don't go too shallow that you cut only the skin, and not too deep to damage the brain. Cut from the slit in the neck to the tip of the nose.
+3. With a sturdy pair of forceps, grab the middle portion of your incision (being careful not to go too deep and damage the brain) and pull apart the skull. You should see the brain exposed very easily.
+4. With a small scoop, gently lift the brain out of the cranium and into a petri dish in one piece.
+5. The valvula (see diagram) is very large and fatty, and can be lifted and cut away to expose the underlying brain.
+6. Transfer to a petri dish to cut out the regions to be sampled as needed.
+7. Transfer to a pre-labeled cryogenic vial and flash freeze.
+
+::: {.callout-warning title="The valvula is not the cerebellum you are used to"}
+
+In most vertebrates, lifting "the cerebellum" off the brainstem is straightforward. In mormyrids, the valvula cerebelli is hypertrophied to the point where it covers nearly the entire dorsal surface of the brain — it is the tissue you see first when you open the skull, and it is fatty enough to confuse a new dissector who expects neural tissue to look like neural tissue. Lift it deliberately, cut it cleanly at its base, and only then will the underlying brain regions be accessible for subdissection.
+
+:::
+
+::: {.callout-important title="Challenge 2: A torn brain (5 min)"}
+
+You opened the skull cleanly but tore the brain when lifting it with the scoop, and the optic tectum is now in two pieces sitting in the petri dish. Do you (a) flash freeze both pieces in the same cryovial and proceed, (b) discard the brain and move on, or (c) flash freeze only the intact regions and note the damage in your log?
+
+:::: {.callout-tip title="Solution" collapse="true"}
+
+The right answer is **(c)** — flash freeze the intact regions and log the damage. snRNA-seq does not require an anatomically perfect brain; it requires that the nuclei that end up in your library actually came from the tissue you think they came from. A torn region cannot be cleanly subdissected, so any nuclei from that region in the final library will be contaminated by adjacent tissue. Freezing the intact regions preserves what is still usable; logging the damage lets you interpret the eventual cell-type counts correctly. Discarding the whole brain throws away tissue you can still learn from, and pooling everything in one vial guarantees mixed-region contamination throughout.
+
+::::
+
+:::
+
+The brain is the last dissection of the run, which means everything that went slightly wrong on the electric organ or the skin is now compounding on the bench beside you. The fish that has been out of the water longest is the one whose brain you are now lifting. Trade ambition for cleanliness here — a well-isolated whole brain that you subdivide later in the warm room is worth more than a heroic in-tray subdissection that takes twice as long.
+
+::: {.callout-caution title="Instructor Note"}
+
+The brain dissection is where time pressure tells. Students who took an extra minute on the electric organ now have warm tissue sitting in the cryovial queue while they wrestle with the skull. If a student is visibly struggling at Step 4, prompt them to verbalize where the scissors are relative to the spinal cord — most "I can't find the brain" failures are scissors cutting through the body wall rather than through the cranial case.
+
+:::
+
+## Keypoints
+
+1. snRNA-seq quality is set at the dissection bench, not at the sequencer — degraded or contaminated tissue cannot be rescued downstream.
+2. Prepare the field before the fish: ethanol on surfaces, then RNase-ZAP on tools, then RNase-free water rinse, in that order.
+3. Work cold and work fast — each tissue goes into liquid nitrogen the moment it is isolated, not at the end of the run.
+4. Trim aggressively to the target tissue: spinal column off the electric organ, mucus off the skin, valvula off the brain.
+5. Log every imperfect dissection — torn tissue, partial pieces, suspected contamination — so the molecular signal can be interpreted in light of what actually happened on the bench.

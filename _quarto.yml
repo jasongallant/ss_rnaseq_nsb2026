@@ -43,9 +43,10 @@ website:
         contents:
           - episodes/introduction.Rmd
           - episodes/eod-recording.Rmd # optional background
-          - episodes/implant-11kt.Rmd
+          - episodes/inject-11kt.Rmd
       - section: "June 9: Tissue Dissection and Analysing EOD Differences"
         contents:
+          - episodes/dissection.Rmd
           - episodes/examine-eod-duration.Rmd
       - section: "June 10: Intro to Single-Nucleus RNA-seq Analysis"
         contents:
