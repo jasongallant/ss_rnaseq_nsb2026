@@ -52,7 +52,8 @@ website:
         contents:
           - episodes/introduction_to_rnaseq.Rmd
       - section: "June 11: Isolating Single Nuclei"
-        contents: []
+        contents:
+          - episodes/nuclei_isolation.Rmd
       - section: "June 12: Data Analysis and QC"
         contents:
           - episodes/snrnaseq-qc.Rmd
