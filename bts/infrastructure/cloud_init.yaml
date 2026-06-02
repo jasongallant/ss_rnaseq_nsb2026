@@ -3,15 +3,30 @@
 # cloud_init.yaml — day-of user-data for the workshop EC2 instance.
 #
 # Passed via `aws ec2 run-instances --user-data file://cloud_init.yaml` when
-# launching the r6i.4xlarge from the baked AMI. Performs three jobs at first boot:
+# launching the r6i.4xlarge from the baked AMI. Performs five jobs at first boot:
 #
-#   1. Create 6 student PAM accounts + 1 instructor account with random passwords.
-#   2. rsync /opt/lesson/ into each user's home as ~/ssrnaseq/.
-#   3. Render the nginx config with the workshop domain and issue a Let's Encrypt cert.
+#   1. Mount the workshop data EBS volume (read-only) at /srv/workshop-data.
+#   2. aws s3 sync s3://${WORKSHOP_BUCKET}/content/ to /srv/workshop-content/
+#      (workbooks + setup.md — the small, frequently-updated stuff).
+#   3. Create 6 student PAM accounts + 1 instructor account with random passwords.
+#   4. provision-student.sh wires up each user's ~/ssrnaseq/ (symlinks into
+#      the mounted volume + writable copies of workbooks and checkpoints).
+#   5. Render the nginx config with the workshop domain and issue a Let's Encrypt cert.
 #
-# Before launching, REPLACE these placeholders in this file:
-#   __WORKSHOP_DOMAIN__   the FQDN you'll point at the Elastic IP (e.g. workshop.example.org)
-#   __ADMIN_EMAIL__       email used for Let's Encrypt registration / expiry notices
+# REQUIRED before launching:
+#
+#   * The instance must be launched with an IAM instance profile that has
+#     s3:GetObject + s3:ListBucket on s3://${WORKSHOP_BUCKET}/content/*.
+#   * REPLACE the placeholders below:
+#       __WORKSHOP_DOMAIN__    FQDN you'll point at the Elastic IP (e.g. workshop.example.org)
+#       __ADMIN_EMAIL__        email for Let's Encrypt registration / expiry notices
+#       __WORKSHOP_BUCKET__    S3 bucket holding workshop content + data
+#       __DATA_DEVICE__        block device for the attached data volume
+#                              (e.g. /dev/nvme1n1 on Nitro; check with `lsblk` after attach)
+#
+#   * Create the data EBS volume from the workshop data snapshot and attach it
+#     to the instance before boot (or shortly after — cloud-init waits for the
+#     device to appear).
 #
 # Credentials are written to /root/credentials.txt — SSH in immediately after
 # boot, copy them out, then `shred -u /root/credentials.txt`.
@@ -22,6 +37,63 @@ write_files:
     content: |
       WORKSHOP_DOMAIN=__WORKSHOP_DOMAIN__
       ADMIN_EMAIL=__ADMIN_EMAIL__
+      WORKSHOP_BUCKET=__WORKSHOP_BUCKET__
+      DATA_DEVICE=__DATA_DEVICE__
+
+  - path: /usr/local/sbin/mount-data-volume.sh
+    permissions: "0755"
+    content: |
+      #!/usr/bin/env bash
+      # Mount the attached workshop-data EBS volume read-only at /srv/workshop-data.
+      # Idempotent: re-running on a booted instance is a no-op if already mounted.
+      set -euo pipefail
+      source /etc/workshop.env
+      : "${DATA_DEVICE:?DATA_DEVICE not set in /etc/workshop.env}"
+
+      MNT=/srv/workshop-data
+      mkdir -p "$MNT"
+
+      # Wait up to 60 seconds for the device to appear (EBS attach can lag
+      # behind cloud-init on Nitro instances).
+      for _ in $(seq 1 30); do
+          [[ -b "$DATA_DEVICE" ]] && break
+          sleep 2
+      done
+      [[ -b "$DATA_DEVICE" ]] || { echo "ERROR: ${DATA_DEVICE} never appeared"; exit 1; }
+
+      if mountpoint -q "$MNT"; then
+          echo "${MNT} already mounted; skipping"
+          exit 0
+      fi
+
+      # Append to fstab so the mount survives reboots. nofail so a missing
+      # device doesn't block boot.
+      if ! grep -q "^${DATA_DEVICE}[[:space:]]" /etc/fstab; then
+          echo "${DATA_DEVICE}  ${MNT}  ext4  ro,noatime,nofail  0  0" >> /etc/fstab
+      fi
+      mount "$MNT"
+
+      # Sanity check: confirm expected top-level directories are present.
+      if [[ ! -d "${MNT}/ssrnaseq_data" ]]; then
+          echo "WARNING: ${MNT}/ssrnaseq_data missing — wrong snapshot attached?" >&2
+      fi
+
+  - path: /usr/local/sbin/sync-workshop-content.sh
+    permissions: "0755"
+    content: |
+      #!/usr/bin/env bash
+      # Sync workbooks + setup.md from S3 to /srv/workshop-content/.
+      # Cloud-init runs this once at first boot; refresh-workbooks.sh re-runs
+      # it mid-week when content changes.
+      set -euo pipefail
+      source /etc/workshop.env
+      : "${WORKSHOP_BUCKET:?WORKSHOP_BUCKET not set in /etc/workshop.env}"
+
+      CONTENT=/srv/workshop-content
+      mkdir -p "$CONTENT"
+      aws s3 sync "s3://${WORKSHOP_BUCKET}/content/" "$CONTENT/" --delete
+
+      [[ -d "$CONTENT/workbooks" ]] || { echo "ERROR: $CONTENT/workbooks missing after sync"; exit 1; }
 
   - path: /usr/local/sbin/create-workshop-users.sh
     permissions: "0755"
@@ -48,7 +120,8 @@ write_files:
           /usr/local/sbin/provision-student.sh "$user"
       done
 
-      # instructor gets sudo so you can administer without SSH-as-root.
+      # instructor gets sudo so you can administer without SSH-as-root,
+      # and so you can apt-install dev libs students need for special projects.
       usermod -aG sudo instructor || true
 
   - path: /usr/local/sbin/setup-nginx-tls.sh
@@ -102,7 +175,11 @@ write_files:
 
       systemctl reload nginx
 
+# Order matters: data volume mounts and S3 content sync must complete BEFORE
+# create-workshop-users.sh, because provision-student.sh reads from both.
 runcmd:
+  - /usr/local/sbin/mount-data-volume.sh
+  - /usr/local/sbin/sync-workshop-content.sh
   - /usr/local/sbin/create-workshop-users.sh
   - /usr/local/sbin/setup-nginx-tls.sh
   - systemctl restart rstudio-server

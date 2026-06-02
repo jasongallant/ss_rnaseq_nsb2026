@@ -1,0 +1,288 @@
+---
+title: "Workbook — snRNA-seq Preprocessing"
+output: html_notebook
+editor_options:
+  chunk_output_type: inline
+---
+
+# Workbook — Preprocessing the EO snRNA-seq Data
+
+This is your hands-on working surface for Friday. Run chunks one at a time. Where you see `___`, fill in the value — the chunk will fail informatively if you leave a blank.
+
+When you get stuck, the full episode at the same name on the course website is the answer key. Don't peek before you predict.
+
+> **Setup check before you start:** Confirm `getwd()` returns `~/ssrnaseq` or similar; you should see `data/ssrnaseq_data/EO/` in the file pane. If not, set the working directory via Session → Set Working Directory → To Project Directory.
+
+## Setup
+
+```{r load-libraries, message=FALSE, warning=FALSE}
+library(Seurat)
+library(tidyverse)
+library(patchwork)
+library(glmGamPoi)
+library(presto)
+library(harmony)
+```
+
+## Load the four EO samples
+
+```{r load-data, message=FALSE, warning=FALSE}
+tissue <- "EO"
+sample_names <- c("BB48", "BB49INJ", "BB50", "BB50INJ")
+
+list_seurat <- list()
+
+for (sample in sample_names) {
+  data_dir <- file.path("data/ssrnaseq_data", tissue, sample)
+
+  seurat_data <- Read10X(data.dir = data_dir)
+  seurat_obj <- CreateSeuratObject(
+    counts = seurat_data,
+    min.features = 1,
+    project = paste0(tissue, "_", sample)
+  )
+
+  list_seurat[[sample]] <- seurat_obj
+}
+
+# Sanity check: print the number of nuclei per sample
+sapply(list_seurat, ncol)
+```
+
+## Merge samples and stamp metadata
+
+```{r merge-and-annotate, message=FALSE, warning=FALSE}
+merged_seurat <- merge(
+  x = list_seurat[[1]],
+  y = list_seurat[2:length(list_seurat)],
+  add.cell.id = names(list_seurat)
+)
+merged_seurat <- JoinLayers(merged_seurat)
+
+merged_seurat$sample <- sub("EO_", "", merged_seurat$orig.ident)
+merged_seurat$fish <- merged_seurat$sample
+```
+
+> **Predict first.** Below, we map fish to treatment. From memory (or the implant-11kt episode): which two fish received 11-KT, and which two received vehicle? Write your prediction in the comment line before filling in the gaps.
+>
+> _Your prediction:_
+
+```{r fill-treatment-map, eval=FALSE}
+# Your prediction: BB__ and BB__ are 11-KT; BB__ and BB__ are vehicle
+treatment_map <- c(
+  BB48    = ___,
+  BB49INJ = ___,
+  BB50    = ___,
+  BB50INJ = ___
+)
+merged_seurat$treatment <- unname(treatment_map[merged_seurat$sample])
+head(merged_seurat@meta.data)
+```
+
+::: {.callout-important title="Challenge — The INJ suffix"}
+
+Two samples have an `INJ` suffix in their names. What does it mean? Why is it dangerous to use the suffix to infer treatment?
+
+::: {.callout-tip title="Hint / solution" collapse="true"}
+`INJ` is a library-preparation label, not a treatment label. BB49INJ is 11-KT; BB50INJ is vehicle. Inferring treatment from the string would flip BB49INJ's label — opposite of the truth. Always use fish identity, never sample name strings.
+:::
+
+:::
+
+## Visual QC check
+
+```{r qc-violin, fig.width=10, fig.height=5, message=FALSE, warning=FALSE}
+p_count <- VlnPlot(merged_seurat,
+  features = "nCount_RNA",
+  group.by = "orig.ident",
+  pt.size = 0
+) + theme(legend.position = "none") + ggtitle("UMI counts per nucleus")
+
+p_feat <- VlnPlot(merged_seurat,
+  features = "nFeature_RNA",
+  group.by = "orig.ident",
+  pt.size = 0
+) + theme(legend.position = "none") + ggtitle("Genes detected per nucleus")
+
+p_count | p_feat
+```
+
+> **Predict first.** Do any samples look categorically different from the others (as Pool 4 did from Pools 1–2 in the QC video)?
+>
+> _Your prediction:_
+
+## SCTransform normalization
+
+```{r sctransform, message=FALSE, warning=FALSE}
+merged_seurat <- SCTransform(merged_seurat, verbose = FALSE)
+```
+
+## PCA and the elbow plot
+
+```{r run-pca, message=FALSE, warning=FALSE}
+merged_seurat <- RunPCA(merged_seurat, verbose = FALSE, assay = "SCT")
+```
+
+```{r elbow-plot, message=FALSE, warning=FALSE}
+ElbowPlot(merged_seurat, ndims = 30)
+```
+
+> **Predict first.** Look at the elbow plot. Where do you think the elbow falls — PC 10? PC 20? PC 30? Write your guess in plain language before running the next chunk.
+>
+> _Your prediction:_ _____ PCs
+
+```{r set-n-pcs, eval=FALSE}
+n_pcs <- ___   # your choice based on the elbow plot
+```
+
+::: {.callout-important title="Challenge — Why does the elbow exist?"}
+
+What does each principal component represent? Why does the curve flatten ("the elbow") at some point?
+
+::: {.callout-tip title="Hint / solution" collapse="true"}
+Each PC is a weighted combination of genes that captures one axis of variance. Early PCs capture the dominant biological axes (cell-type differences). Later PCs capture progressively smaller, noisier components. Past the elbow, additional PCs are mostly noise; including them adds little signal but a lot of computational cost.
+:::
+
+:::
+
+```{r run-umap-pca, message=FALSE, warning=FALSE}
+# Uses n_pcs from the previous chunk; defaults to 20 if you skipped the gap
+if (!exists("n_pcs")) n_pcs <- 20
+
+merged_seurat <- RunUMAP(
+  merged_seurat,
+  dims           = 1:n_pcs,
+  reduction      = "pca",
+  reduction.name = "umap.pca",
+  verbose        = FALSE
+)
+```
+
+```{r save-checkpoint-01, message=FALSE, warning=FALSE}
+# Save the post-SCT/PCA state in case you need to back out of later changes
+dir.create("data/checkpoints", showWarnings = FALSE, recursive = TRUE)
+saveRDS(merged_seurat, file = "data/checkpoints/01_merged_sct.rds")
+```
+
+## Harmony integration
+
+```{r harmony-integration, message=FALSE, warning=FALSE}
+merged_seurat <- RunHarmony(
+  merged_seurat,
+  group.by.vars  = "orig.ident",
+  reduction      = "pca",
+  reduction.save = "harmony",
+  verbose        = FALSE
+)
+```
+
+## Cluster on Harmony
+
+> **Predict first.** Resolution sets cluster granularity. Lower = fewer/broader clusters; higher = more/finer. For an EO dataset where you expect 1 dominant electrocyte type plus 3–5 smaller types (muscle, Schwann, endothelial, motor neurons, maybe stalk vs. face), what resolution would you start with?
+>
+> _Your prediction:_ resolution = _____
+
+```{r fill-resolution, eval=FALSE}
+my_resolution <- ___   # your choice
+
+merged_seurat <- FindNeighbors(merged_seurat,
+  dims      = 1:n_pcs,
+  reduction = "harmony",
+  verbose   = FALSE
+)
+merged_seurat <- FindClusters(merged_seurat,
+  resolution = my_resolution,
+  verbose    = FALSE
+)
+
+merged_seurat <- RunUMAP(
+  merged_seurat,
+  dims           = 1:n_pcs,
+  reduction      = "harmony",
+  reduction.name = "umap.harmony",
+  verbose        = FALSE
+)
+```
+
+## Before / after Harmony
+
+```{r harmony-comparison, fig.width=14, fig.height=8, message=FALSE, warning=FALSE}
+p1 <- DimPlot(merged_seurat, reduction = "umap.pca",
+  group.by = "orig.ident", alpha = 0.4) + ggtitle("PCA — by sample")
+p2 <- DimPlot(merged_seurat, reduction = "umap.pca",
+  group.by = "treatment", alpha = 0.4,
+  cols = c("11kt" = "#D55E00", "vehicle" = "#0072B2")) + ggtitle("PCA — by treatment")
+p3 <- DimPlot(merged_seurat, reduction = "umap.harmony",
+  group.by = "orig.ident", alpha = 0.4) + ggtitle("Harmony — by sample")
+p4 <- DimPlot(merged_seurat, reduction = "umap.harmony",
+  group.by = "treatment", alpha = 0.4,
+  cols = c("11kt" = "#D55E00", "vehicle" = "#0072B2")) + ggtitle("Harmony — by treatment")
+
+(p1 | p2) / (p3 | p4)
+```
+
+::: {.callout-important title="Challenge — Did Harmony help?"}
+
+Compare the two rows of UMAPs.
+
+1. In the "by sample" panels, do sample-specific islands present in the PCA UMAP dissolve in the Harmony UMAP? Or were they already mixed?
+2. In the "by treatment" panels, do 11-KT and vehicle stay partially separated after Harmony? They should.
+3. Based on what you see, did Harmony provide assurance (small change) or active correction (big change)?
+
+::: {.callout-tip title="Hint / solution" collapse="true"}
+For this low-batch dataset, the PCA and Harmony UMAPs often look very similar. That's a good result — minimal technical batch is exactly what we want. Treatment separation should be preserved across both. The full episode walks through what each panel tells you.
+:::
+
+:::
+
+## Resolution sweep
+
+::: {.callout-important title="Challenge — Pick a resolution"}
+
+Re-run clustering at three resolutions and visualize. Then set it back to your chosen value.
+
+```{r resolution-sweep, eval=FALSE}
+for (res in c(0.3, 0.8, 1.5)) {
+  merged_seurat <- FindClusters(merged_seurat, resolution = res, verbose = FALSE)
+  print(
+    DimPlot(merged_seurat, reduction = "umap.harmony",
+            group.by = "seurat_clusters", label = TRUE) +
+      ggtitle(paste("resolution =", res))
+  )
+}
+
+# After exploring, restore your chosen resolution so Saturday is reproducible
+merged_seurat <- FindClusters(merged_seurat, resolution = ___, verbose = FALSE)
+```
+
+Which resolution gives groups that you'd be willing to start annotating tomorrow?
+
+::: {.callout-tip title="Hint / solution" collapse="true"}
+The full episode uses `resolution = 0.8`. Lower resolutions merge electrocyte sub-types; higher resolutions over-split them. ~10–14 clusters at 0.8 is a defensible starting point. The "right" value depends on the biological question.
+:::
+
+:::
+
+## Three-panel final view
+
+```{r umap-cluster-views, fig.width=15, fig.height=5, message=FALSE, warning=FALSE}
+p_clu <- DimPlot(merged_seurat, reduction = "umap.harmony",
+  group.by = "seurat_clusters", label = TRUE, repel = TRUE) +
+  ggtitle("Cluster") + theme(legend.position = "none")
+p_smp <- DimPlot(merged_seurat, reduction = "umap.harmony",
+  group.by = "orig.ident", alpha = 0.4) + ggtitle("Sample")
+p_trt <- DimPlot(merged_seurat, reduction = "umap.harmony",
+  group.by = "treatment", alpha = 0.4,
+  cols = c("11kt" = "#D55E00", "vehicle" = "#0072B2")) + ggtitle("Condition")
+
+p_clu | p_smp | p_trt
+```
+
+## Save the checkpoint for Saturday
+
+```{r save-checkpoint-02, message=FALSE, warning=FALSE}
+saveRDS(merged_seurat, file = "data/checkpoints/02_harmony_clustered.rds")
+cat("Friday checkpoint saved.\n")
+```
+
+> **Done.** Tomorrow's workbook (`workbook/snrnaseq-annotation-and-de.Rmd`) starts by loading this file. If you arrive Saturday and find you missed today's session, run the first chunk of the Saturday workbook — it loads the pre-built checkpoint shipped on the server.

@@ -7,30 +7,33 @@
 # terminate the build host. The AMI is then launched as r6i.4xlarge on
 # the day of the course (see cloud_init.yaml).
 #
+# The AMI is intentionally "R environment only": OS + system libs + R 4.4 +
+# the locked R package set + RStudio Server + nginx + certbot + awscli +
+# provision/refresh scripts. It contains NO lesson content. Workbooks and
+# bulk data are delivered at launch (S3 sync + mounted EBS snapshot — see
+# cloud_init.yaml). This lets you fix typos in workbooks without rebaking.
+#
 # Expected env vars (set before running):
-#   LESSON_REPO_URL   git URL for the ss_rnaseq_nsb2026 repo (HTTPS or SSH)
-#   RENV_LOCK_URL     (optional) HTTPS URL to renv.lock if it isn't committed
-#                     in the repo yet. If unset, the script expects
-#                     /opt/lesson/renv.lock to exist after `git clone`.
+#   RENV_LOCK_URL     HTTPS URL to renv.lock, e.g.
+#                     https://raw.githubusercontent.com/<user>/<repo>/main/renv.lock
+#   GITHUB_PAT        (optional) classic PAT with zero scopes to lift the
+#                     GitHub API rate limit so renv can resolve GitHub-sourced
+#                     packages like presto without throttling.
 #
 # Example:
-#   sudo LESSON_REPO_URL=https://github.com/jrgallant/ss_rnaseq_nsb2026.git \
-#        RENV_LOCK_URL=https://example.com/renv.lock \
+#   sudo RENV_LOCK_URL=https://raw.githubusercontent.com/jrgallant/ss_rnaseq_nsb2026/main/renv.lock \
+#        GITHUB_PAT=ghp_... \
 #        bash build_ami.sh
 
 set -euo pipefail
 
-: "${LESSON_REPO_URL:?LESSON_REPO_URL must be set}"
-RENV_LOCK_URL="${RENV_LOCK_URL:-}"
-# GITHUB_PAT lifts the GitHub API rate limit (60/hr anonymous -> 5000/hr) so
-# renv can resolve GitHub-sourced packages like presto without throttling.
-# Generate a classic PAT with zero scopes — auth alone is enough.
+: "${RENV_LOCK_URL:?RENV_LOCK_URL must be set (HTTPS URL to renv.lock)}"
 GITHUB_PAT="${GITHUB_PAT:-}"
 if [[ -z "$GITHUB_PAT" ]]; then
     echo "WARNING: GITHUB_PAT not set. renv may hit GitHub API rate limits." >&2
 fi
 
-LESSON_DIR=/opt/lesson
+RENV_LOCK_PATH=/opt/renv.lock
 R_SITE_LIB=/opt/R/site-library
 UBUNTU_CODENAME=noble
 R_VERSION=4.4.3
@@ -43,6 +46,11 @@ log() { printf '[build_ami] %s\n' "$*"; }
 ###############################################################################
 # 1. System libraries needed by the R package set
 ###############################################################################
+# The first block (build-essential through libgeos-dev) covers Seurat/DESeq2/
+# Harmony/tidyverse. The second block widens the net for student-installed
+# packages during special-projects week (sf, terra, magick, gsl, netCDF,
+# cairo) — costs ~5 min of bake time, zero runtime overhead, and saves the
+# instructor from sudo apt-installing dev libraries during the workshop.
 log "Installing system libraries"
 export DEBIAN_FRONTEND=noninteractive
 apt-get update -y
@@ -56,8 +64,10 @@ apt-get install -y --no-install-recommends \
     libpng-dev libtiff5-dev libjpeg-dev \
     libhdf5-dev libglpk-dev libbz2-dev liblzma-dev zlib1g-dev \
     libgit2-dev libsodium-dev libgeos-dev \
+    libudunits2-dev libgdal-dev libproj-dev libgsl-dev \
+    libmagick++-dev libgmp-dev libmpfr-dev libnetcdf-dev libcairo2-dev \
     nginx certbot python3-certbot-nginx \
-    pwgen
+    awscli pwgen
 
 ###############################################################################
 # 2. R ${R_VERSION} via rig (NOT the CRAN apt repo)
@@ -152,28 +162,11 @@ systemctl enable rstudio-server
 systemctl restart rstudio-server
 
 ###############################################################################
-# 5. Clone the lesson repo into /opt/lesson
+# 5. Fetch renv.lock (no full repo clone — content is delivered at launch)
 ###############################################################################
-log "Syncing lesson repo into ${LESSON_DIR}"
-if [[ -d "${LESSON_DIR}/.git" ]]; then
-    # Re-running on an AMI-baked instance: pull the latest commit.
-    git -C "$LESSON_DIR" fetch --depth=1 origin
-    git -C "$LESSON_DIR" reset --hard origin/HEAD
-else
-    rm -rf "$LESSON_DIR"
-    git clone --depth=1 "$LESSON_REPO_URL" "$LESSON_DIR"
-fi
-
-# renv.lock may not be committed yet — fetch from URL if provided.
-if [[ -n "$RENV_LOCK_URL" ]]; then
-    log "Downloading renv.lock from ${RENV_LOCK_URL}"
-    curl -fSL -o "${LESSON_DIR}/renv.lock" "$RENV_LOCK_URL"
-fi
-
-if [[ ! -f "${LESSON_DIR}/renv.lock" ]]; then
-    echo "ERROR: ${LESSON_DIR}/renv.lock not found. Commit it to the repo or set RENV_LOCK_URL." >&2
-    exit 1
-fi
+log "Fetching renv.lock from ${RENV_LOCK_URL}"
+curl -fSL -o "$RENV_LOCK_PATH" "$RENV_LOCK_URL"
+test -s "$RENV_LOCK_PATH" || { echo "ERROR: ${RENV_LOCK_PATH} empty"; exit 1; }
 
 ###############################################################################
 # 6. Install the locked R package set into the system library
@@ -230,10 +223,12 @@ install.packages("renv",        lib = "${R_SITE_LIB}")
 install.packages("BiocManager", lib = "${R_SITE_LIB}")
 
 # --- Restore into the system library so every PAM user inherits it ----------
+# renv::restore needs a project dir; we pass /opt as a throwaway since
+# everything we care about is the lockfile + the target library.
 renv::restore(
-  project  = "${LESSON_DIR}",
+  project  = "/opt",
   library  = "${R_SITE_LIB}",
-  lockfile = "${LESSON_DIR}/renv.lock",
+  lockfile = "${RENV_LOCK_PATH}",
   prompt   = FALSE
 )
 
@@ -259,36 +254,118 @@ chmod -R a+rX "$R_SITE_LIB"
 ###############################################################################
 # The actual rstudio site config is written by cloud-init at boot
 # (in setup-nginx-tls.sh) because the server_name needs the workshop
-# domain, which isn't known until launch. Earlier versions baked a
-# template here and used a sentinel like __WORKSHOP_DOMAIN__; that
-# collided with the same sentinel used by the launch-time sed pass
-# over cloud_init.yaml, so the substitution silently no-op'd. Avoid.
+# domain, which isn't known until launch.
 log "Removing nginx default site"
 rm -f /etc/nginx/sites-enabled/default
 
 ###############################################################################
-# 8. Per-user setup hook (runs once per student account at first login of cloud-init)
+# 8. Per-user provisioning hook (runs once per student account at first login)
 ###############################################################################
+# Layout this script produces in each student's home:
+#   ~/ssrnaseq/
+#   ├── workbook/                            (writable copy from /srv/workshop-content/workbooks/)
+#   ├── setup.md                             (writable copy from /srv/workshop-content/setup.md)
+#   └── data/
+#       ├── ssrnaseq_data → /srv/workshop-data/ssrnaseq_data    (symlink, RO mount)
+#       ├── raw           → /srv/workshop-data/raw              (symlink, RO mount)
+#       ├── eod_duration  → /srv/workshop-data/eod_duration     (symlink, RO mount; if present)
+#       └── checkpoints/                                          (writable per-student copy)
+#
+# Why copy workbooks and checkpoints but symlink ssrnaseq_data and raw:
+# students edit workbooks (fill in `___` gaps) and overwrite checkpoints
+# (saveRDS), so those need to be writable per-student. The bulk read-only
+# data is shared via symlinks to avoid duplicating hundreds of GB.
 log "Installing per-user provisioning hook"
 cat > /usr/local/sbin/provision-student.sh <<'PROV'
 #!/usr/bin/env bash
 # Usage: provision-student.sh <username>
-# Copies the lesson into the user's home dir if not already there.
+# Populates ~/ssrnaseq/ from the mounted data volume and synced content.
 set -euo pipefail
 user="$1"
 home="/home/${user}"
 target="${home}/ssrnaseq"
 
-if [[ ! -d "$target" ]]; then
-    rsync -a --exclude='renv/library' --exclude='_freeze' --exclude='.git' \
-        /opt/lesson/ "$target/"
-    chown -R "${user}:${user}" "$target"
+# Idempotent: never clobber an existing home. Mid-week updates go through
+# refresh-workbooks.sh instead, which preserves student edits via --backup.
+[[ -d "$target" ]] && exit 0
+
+CONTENT=/srv/workshop-content
+DATA=/srv/workshop-data
+
+# Sanity check: both must be populated before we provision anyone.
+[[ -d "$CONTENT/workbooks" ]] || { echo "ERROR: $CONTENT/workbooks missing — content S3 sync didn't run?"; exit 1; }
+[[ -d "$DATA/ssrnaseq_data" ]] || { echo "ERROR: $DATA/ssrnaseq_data missing — data volume not mounted?"; exit 1; }
+
+mkdir -p "$target/data"
+
+# Workbooks + setup.md: per-student writable copies.
+cp -r "$CONTENT/workbooks" "$target/workbook"
+[[ -f "$CONTENT/setup.md" ]] && cp "$CONTENT/setup.md" "$target/setup.md"
+
+# Read-only data: symlinks into the mounted volume.
+ln -s "$DATA/ssrnaseq_data" "$target/data/ssrnaseq_data"
+[[ -d "$DATA/raw" ]]          && ln -s "$DATA/raw"          "$target/data/raw"
+[[ -d "$DATA/eod_duration" ]] && ln -s "$DATA/eod_duration" "$target/data/eod_duration"
+
+# Checkpoints: per-student writable copy, pre-populated from the volume's baselines.
+if [[ -d "$DATA/checkpoints" ]]; then
+    cp -r "$DATA/checkpoints" "$target/data/checkpoints"
+else
+    mkdir -p "$target/data/checkpoints"
 fi
+
+chown -R "${user}:${user}" "$target"
 PROV
 chmod 0755 /usr/local/sbin/provision-student.sh
 
 ###############################################################################
-# 9. Cleanup
+# 9. Mid-week refresh hook (instructor runs this to push workbook fixes)
+###############################################################################
+# Pulls latest content from S3 and rsyncs into each student's ~/ssrnaseq/
+# with --backup so any local edits are preserved in ~/ssrnaseq/.workbook-backups/.
+log "Installing refresh-workbooks hook"
+cat > /usr/local/sbin/refresh-workbooks.sh <<'REFRESH'
+#!/usr/bin/env bash
+# /usr/local/sbin/refresh-workbooks.sh — push workbook updates to all students.
+# Reads WORKSHOP_BUCKET from /etc/workshop.env (set by cloud-init).
+set -euo pipefail
+
+if [[ ! -f /etc/workshop.env ]]; then
+    echo "ERROR: /etc/workshop.env not found (set by cloud-init at first boot)" >&2
+    exit 1
+fi
+# shellcheck disable=SC1091
+source /etc/workshop.env
+: "${WORKSHOP_BUCKET:?WORKSHOP_BUCKET not set in /etc/workshop.env}"
+
+CONTENT=/srv/workshop-content
+mkdir -p "$CONTENT"
+
+aws s3 sync "s3://${WORKSHOP_BUCKET}/content/" "$CONTENT/" --delete
+
+stamp=$(date +%Y%m%dT%H%M%S)
+for user in student1 student2 student3 student4 student5 student6 instructor; do
+    home="/home/${user}/ssrnaseq"
+    [[ -d "$home" ]] || continue
+    backup="${home}/.workbook-backups/${stamp}"
+    mkdir -p "$backup"
+    # rsync --backup moves overwritten/deleted files into the backup dir;
+    # student work in progress is never silently lost.
+    rsync -a --backup --backup-dir="$backup" \
+        "$CONTENT/workbooks/" "$home/workbook/"
+    if [[ -f "$CONTENT/setup.md" ]]; then
+        rsync -a --backup --backup-dir="$backup" \
+            "$CONTENT/setup.md" "$home/setup.md"
+    fi
+    chown -R "${user}:${user}" "$home/workbook" "$home/.workbook-backups"
+    [[ -f "$home/setup.md" ]] && chown "${user}:${user}" "$home/setup.md"
+    echo "refreshed: $user (backups: $backup if any)"
+done
+REFRESH
+chmod 0755 /usr/local/sbin/refresh-workbooks.sh
+
+###############################################################################
+# 10. Cleanup
 ###############################################################################
 log "Cleaning up apt caches and renv staging"
 apt-get clean
@@ -296,7 +373,7 @@ rm -rf /var/lib/apt/lists/*
 # Keep /opt/renv-cache so future rebuilds against this AMI (e.g. for a
 # lockfile bump) restore from cache in seconds instead of redownloading
 # every tarball. Costs a few GB of EBS snapshot — worth it.
-rm -rf /root/.cache /tmp/Rtmp* "${LESSON_DIR}/renv/library" || true
+rm -rf /root/.cache /tmp/Rtmp* || true
 
 log "Build complete. Now: snapshot this instance via 'aws ec2 create-image'."
 log "Recommended AMI name: ss-rnaseq-nsb2026-$(date +%Y%m%d)"

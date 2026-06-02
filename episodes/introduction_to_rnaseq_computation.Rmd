@@ -1,0 +1,218 @@
+---
+title: "snRNA-seq Computation & QC"
+teaching: 35
+exercises: 25
+optional: false
+---
+
+::: {.callout-note title="Questions"}
+
+- What does the computational pipeline do between a folder of FASTQ files and a count matrix you can cluster?
+- How do FastQC and Cell Ranger metrics each contribute to deciding whether a library is trustworthy?
+- Which pool failed QC, and why — and how would we know if we hadn't been told?
+- After QC, what do normalization, batch correction, clustering, annotation, and pseudobulk DE actually do?
+
+:::
+
+::: {.callout-tip title="Objectives"}
+
+- Describe the snRNA-seq computational pipeline from raw reads to differential expression.
+- Read CellRanger `qc_report.html` and FastQC outputs and interpret per-pool metrics across the four NS&B 11-KT pools.
+- Justify, with concrete metrics, why Pool 4 is excluded and Pool 3 (EO) is the workshop's focus.
+- Distinguish bulk-style sample failure (fixable upstream) from analysis decisions (handled downstream in Seurat).
+- Recognize the four major analytical steps you will run hands-on: normalization (SCTransform), dimensionality reduction (PCA + Harmony), clustering (Louvain), and pseudobulk differential expression (DESeq2).
+
+:::
+
+## Lecture Video
+
+```{=html}
+<video class="plyr-video" playsinline controls preload="metadata">
+  <source src="https://d18e7eu8nurr5a.cloudfront.net/lectures/intro_to_rnaseq_computation.mp4"
+          type="video/mp4" />
+  Your browser does not support embedded video.
+</video>
+```
+
+## Overview
+
+This pre-class session has two halves. The first is conceptual: the video above walks you through the snRNA-seq computational pipeline, from FASTQ reads through pseudobulk DE, so you can recognize each step before you run it. The second is hands-on: a **QC interpretation worksheet** that you fill in by clicking through the actual Cell Ranger and FastQC reports for all four pools on the workshop server. By the time you walk into Friday's session, you should be able to defend — in plain language — which pools to include in analysis and why.
+
+Friday opens with a 15-minute review of your worksheet answers. Come ready to point at specific numbers in the reports, not just say "Pool 4 looked bad."
+
+## The Pipeline at a Glance
+
+Single-nucleus RNA-seq turns physical molecules into a tractable analytical object — a gene-by-nucleus count matrix — through a chain of computational steps. Each step has a name, a tool, and a decision point:
+
+| Step | Tool | Decision you control |
+|---|---|---|
+| Alignment + UMI counting | Cell Ranger | Pre-mRNA reference; cell-calling thresholds |
+| Quality control | FastQC + Cell Ranger metrics | Which samples to keep, which to exclude |
+| Normalization | SCTransform | Number of variable features |
+| Dimensionality reduction | PCA | Number of principal components |
+| Batch correction | Harmony | Which metadata defines "batch" |
+| Clustering | Louvain (Seurat) | Resolution parameter |
+| Cell-type annotation | Curated markers + module scores | Which marker lists, which thresholds |
+| Differential expression | DESeq2 (pseudobulk) | Design matrix, contrast direction |
+
+Each step is short to explain but easy to fumble. The video covers the conceptual content; Friday and Saturday's hands-on episodes walk through the code.
+
+## QC Is the Gate
+
+The most important fact about the pipeline: **Cell Ranger does not know whether the molecules in your tube were the molecules you wanted.** It aligns reads to the reference and calls cells from the barcode-rank distribution. If those reads were ribosomal RNA, you get a count matrix of ribosomal RNA. There is no error flag.
+
+This is why QC isn't downstream cleanup — it's epistemic. You are asking: *did the experiment work at all?* Two tools together answer the question:
+
+- **FastQC** reads the FASTQ files before alignment. It catches base-call quality, GC content shifts, adapter contamination, and overrepresented sequences. A sample that fails FastQC has a problem in *what was in the tube*.
+- **Cell Ranger** reports metrics after alignment: confident mapping rate, intronic fraction, cells called, median genes per cell. A sample that passes FastQC but fails Cell Ranger has a problem in *capture or composition*, not sequencing quality.
+
+The healthy ranges for snRNA-seq:
+
+| Metric | Healthy range | What low means |
+|---|---|---|
+| Q30 RNA read (R2) | > 85% | Base-call accuracy problem |
+| Confident genome mapping | > 60% | Contamination, wrong reference, or degradation |
+| Intronic reads | 25–45% | Reflects nuclear pre-mRNA capture |
+| Median genes / cell | > 500 | Real nuclei vs. empty droplets |
+
+::: {.callout-warning title="Q30 isn't a pass/fail for the library"}
+
+Q30 measures sequencer performance — how accurately the base calls were made. You can have 93% Q30 on a library that is 90% ribosomal RNA. Those rRNA reads were sequenced accurately; they're still rRNA. Always read Q30 together with mapping rate and intronic fraction.
+
+:::
+
+## QC Worksheet — Four Pools
+
+Open the actual reports for each pool in side tabs, walk through them, and fill in the table below. The reports live on the workshop server:
+
+- **CellRanger `qc_report.html`** for pool *N*: `https://workshop.efishgenomics.com/qc/poolN_<tissue>/outs/qc_report.html`
+- **FastQC HTMLs** for pool *N*: `https://workshop.efishgenomics.com/qc/poolN_<tissue>/fastqc_fcA/` and `fastqc_fcB/`
+
+The four pools are:
+
+| Pool | Tissue | Fish |
+|---|---|---|
+| 1 | Hindbrain | BB48, BB50 |
+| 2 | Midbrain | BB48, BB49INJ, BB50, BB50INJ |
+| 3 | Electric organ (EO) | BB48, BB49INJ, BB50, BB50INJ |
+| 4 | Skin / Knollenorgan | BB48, BB49INJ, BB50, BB50INJ |
+
+### Per-pool comparison table
+
+Read each pool's `qc_report.html` and FastQC output. Fill in the cells below. Some are filled in for you as examples — you'll fill the blanks.
+
+| Metric | Pool 1 (Hindbrain) | Pool 2 (Midbrain) | Pool 3 (EO) | Pool 4 (Skin) |
+|---|---|---|---|---|
+| Confident genome mapping (%) | 74 | 76 | _____ | _____ |
+| Intronic reads (%) | 36 | 38 | _____ | _____ |
+| Cells called | 4,761 | 5,234 | _____ | _____ |
+| Median genes / cell | 1,500–1,700 | 1,600–2,200 | _____ | _____ |
+| FastQC: per-base sequence content | _____ | _____ | _____ | _____ |
+| FastQC: GC content | _____ | _____ | _____ | _____ |
+| FastQC: overrepresented sequences | _____ | _____ | _____ | _____ |
+
+### Short-answer prompts
+
+::: {.callout-important title="Worksheet Q1 — The verdict"}
+
+Based on the metrics you filled in:
+
+1. Which pool would you exclude from analysis, and what's the single strongest piece of evidence?
+2. Is the exclusion decision a "lower-quality data" call or a "this is not gene-expression data" call? Defend your wording.
+3. What would you say in a Methods section of a paper to justify the exclusion?
+
+:::: {.callout-tip title="Solution" collapse="true"}
+
+Pool 4 is excluded. The strongest single piece of evidence is the **1% intronic fraction** — snRNA-seq from real nuclei runs 25–45% intronic, and 1% means almost nothing was nuclear pre-mRNA. Combined with the 11% confident mapping and the 77,427 phantom cells called, the data is not low-quality gene expression — it is not gene-expression data at all.
+
+A Methods sentence: *"Pool 4 (skin/knollenorgan) was excluded due to rRNA contamination arising from low nuclear yield during tissue preparation; Kraken2 analysis ruled out exogenous contamination."*
+
+::::
+
+:::
+
+::: {.callout-important title="Worksheet Q2 — Intronic fraction"}
+
+The intronic-reads percentage is one of the most diagnostic Cell Ranger metrics for snRNA-seq specifically. Why does the healthy range run **25–45% for snRNA-seq** vs. **<5% for scRNA-seq**?
+
+:::: {.callout-tip title="Solution" collapse="true"}
+
+snRNA-seq captures **nuclear** RNA, which includes large amounts of pre-mRNA — transcripts still being processed and still carrying their introns. scRNA-seq captures **cytoplasmic** RNA, which is fully spliced (introns removed). A high intronic fraction in snRNA-seq is the validation stamp for nuclear capture; in scRNA-seq it would be a contamination flag. Pool 4's 1% intronic rate means whatever was captured wasn't nuclear.
+
+::::
+
+:::
+
+::: {.callout-important title="Worksheet Q3 — The barcode-rank plot"}
+
+Click into Pool 2's `qc_report.html` and find the barcode-rank plot. Then do the same for Pool 4. Compare them visually.
+
+1. What does the "knee" in Pool 2's plot represent biologically?
+2. Pool 4 has no knee. What does that mean about what's in the droplets?
+3. Why does the absence of a knee lead to 77,427 spurious cell calls?
+
+:::: {.callout-tip title="Solution" collapse="true"}
+
+1. The knee is the gap between barcodes that contained a real nucleus (high UMI count) and empty droplets (low UMI count). Cells contain 10–100× more mRNA than empty droplets, creating the gap.
+2. No knee means high-UMI and low-UMI barcodes form a continuous ramp — there is no clean signal distinguishing nucleus-containing droplets from empty ones. In Pool 4, free rRNA molecules loaded into essentially every droplet, smearing the distribution.
+3. Cell Ranger's barcode-rank algorithm anchors on the knee to call cells. Without one, it picks an inflection point anywhere on the ramp and calls everything above it — 77,427 barcodes with 25–73 genes each, none of them real cells.
+
+::::
+
+:::
+
+### Forensics box
+
+::: {.callout-note title="Pool 4 forensics — what's actually in the unmapped reads?"}
+
+When FastQC flagged Pool 4 with **~7.5% overrepresented "No Hit" sequences**, the natural reaction is to assume contamination from another organism — bacterial skin microbiome being the obvious candidate.
+
+Three independent lines of evidence ruled this out:
+
+1. **BLAST.** The "No Hit" consensus sequence returned **100% match to *B. brachyistius* 18S/28S rRNA**. The unmapped reads are the fish's own ribosomal RNA — not foreign.
+2. **Chemistry.** The 10x Genomics poly(dT) capture chemistry requires a poly(A) tail. Bacterial mRNA isn't polyadenylated. Even if skin microbiome bacteria were present, their transcripts couldn't be captured.
+3. **Kraken2.** A microbial classifier ran against the unmapped reads from both Pool 2 (midbrain, clean) and Pool 4 (skin, failed). In both pools, ~81–90% of unmapped reads were **unclassified** — identical fractions. The classified hits were reagent background (*Homo sapiens* handling contaminant, trace *Klebsiella*) and present equally in both pools. No skin-specific microbial enrichment.
+
+The mechanism: skin nuclei are rare and fragile. Mechanical lysis protocols designed for soft brain tissue don't efficiently release nuclei from densely-packed keratinocytes. Low yield → few real nuclei → the abundant, stable rRNA pool dominated what was captured. Result: 89% rRNA library, no knee, 77,427 phantom cells. **This is a sample-preparation problem, not a bioinformatics problem.**
+
+:::
+
+## Beyond QC: What Friday and Saturday Will Cover
+
+Once you've decided which pools are real, the rest of the pipeline asks: what cell types are in this tissue, and which genes change with treatment?
+
+**Normalization** removes the technical component of nucleus-to-nucleus variation. SCTransform fits a regularized negative binomial model to each gene and returns variance-stabilized residuals.
+
+**PCA** compresses ~3,000 highly variable genes into 20–30 principal components — enough to capture meaningful variance, few enough to cluster on.
+
+**Harmony** corrects GEM-well batch effects in the PCA embedding. With four samples on two capture days, batch is real; Harmony aligns samples within each cell type without flattening cell-type structure.
+
+**Clustering** uses Louvain community detection on a kNN graph in the corrected embedding. The resolution parameter controls how finely the graph is partitioned — a judgment call, not an answer.
+
+**Cell-type annotation** matches clusters to curated marker gene lists (electrocyte: *scn4aa*, *scn4ab*, *kcna7a*; muscle: *pax7b*, myomesins; Schwann: *col28a1a*; endothelial: *cdh5*; motor neuron: *mnx1*, *chata*). Module scores quantify how well each cluster matches each gene set.
+
+**Pseudobulk + DESeq2** runs the central statistical test: aggregate raw counts per (cell-type × sample), then test treatment as a fixed effect. This treats *fish*, not *nucleus*, as the unit of replication — statistically correct for snRNA-seq.
+
+::: {.callout-important title="Predict-first — what's the right unit of replication?"}
+
+We have 2 fish per condition × ~1,400 nuclei per fish = ~5,600 nuclei. A graduate student in your lab proposes testing 11-KT vs. vehicle with a Wilcoxon rank-sum test on the ~2,800 individual 11-KT vs. ~2,800 vehicle nuclei. Predict the consequence before reading the solution.
+
+:::: {.callout-tip title="Solution" collapse="true"}
+
+Nuclei from the same fish are **not independent** — they share fish-level variation in diet, microbiome, stress, circadian state, and countless other factors unrelated to 11-KT. Treating each nucleus as a replicate inflates the degrees of freedom ~1,400-fold, deflating p-values dramatically. The result: many genes look strongly "significant" but the effect rides on one unusual fish. This is pseudoreplication.
+
+Pseudobulk aggregates raw counts to the (cell-type × fish) level, restoring n=2 per group. DESeq2 then estimates dispersion and tests with honest degrees of freedom. The padj values will be much larger than you'd see in the pseudoreplicated test — that's the correct statistical behavior, not a failure of the method.
+
+::::
+
+:::
+
+## Keypoints
+
+1. Cell Ranger converts FASTQs into a count matrix but does not validate whether the underlying biology was sound — that's what QC is for.
+2. FastQC catches problems in *what was sequenced*; Cell Ranger catches problems in *what was captured*. Both must look right.
+3. The intronic fraction (25–45% healthy) is the single most diagnostic snRNA-seq metric — it distinguishes nuclear capture from contamination.
+4. Pool 4 was excluded because intronic 1%, mapping 11%, and 77,427 phantom cells indicate the library is host ribosomal RNA, not gene expression.
+5. Pool 3 (EO) is the workshop's analytical focus — the library is real, CellRanger's cell calls look reasonable, and the 11-KT × vehicle 2v2 design is intact.
+6. The downstream pipeline (SCTransform → PCA → Harmony → Louvain → curated annotation → pseudobulk DESeq2) is what Friday and Saturday's hands-on sessions cover.
+7. Nuclei from the same fish are not independent replicates — always aggregate to the biological replicate level before testing for treatment effects.

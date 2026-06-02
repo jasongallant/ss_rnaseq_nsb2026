@@ -1,6 +1,9 @@
 episodes/data/*
 slides/
 
+# Workshop infrastructure secrets (AWS resource IDs + GitHub PAT)
+bts/infrastructure/.env
+
 /.quarto/
 /_site/
 

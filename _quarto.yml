@@ -11,6 +11,7 @@ project:
     - "!slides/" # Ignores an entire folder
     - "!_includes/" # HTML partials, not pages
     - "!episodes/episodes_style_guide.md"
+    - "!episodes/workbook/" # student notebooks, run interactively — not rendered
 
 website:
   title: "Electric Fish: Single-Nucleus RNA-seq"
@@ -54,13 +55,13 @@ website:
       - section: "June 11: Isolating Single Nuclei"
         contents:
           - episodes/nuclei_isolation.Rmd
-      - section: "June 12: Data Analysis and QC"
+      - section: "June 12: Preprocessing and Batch Correction"
         contents:
-          - episodes/snrnaseq-qc.Rmd
-      - section: "June 13: Clustering and Differential Expression Analysis"
+          - episodes/introduction_to_rnaseq_computation.Rmd
+          - episodes/snrnaseq-preprocessing.Rmd
+      - section: "June 13: Cell-Type Annotation and Differential Expression"
         contents:
-          - episodes/normalize-reduce-cluster.Rmd
-          - episodes/gene-expression-change.Rmd
+          - episodes/snrnaseq-annotation-and-de.Rmd
       - "---"
       - episodes/setup.md
 

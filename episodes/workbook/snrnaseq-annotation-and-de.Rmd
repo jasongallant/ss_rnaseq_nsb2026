@@ -1,0 +1,489 @@
+---
+title: "Workbook — Cell-Type Annotation & Differential Expression"
+output: html_notebook
+editor_options:
+  chunk_output_type: inline
+---
+
+# Workbook — Saturday
+
+Today's work is denser than yesterday's. The gaps land at decision points: which cell-type labels to trust, which paralog drives the stalk signal, which gene to defend as a candidate hit, and how to read the cross-study scatter plot.
+
+The full episode at the same name on the course website is the answer key. Predict before you peek.
+
+## Load Friday's checkpoint
+
+```{r load-libraries, message=FALSE, warning=FALSE}
+library(Seurat)
+library(tidyverse)
+library(patchwork)
+library(glmGamPoi)
+library(presto)
+library(DESeq2)
+library(limma)
+library(ggrepel)
+if (requireNamespace("speckle", quietly = TRUE)) library(speckle)
+```
+
+```{r load-checkpoint, message=FALSE, warning=FALSE}
+# Loads the post-Harmony, post-clustering state you produced Friday.
+# If you missed Friday, this loads the pre-built checkpoint shipped on the server.
+merged_seurat <- readRDS("data/checkpoints/02_harmony_clustered.rds")
+merged_seurat
+```
+
+## Find cluster markers
+
+```{r prep-markers, message=FALSE, warning=FALSE}
+merged_seurat <- PrepSCTFindMarkers(merged_seurat, verbose = FALSE)
+```
+
+```{r find-markers, message=FALSE, warning=FALSE}
+all_markers <- FindAllMarkers(
+  merged_seurat,
+  only.pos = TRUE,
+  verbose  = FALSE
+)
+all_markers <- all_markers |> arrange(cluster, desc(avg_log2FC))
+head(all_markers, 20)
+```
+
+## Join NCBI gene-product descriptions
+
+```{r parse-gtf, message=FALSE, warning=FALSE}
+gtf_raw <- read_tsv(
+  "data/ssrnaseq_data/genes.gtf.gz",
+  comment        = "#",
+  col_names      = FALSE,
+  col_types      = "ccciicccc",
+  show_col_types = FALSE
+)
+gene_desc <- gtf_raw |>
+  filter(str_detect(X9, 'product "')) |>
+  mutate(
+    gene_id   = str_extract(X9, 'gene_id "([^"]+)"', group = 1),
+    gene_name = str_extract(X9, 'gene "([^"]+)"', group = 1),
+    product   = str_extract(X9, 'product "([^"]+)"', group = 1)
+  ) |>
+  dplyr::select(gene_id, gene_name, product) |>
+  distinct(gene_id, .keep_all = TRUE)
+
+gene_lookup <- bind_rows(
+  gene_desc |> transmute(key = gene_id, gene_name, product),
+  gene_desc |>
+    filter(!is.na(gene_name), gene_name != gene_id) |>
+    transmute(key = gene_name, gene_name, product)
+) |>
+  distinct(key, .keep_all = TRUE)
+
+annotated_markers <- all_markers |>
+  left_join(gene_lookup |> dplyr::select(key, gene_name, product),
+    by = c("gene" = "key")
+  )
+
+annotated_markers |>
+  group_by(cluster) |>
+  slice_max(avg_log2FC, n = 3) |>
+  ungroup() |>
+  dplyr::select(cluster, gene, gene_name, product, avg_log2FC, p_val_adj)
+```
+
+> **Predict first.** Scan the top markers. Before running module scoring, which cluster do you think will be electrocyte? Which is most likely Schwann? Write your guesses, including the cluster numbers.
+>
+> _Your prediction:_
+
+## Curated marker gene lists
+
+The marker lists below come from the published EO literature (Gallant et al. 2014, Thompson et al. 2018, Losilla & Gallant 2025, Baumann et al. 2025, others). They are intentionally not gapped — the curation is the literature's contribution, not yours.
+
+```{r marker-gene-lists, message=FALSE, warning=FALSE}
+marker_genes <- list(
+  Electrocyte = c(
+    "LOC125742960", "scn4ab",       # Nav1.4 paralogs
+    "LOC125743019", "kcna7", "kcnq1.2", "kcnq5a", "kcnn2",   # K+ channels
+    "cnga3a", "atp1b2b",
+    "rrad", "igsf9ba", "robo2", "tenm1"
+  ),
+  Muscle = c("pax7b", "pitx3", "myom2a", "myom2b", "hey2", "ezh2",
+             "megf10", "mcama", "fgfr4", "tbx22"),
+  Schwann = c("col28a1a", "smoc1", "prss12", "antxr1b",
+              "numb", "olfml2ba", "col6a3", "sema3bl"),
+  Endothelial = c("cdh5", "pecam1b", "kdr", "flt1",
+                  "clec14a", "pcdh12", "podxl", "adgrl4"),
+  Motorneuron = c("mnx1", "LOC125712540", "LOC125745880",
+                  "LOC125704285", "LOC125706047",
+                  "chata", "slc18a3a", "elavl3", "rbfox3a",
+                  "nefma", "nefla", "neflb", "LOC125751823", "prph",
+                  "sv2a", "snap25a", "LOC125712969",
+                  "gap43", "nrn1b", "nrxn1a")
+)
+marker_genes <- lapply(marker_genes, function(g) g[g %in% rownames(merged_seurat)])
+print(sapply(marker_genes, length))
+
+pmca_genes <- c("atp2b1a", "atp2b2", "atp2b3b", "atp2b4")
+pmca_genes <- pmca_genes[pmca_genes %in% rownames(merged_seurat)]
+```
+
+## Module scores per cell type
+
+```{r module-score, fig.width=12, fig.height=9, message=FALSE, warning=FALSE}
+for (ct in names(marker_genes)) {
+  if (length(marker_genes[[ct]]) < 3) next
+  merged_seurat <- AddModuleScore(
+    merged_seurat,
+    features = list(marker_genes[[ct]]),
+    name     = paste0(ct, "_score"),
+    nbin     = 12, seed = 42
+  )
+  old_col <- paste0(ct, "_score1")
+  new_col <- paste0(ct, "_score")
+  merged_seurat@meta.data[[new_col]] <- merged_seurat@meta.data[[old_col]]
+  merged_seurat@meta.data[[old_col]] <- NULL
+}
+score_cols <- paste0(names(marker_genes), "_score")
+score_cols <- score_cols[score_cols %in% colnames(merged_seurat@meta.data)]
+
+if (length(pmca_genes) >= 2) {
+  merged_seurat <- AddModuleScore(
+    merged_seurat, features = list(pmca_genes),
+    name = "PMCA_score", nbin = 12, seed = 42
+  )
+  merged_seurat$PMCA_score <- merged_seurat$PMCA_score1
+  merged_seurat$PMCA_score1 <- NULL
+}
+
+FeaturePlot(merged_seurat,
+  features  = c(score_cols, "PMCA_score"),
+  reduction = "umap.harmony",
+  ncol = 2, order = TRUE
+)
+```
+
+::: {.callout-important title="Challenge — Compare your prediction"}
+
+Look at the module-score Feature plots. Did your predicted electrocyte cluster light up brightest on `Electrocyte_score`? Did your predicted Schwann cluster light up on `Schwann_score`? Where were you wrong, and what tipped you off in the top markers?
+
+::: {.callout-tip title="Hint / solution" collapse="true"}
+Electrocyte signatures are usually strong and central on the UMAP because electrocytes dominate the tissue. The PMCA score lights up a smaller subset within the electrocyte territory — that's your stalk candidate. Schwann, endothelial, and motor-neuron territories are usually smaller and peripheral on the UMAP.
+:::
+
+:::
+
+## Assign cluster labels and refine stalk identity
+
+```{r annotate-from-markers, fig.width=9, fig.height=6, message=FALSE, warning=FALSE}
+cluster_scores <- merged_seurat@meta.data |>
+  group_by(seurat_clusters) |>
+  summarise(across(all_of(score_cols), mean, .names = "{.col}"), .groups = "drop")
+
+cluster_labels <- cluster_scores |>
+  pivot_longer(-seurat_clusters, names_to = "score_col", values_to = "mean_score") |>
+  mutate(cell_type = str_remove(score_col, "_score")) |>
+  group_by(seurat_clusters) |>
+  slice_max(mean_score, n = 1, with_ties = FALSE) |>
+  ungroup() |>
+  dplyr::select(seurat_clusters, cell_type, mean_score) |>
+  arrange(as.integer(as.character(seurat_clusters)))
+
+label_vec <- setNames(cluster_labels$cell_type,
+  as.character(cluster_labels$seurat_clusters))
+merged_seurat$cell_type_go <- unname(label_vec[as.character(merged_seurat$seurat_clusters)])
+
+# Stalk refinement
+merged_seurat$cell_type_detail <- merged_seurat$cell_type_go
+if (length(pmca_genes) >= 2 && "PMCA_score" %in% colnames(merged_seurat@meta.data)) {
+  stalk_scores <- merged_seurat@meta.data |>
+    group_by(seurat_clusters) |>
+    summarise(
+      mean_PMCA = mean(PMCA_score),
+      mean_Elec = mean(Electrocyte_score),
+      n_cells = n(),
+      initial_label = names(sort(table(cell_type_go), decreasing = TRUE))[1],
+      .groups = "drop"
+    ) |>
+    mutate(stalk_score = mean_PMCA * pmax(mean_Elec, 0)) |>
+    arrange(desc(stalk_score))
+  stalk_cluster <- as.character(stalk_scores$seurat_clusters[1])
+
+  pmca_by_cluster <- merged_seurat@meta.data |>
+    filter(cell_type_go == "Electrocyte") |>
+    group_by(seurat_clusters) |>
+    summarise(mean_PMCA = mean(PMCA_score), n_cells = n(), .groups = "drop") |>
+    arrange(desc(mean_PMCA))
+
+  stalk_idx <- rownames(merged_seurat@meta.data)[
+    as.character(merged_seurat$seurat_clusters) == stalk_cluster
+  ]
+  merged_seurat$cell_type_detail[stalk_idx] <- "Stalk_Electrocyte"
+}
+
+DimPlot(merged_seurat,
+  reduction = "umap.harmony",
+  group.by  = "cell_type_detail",
+  label     = TRUE, repel = TRUE
+) + ggtitle("EO cell types") + NoLegend()
+```
+
+```{r save-checkpoint-03, message=FALSE, warning=FALSE}
+saveRDS(merged_seurat, file = "data/checkpoints/03_annotated.rds")
+```
+
+## Identify the stalk-driver PMCA paralog
+
+> **Predict first.** Four PMCA paralogs (`atp2b1a`, `atp2b2`, `atp2b3b`, `atp2b4`) are present. The module score is the **average** of all four. Which single paralog do you think will turn out to be the most stalk-specific? You'll find out by looking at the FeaturePlot below.
+>
+> _Your prediction:_
+
+```{r pmca-paralogs, fig.width=12, fig.height=5, message=FALSE, warning=FALSE}
+FeaturePlot(merged_seurat,
+  features = pmca_genes,
+  reduction = "umap.harmony",
+  ncol = 2, order = TRUE
+)
+```
+
+::: {.callout-important title="Challenge — Single-paralog stalk marker"}
+
+Looking at the four PMCA FeaturePlots:
+
+1. Which paralog has the most stalk-restricted expression (lights up only in the stalk cluster)?
+2. Which paralog is most broadly expressed (lights up everywhere)?
+3. If you had to recommend a **single** PMCA paralog as a stalk marker for a future in-situ hybridization study, which one and why?
+
+::: {.callout-tip title="Hint / solution" collapse="true"}
+The Baumann 2025 paper used a pan-PMCA antibody, so the specific paralog is open. The single-paralog story is precisely what snRNA-seq can resolve. You're looking for tight, stalk-specific signal — the paralog whose territory looks most like the Stalk_Electrocyte label.
+:::
+
+:::
+
+## Pseudobulk DE
+
+> **Predict first.** Before we aggregate, write down the grouping variable for `AggregateExpression`. We want one count per gene per fish per cell type. What two metadata columns does `group.by` need?
+>
+> _Your prediction:_ `group.by = c(___, ___)`
+
+```{r aggregate-expression, eval=FALSE}
+pseudobulk_counts <- AggregateExpression(
+  merged_seurat,
+  assays        = "RNA",
+  group.by      = c(___, ___),
+  return.seurat = FALSE
+)$RNA
+
+cat("Pseudobulk matrix:", dim(pseudobulk_counts), "\n")
+print(colnames(pseudobulk_counts))
+```
+
+::: {.callout-important title="Challenge — Why these two columns?"}
+
+Defend your choice for the two grouping variables. What goes wrong if you use only one? What goes wrong if you use a third?
+
+::: {.callout-tip title="Hint / solution" collapse="true"}
+We need `(cell_type × sample)` — one count per gene per cell type per fish. With only `cell_type`, you'd pool all four fish into one number per cell type, losing the n=2-per-group structure DESeq2 needs. With only `sample`, you'd pool all cell types within each fish into one number, losing cell-type specificity. Adding a third grouping variable (e.g., `treatment`) is redundant — treatment is already a property of the sample.
+
+The full episode uses `c("cell_type_go", "orig.ident")`.
+:::
+
+:::
+
+## Build the metadata and run DESeq2
+
+```{r pseudobulk-pipeline, message=FALSE, warning=FALSE, eval=FALSE}
+# Use the value you set above
+if (!exists("pseudobulk_counts")) {
+  pseudobulk_counts <- AggregateExpression(
+    merged_seurat,
+    assays        = "RNA",
+    group.by      = c("cell_type_go", "orig.ident"),
+    return.seurat = FALSE
+  )$RNA
+}
+
+pb_meta <- data.frame(
+  col_id = colnames(pseudobulk_counts),
+  stringsAsFactors = FALSE
+) |>
+  tidyr::separate(col_id, into = c("cell_type", "orig_ident"),
+                  sep = "_", extra = "merge") |>
+  mutate(
+    sample = sub("EO-", "", orig_ident),
+    treatment = case_when(
+      sample %in% c("BB48", "BB49INJ") ~ "11kt",
+      TRUE ~ "vehicle"
+    ),
+    treatment = factor(treatment, levels = c("vehicle", "11kt"))
+  )
+rownames(pb_meta) <- colnames(pseudobulk_counts)
+
+sample_counts_per_ct <- pb_meta |>
+  group_by(cell_type, treatment) |>
+  summarise(n = n(), .groups = "drop") |>
+  group_by(cell_type) |>
+  filter(all(n >= 2)) |>
+  pull(cell_type) |>
+  unique()
+
+de_results <- list()
+dds_objects <- list()
+
+for (ct in sample_counts_per_ct) {
+  cols <- which(pb_meta$cell_type == ct)
+  mat <- pseudobulk_counts[, cols, drop = FALSE]
+  meta_sub <- pb_meta[cols, , drop = FALSE]
+  mat <- mat[rowSums(mat) > 0, , drop = FALSE]
+
+  dds <- DESeqDataSetFromMatrix(
+    countData = mat, colData = meta_sub, design = ~treatment
+  )
+  suppressWarnings(dds <- DESeq(dds, quiet = TRUE))
+  res <- results(dds,
+    contrast = c("treatment", "11kt", "vehicle"), alpha = 0.05)
+
+  de_results[[ct]] <- as.data.frame(res) |>
+    tibble::rownames_to_column("gene") |>
+    mutate(cell_type = ct) |>
+    arrange(padj)
+  dds_objects[[ct]] <- dds
+}
+
+de_combined <- bind_rows(de_results)
+saveRDS(list(de_results = de_results, dds_objects = dds_objects, pb_meta = pb_meta),
+  file = "data/checkpoints/04_pseudobulk_dds.rds")
+```
+
+## Top DE table and per-fish visualization
+
+```{r de-table, message=FALSE, warning=FALSE}
+de_combined |>
+  filter(!is.na(padj), padj < 0.1) |>
+  group_by(cell_type) |>
+  slice_min(padj, n = 5) |>
+  ungroup() |>
+  left_join(gene_lookup |> dplyr::select(key, product), by = c("gene" = "key")) |>
+  dplyr::select(cell_type, gene, product, log2FoldChange, lfcSE, padj)
+```
+
+```{r pseudobulk-visualization, fig.width=11, fig.height=5, message=FALSE, warning=FALSE}
+ct_vis <- if ("Electrocyte" %in% sample_counts_per_ct) "Electrocyte" else sample_counts_per_ct[1]
+dds_vis <- dds_objects[[ct_vis]]
+dds_vis <- estimateSizeFactors(dds_vis)
+norm_mat <- counts(dds_vis, normalized = TRUE)
+
+top_genes <- de_results[[ct_vis]] |>
+  filter(!is.na(padj), padj < 1) |>
+  slice_min(padj, n = 3) |>
+  pull(gene)
+
+norm_tidy <- norm_mat[top_genes, , drop = FALSE] |>
+  as.data.frame() |>
+  tibble::rownames_to_column("gene") |>
+  pivot_longer(-gene, names_to = "col_id", values_to = "norm_count") |>
+  left_join(pb_meta |> tibble::rownames_to_column("col_id"), by = "col_id") |>
+  left_join(gene_lookup |> dplyr::select(key, gene_name, product),
+    by = c("gene" = "key")) |>
+  mutate(label = if_else(is.na(product) | product == "", gene,
+    paste0(gene, "\n(", str_trunc(product, 40), ")")))
+
+ggplot(norm_tidy, aes(x = treatment, y = norm_count, color = treatment)) +
+  geom_point(size = 4, position = position_jitter(width = 0.08, seed = 42)) +
+  facet_wrap(~label, scales = "free_y", nrow = 1) +
+  scale_color_manual(values = c("11kt" = "#D55E00", "vehicle" = "#0072B2")) +
+  theme_bw() +
+  theme(legend.position = "none", strip.text = element_text(size = 8)) +
+  labs(title = paste("Pseudobulk —", ct_vis), y = "DESeq2-normalized counts", x = "Treatment")
+```
+
+::: {.callout-important title="Challenge — Defend one gene"}
+
+Pick **one** top DE gene from the plot above and answer:
+
+1. Are both 11-KT fish higher (or both lower) than both vehicle fish?
+2. Look up the `product` description — does it make biological sense for an 11-KT response?
+3. What would you do next to validate it?
+
+Write your defense in the space below.
+
+> _Your candidate gene:_
+>
+> _Replicate consistency:_
+>
+> _Biological plausibility:_
+>
+> _Next validation step:_
+
+::: {.callout-tip title="Hint / solution" collapse="true"}
+The honest version: only call a gene a "candidate" if both replicates in each condition agree in direction. The episode discusses ion channels (Na⁺, K⁺, Ca²⁺), sarcomeric proteins, and systemic androgen responses (lipid metabolism). Validation next steps: qPCR on independent fish; in-situ hybridization; comparison against published androgen-response datasets.
+:::
+
+:::
+
+## Cross-study validation against Losilla & Gallant 2025
+
+```{r load-losilla-data, message=FALSE, warning=FALSE}
+losilla_bulk <- read_csv(
+  "data/ssrnaseq_data/EO/losilla_et_al_data.csv",
+  show_col_types = FALSE
+) |>
+  dplyr::rename(
+    gene_bulk = "Gene Symbol",
+    desc_bulk = "Gene Description",
+    logFC_bulk = "logFC",
+    FDR_bulk = "FDR"
+  )
+
+ct_check <- if ("Electrocyte" %in% names(de_results)) "Electrocyte" else names(de_results)[1]
+overlap_tbl <- de_results[[ct_check]] |>
+  inner_join(losilla_bulk, by = c("gene" = "gene_bulk")) |>
+  mutate(concordant = sign(log2FoldChange) == sign(logFC_bulk)) |>
+  left_join(gene_lookup |> dplyr::select(key, gene_name, product),
+    by = c("gene" = "key"))
+
+n_detected <- nrow(overlap_tbl)
+n_concordant <- sum(overlap_tbl$concordant, na.rm = TRUE)
+cat(sprintf("Losilla DEGs detected: %d (concordance %.0f%%)\n",
+  n_detected, 100 * n_concordant / n_detected))
+```
+
+> **Predict first.** Based on the printed concordance rate, what's your verdict — did our pipeline preserve the androgen signal? Write your prediction before reading the next callout.
+>
+> _Your prediction:_
+
+```{r logfc-scatter, fig.width=8, fig.height=6, message=FALSE, warning=FALSE}
+label_genes <- c("actn1", "actc1c", "myh6", "acta1b", "xirp1",
+                 "elovl7a", "fhl1a", "atp1b2b",
+                 "LOC125742960", "LOC125743019", "kcna7", "scn4b")
+
+overlap_tbl |>
+  mutate(label = if_else(gene %in% label_genes, gene, NA_character_)) |>
+  ggplot(aes(x = logFC_bulk, y = log2FoldChange, color = concordant)) +
+  geom_point(size = 2.5, alpha = 0.8) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "grey50") +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "grey50") +
+  ggrepel::geom_text_repel(aes(label = label), na.rm = TRUE,
+    size = 3, max.overlaps = 20, box.padding = 0.4) +
+  scale_color_manual(
+    values = c("TRUE" = "#009E73", "FALSE" = "#CC4678"),
+    labels = c("TRUE" = "Concordant", "FALSE" = "Discordant"),
+    na.value = "grey60"
+  ) +
+  labs(x = "Bulk logFC (Losilla & Gallant 2025, 17αMT)",
+       y = "Pseudobulk log2FC (this study, 11-KT)",
+       color = "Direction") +
+  theme_bw(base_size = 12)
+```
+
+::: {.callout-important title="Challenge — Interpret the scatter"}
+
+1. Is concordance well above 50% (random chance)?
+2. Do genes with the largest bulk logFC also have the largest snRNA-seq log2FC? What does that imply?
+3. Losilla used 17αMT; we used 11-KT. List two biological reasons why some genes might respond differently across the two androgens.
+
+::: {.callout-tip title="Hint / solution" collapse="true"}
+The full episode discusses (a) receptor selectivity — 11-KT is the physiological teleost androgen, 17αMT is synthetic — and (b) aromatization — 17αMT can't be converted to estrogens whereas 11-KT can. Both could differentiate the gene response sets.
+:::
+
+:::
+
+## Wrap
+
+You've gone from raw counts to an annotated, integrated, hormone-contrasted EO atlas with cross-study validation. The most important habit to take away: **report direction and replicate consistency before padj** in any small-sample experiment.

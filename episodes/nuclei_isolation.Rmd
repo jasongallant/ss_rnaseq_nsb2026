@@ -68,7 +68,6 @@ Mg²⁺ stabilizes the envelope; **DTT** reduces disulfide crosslinks that would
 Nuclei that have lost their plasma membranes expose nucleoporins and other surface proteins that stick to glass, plastic, and to each other. BSA coats those surfaces with a protein layer that prevents aggregation and wall adhesion. A prep that looks fine immediately after homogenization but counts low after the wash spin is often a BSA problem — the nuclei stuck to the conical wall during the spin.
 :::
 
-
 ## What differs across tissues: the debris problem
 
 The shared backbone gets you from frozen tissue to a particle suspension. The **tissue-specific step** is what separates *nuclei* from the rest of the particles in that suspension. Brain and EO/skin solve the same problem in very different ways because the debris is chemically different.
@@ -103,7 +102,7 @@ Every nuclei prep has two numbers that move in opposite directions:
 Push the prep harder (more strokes, higher centrifugal force, longer spins) and extraction efficiency goes up while recovery goes down. Push gentler and the opposite happens. There is no "correct" point on this tradeoff in the abstract — only the point that matches what each tissue actually needs.
 
 | Tissue | Strategy | Extraction efficiency | Recovery |
-|------------------|------------------|------------------|------------------|
+|----|----|----|----|
 | Brain | Homogenize → filter → 1.8 M sucrose cushion at 13,000 ×g | \~90% | \~18% |
 | EO / skin | Homogenize gently → filter early → 1,000 ×g wash spin | \>85% | Higher (no cushion losses) |
 
@@ -164,9 +163,7 @@ The cushion is the single step that separates a usable mormyrid hindbrain prep f
 *Post-cushion: most of the small particulate debris has been left behind in the cushion supernatant or at the lipid film on top. This is what 18% recovery looks like — fewer particles, but each one is much more likely to be a nucleus.*
 
 ::: {.callout-note title="The cushion is doing exactly what it should"}
-
 The post-cushion field looks emptier — that is the point, not a failure mode. The pre-cushion field's crowding was mostly myelin. Removing it is what the protocol is for, and it is the reason we tolerate the recovery cost.
-
 :::
 
 ### Electric organ: a dirty prep vs. a clean prep
@@ -182,9 +179,7 @@ For electric organ, the contaminant is fragmented ECM rather than myelin. Below 
 *Clean EO prep, AO/PI on the CellDrop: hundreds of sharp red dots (nuclei, PI⁺), a small number of green dots (intact cells, AO⁺/PI⁻), and a couple of larger yellow-green aggregates that the size gate will exclude. This is what an Extraction Efficiency ≥ 85% looks like at the channel-image level — most of what you see is red.*
 
 ::: {.callout-warning title="A good number does not guarantee a good image — and vice versa"}
-
 The two channel images above are the evidence behind a single Extraction Efficiency number. Always look at both channels before you trust the headline number: a high EE with a field full of debris-shaped red blobs is a different problem than a high EE with crisp round red dots. Save the channel images with the lab notebook entry — they are part of the count, not optional metadata.
-
 :::
 
 ## Fresh load vs. bank: a scheduling decision, not a quality decision

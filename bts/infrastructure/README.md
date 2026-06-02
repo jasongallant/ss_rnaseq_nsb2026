@@ -1,7 +1,7 @@
 # Workshop Infrastructure — NS&B 2026 snRNA-seq Module
 
 End-to-end runbook for the shared RStudio Server used by students June 8–13, 2026.
-Architecture and sizing rationale: see [`~/.claude/plans/okay-now-for-some-nifty-alpaca.md`](../../../.claude/plans/okay-now-for-some-nifty-alpaca.md) (instructor only).
+Architecture and sizing rationale: see [`~/.claude/plans/okay-let-s-work-on-abstract-cocke.md`](../../../.claude/plans/okay-let-s-work-on-abstract-cocke.md) (instructor only).
 
 | Resource             | Choice                                                                 |
 | -------------------- | ---------------------------------------------------------------------- |
@@ -12,27 +12,79 @@ Architecture and sizing rationale: see [`~/.claude/plans/okay-now-for-some-nifty
 | URL                  | `https://<your-domain>` (HTTPS via Let's Encrypt)                      |
 | Lifecycle            | Disposable — terminated June 14                                        |
 
----
+## Architecture in one diagram
+
+```
++---------------------------------------------------------------+
+|  EC2 r6i.4xlarge (one shared instance)                        |
+|                                                               |
+|   /opt/R/site-library     <- baked into AMI (slow to build)   |
+|   /srv/workshop-content/  <- S3 sync at boot (workbooks, etc.)|
+|   /srv/workshop-data/     <- RO mount of EBS snapshot         |
+|   /home/student[1-6]/     <- provisioned at first boot:       |
+|       └── ssrnaseq/                                           |
+|           ├── workbook/   <- cp from /srv/workshop-content/   |
+|           ├── setup.md                                        |
+|           └── data/                                           |
+|               ├── ssrnaseq_data -> /srv/workshop-data/...     |
+|               ├── raw           -> /srv/workshop-data/raw     |
+|               └── checkpoints/  <- writable per-student cp    |
++---------------------------------------------------------------+
+       ^                                ^                 ^
+       |                                |                 |
+  AMI (built in Phase 1)         S3 bucket          EBS snapshot
+  R + packages, no content       content/ workbooks data/  bulk data
+                                                          (Phase 2)
+```
+
+Key property: a workbook fix → push to `s3://${WORKSHOP_BUCKET}/content/` → `sudo refresh-workbooks.sh` on the instance. **No AMI rebuild required for content tweaks.**
 
 ## How this runbook works
 
-Every command captures its output into a shell variable (`SG_ID`, `BUILDER_ID`, `AMI_ID`, etc.) so that later steps can reference it without copy-pasting IDs by hand. **Run all commands in the same terminal session**, or persist the variables to a file (see the "Resume after losing your shell" tip at the bottom of each phase).
+Every command captures its output into a shell variable (`SG_ID`, `BUILDER_ID`, `AMI_ID`, etc.) so that later steps can reference it without copy-pasting IDs by hand. Inputs and captured outputs both live in `bts/infrastructure/.env` so a fresh terminal can always pick up where you left off.
 
-Before starting any phase, paste the **Session setup** block at the top of that phase into your terminal. It sets the constants (region, key name, etc.) that the phase's commands reference.
+### Set up your .env
+
+```bash
+cp bts/infrastructure/.env.example bts/infrastructure/.env
+# Edit .env: fill in your KEY_NAME, WORKSHOP_DOMAIN, WORKSHOP_BUCKET,
+# GITHUB_PAT, etc. The example file documents what each variable is for.
+```
+
+`bts/infrastructure/.env` is git-ignored — your GitHub PAT and AWS IDs stay local. Don't commit it.
+
+### Load .env at the start of every work session
+
+```bash
+set -a; source bts/infrastructure/.env; set +a
+```
+
+(The `set -a` toggle auto-exports every variable assigned while it's active, so the file can stay plain `KEY=VALUE` with no `export` lines.)
+
+### Save outputs as you go
+
+When a phase captures a new resource ID (e.g. `SG_ID`, `AMI_ID`, `DATA_SNAPSHOT_ID`), update the same key in `.env` so your next shell session inherits it. The one-liner is:
+
+```bash
+# After exporting any variable in a phase, persist it to .env:
+sed -i.bak "s|^SG_ID=.*|SG_ID=$SG_ID|" bts/infrastructure/.env
+```
+
+(Bash on macOS needs `sed -i.bak` — the `.bak` argument is non-optional. Delete the resulting `.env.bak` afterward if it bugs you.)
 
 ---
 
 ## Phase 0 — One-time prerequisites
 
-You only do this once per AWS account. If you've already created the security group and key pair, skip ahead to Phase 1.
+You only do this once per AWS account. If you've already created the security group, key pair, S3 bucket, and IAM instance profile, skip ahead to Phase 1.
 
 ### Session setup
 
 ```bash
-export REGION=us-east-1
-export KEY_NAME=gallant_mbp
-export KEY_FILE=~/.ssh/gallant_mbp.pem
+set -a; source bts/infrastructure/.env; set +a
 ```
+
+This loads `REGION`, `KEY_NAME`, `KEY_FILE`, `WORKSHOP_BUCKET`, and friends from your `.env`.
 
 ### 0.1 — Create the SSH key pair
 
@@ -67,60 +119,127 @@ export SG_ID=$(aws ec2 create-security-group \
 echo "SG_ID=$SG_ID"
 
 # Ingress rules
-export MY_IP="$(curl -s https://checkip.amazonaws.com)/32"
-echo "MY_IP=$MY_IP"
-
 aws ec2 authorize-security-group-ingress --region "$REGION" \
-    --group-id "$SG_ID" --protocol tcp --port 22 --cidr "$MY_IP"
+    --group-id "$SG_ID" --protocol tcp --port 22 --cidr "0.0.0.0/0
 aws ec2 authorize-security-group-ingress --region "$REGION" \
     --group-id "$SG_ID" --protocol tcp --port 80 --cidr 0.0.0.0/0
 aws ec2 authorize-security-group-ingress --region "$REGION" \
     --group-id "$SG_ID" --protocol tcp --port 443 --cidr 0.0.0.0/0
 ```
 
-> **Resume after losing your shell:** to recover `$SG_ID` later,
->
-> ```bash
-> export SG_ID=$(aws ec2 describe-security-groups --region "$REGION" \
->     --filters Name=group-name,Values=nsb2026-workshop \
->     --query 'SecurityGroups[0].GroupId' --output text)
-> ```
+**Save to .env so a fresh terminal can pick this up:**
+
+```bash
+sed -i.bak "s|^VPC_ID=.*|VPC_ID=$VPC_ID|; s|^SG_ID=.*|SG_ID=$SG_ID|" bts/infrastructure/.env
+```
+
+### 0.3 — Create the S3 bucket and upload content
+
+The bucket holds two prefixes:
+
+- `s3://${WORKSHOP_BUCKET}/content/` — workbooks, `setup.md` (small, frequently updated)
+- `s3://${WORKSHOP_BUCKET}/data/` — bulk data (only consumed by `build_data_volume.sh` in Phase 2)
+
+```bash
+aws s3 mb "s3://${WORKSHOP_BUCKET}" --region "$REGION"
+
+# Push workbooks + setup.md from the local repo
+aws s3 sync episodes/workbook/ "s3://${WORKSHOP_BUCKET}/content/workbooks/"
+aws s3 cp   episodes/setup.md  "s3://${WORKSHOP_BUCKET}/content/setup.md"
+
+# Push the bulk data (your existing fastq/cellranger outputs)
+#   The exact layout is:
+#     s3://${WORKSHOP_BUCKET}/data/ssrnaseq_data/...
+#     s3://${WORKSHOP_BUCKET}/data/checkpoints/0[1-4]_*.rds
+#     s3://${WORKSHOP_BUCKET}/data/raw/{fastq,fastqc,cellranger}/<sample>/
+#     s3://${WORKSHOP_BUCKET}/data/eod_duration/  (optional)
+aws s3 sync /path/to/local/ssrnaseq_data/ "s3://${WORKSHOP_BUCKET}/data/ssrnaseq_data/"
+aws s3 sync /path/to/local/checkpoints/   "s3://${WORKSHOP_BUCKET}/data/checkpoints/"
+aws s3 sync /path/to/local/raw/           "s3://${WORKSHOP_BUCKET}/data/raw/"
+```
+
+### 0.4 — Create the IAM instance profile
+
+The workshop instance needs read access to the S3 bucket so cloud-init and `refresh-workbooks.sh` can sync content.
+
+```bash
+# Trust policy: allow EC2 to assume the role
+cat > /tmp/trust.json <<'JSON'
+{
+  "Version": "2012-10-17",
+  "Statement": [{"Effect": "Allow", "Principal": {"Service": "ec2.amazonaws.com"}, "Action": "sts:AssumeRole"}]
+}
+JSON
+
+aws iam create-role \
+    --role-name "$INSTANCE_PROFILE" \
+    --assume-role-policy-document file:///tmp/trust.json
+
+# Permission policy: read the content/ prefix
+cat > /tmp/policy.json <<JSON
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {"Effect": "Allow", "Action": ["s3:ListBucket"], "Resource": "arn:aws:s3:::${WORKSHOP_BUCKET}"},
+    {"Effect": "Allow", "Action": ["s3:GetObject"], "Resource": "arn:aws:s3:::${WORKSHOP_BUCKET}/content/*"}
+  ]
+}
+JSON
+
+aws iam put-role-policy \
+    --role-name "$INSTANCE_PROFILE" \
+    --policy-name nsb2026-s3-content-read \
+    --policy-document file:///tmp/policy.json
+
+aws iam create-instance-profile --instance-profile-name "$INSTANCE_PROFILE"
+aws iam add-role-to-instance-profile \
+    --instance-profile-name "$INSTANCE_PROFILE" \
+    --role-name "$INSTANCE_PROFILE"
+```
+
+(`$INSTANCE_PROFILE` was loaded from `.env` in the session setup — change the name there if you want a different profile name.)
+
+The builder for the data volume (Phase 2) needs broader access (both `content/` and `data/` plus write). Create a separate profile or reuse this one with a wider policy attached during the build only — your call.
 
 ---
 
 ## Phase 1 — Build the golden AMI
 
-A "golden AMI" carries the OS, R 4.4, the full `renv` package set, RStudio Server, nginx, and a clone of the lesson repo. Build it once on a cheap t3.medium and snapshot it.
+A "golden AMI" carries the OS, R 4.4, the full `renv` package set, RStudio Server, nginx, and the provision/refresh helper scripts. **It does NOT carry any lesson content** — workbooks come from S3 at launch, bulk data comes from a mounted EBS snapshot (Phase 2). Build the AMI once on a cheap t3.medium and snapshot it.
 
 ### Session setup
 
 ```bash
-# Carried forward from Phase 0:
-export REGION=us-east-1
-export KEY_NAME=gallant_mbp
-export KEY_FILE=~/.ssh/gallant_mbp
-export SG_ID=sg-0d661b0ecfdeafb41   # or recover via the snippet in 0.2
-
-# Phase 1 specifics:
-# - First build of the year: use the Ubuntu base AMI (slow path, ~30-60 min).
-# - Rebuilding because something changed (lockfile bump, R version, lesson tweak):
-#   set BASE_AMI to last year's $AMI_ID. The script is idempotent: apt-get,
-#   rig add, and renv::restore all skip work that's already done, so the
-#   rebuild finishes in 10-20 min instead of 30-60.
-export BASE_AMI=ami-0fbcf351e82d18381              # Ubuntu 24.04 LTS in us-east-1 (or last year's $AMI_ID)
-export LESSON_REPO_URL=https://github.com/jasongallant/ss_rnaseq_nsb2026.git
-export RENV_LOCK_URL=                              # leave empty if renv.lock is committed in the repo
-export GITHUB_PAT='ghp_REPLACE_ME'                 # zero-scope classic PAT from https://github.com/settings/tokens (lifts the GitHub API rate limit so renv can resolve presto)
+set -a; source bts/infrastructure/.env; set +a
 ```
 
-### 1.1 — Confirm `renv.lock` is reachable
+Phase 1 reads `REGION`, `KEY_*`, `SG_ID` (from Phase 0), and the build inputs `BASE_AMI`, `RENV_LOCK_URL`, `GITHUB_PAT`.
 
-The build script needs `renv.lock` to install the locked R package set. Either:
+**About `BASE_AMI`:**
 
-- It's committed in the repo (preferred), and `LESSON_REPO_URL` will bring it down via `git clone`. Run `git ls-files renv.lock` locally — if you see the path, it's committed.
-- **Or** host it at an HTTPS URL and set `RENV_LOCK_URL` to that URL.
+- First build of the year: use the Ubuntu base AMI (slow path, ~30–60 min).
+- Rebuilding because something changed (R package set, dev libs, helper scripts): set `BASE_AMI` in `.env` to last year's `AMI_ID`. The script is idempotent: apt-get, rig add, and renv::restore all skip work that's already done, so the rebuild finishes in 10–20 min instead of 30–60.
 
-### 1.2 — Launch the builder (t3.medium)
+### 1.1 — Confirm `renv.lock` is reachable at the URL
+
+```bash
+curl -fsS "$RENV_LOCK_URL" | head -5    # should print the JSON header
+```
+
+If the file isn't published yet (e.g. you're on a private branch), either merge to `main` first or host the lockfile at any HTTPS URL the builder can reach.
+
+### 1.2 — Keep renv.lock lean (optional, recommended)
+
+Before baking, prune the lockfile to only what the current `.Rmd` files actually use. Every removed package shaves bake time off later.
+
+```bash
+Rscript bts/infrastructure/rebuild_renv_lock.R
+git diff renv.lock                          # inspect
+git add renv.lock && git commit -m "chore: rebuild renv.lock"
+git push                                    # so the URL serves the new file
+```
+
+### 1.3 — Launch the builder (t3.medium)
 
 ```bash
 export BUILDER_ID=$(aws ec2 run-instances \
@@ -128,7 +247,7 @@ export BUILDER_ID=$(aws ec2 run-instances \
     --instance-type t3.medium \
     --key-name "$KEY_NAME" \
     --security-group-ids "$SG_ID" \
-    --block-device-mappings 'DeviceName=/dev/sda1,Ebs={VolumeSize=200,VolumeType=gp3}' \
+    --block-device-mappings 'DeviceName=/dev/sda1,Ebs={VolumeSize=80,VolumeType=gp3}' \
     --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=nsb2026-builder},{Key=Project,Value=nsb2026-workshop}]' \
     --region "$REGION" \
     --query 'Instances[0].InstanceId' --output text)
@@ -142,32 +261,34 @@ export BUILDER_IP=$(aws ec2 describe-instances --instance-ids "$BUILDER_ID" --re
 echo "BUILDER_IP=$BUILDER_IP"
 ```
 
-### 1.3 — Copy the build script up and run it
+The builder's root volume is 80 GB (smaller than before — we're not baking any lesson content into the AMI).
+
+### 1.4 — Copy the build script up and run it
 
 ```bash
 scp -i "$KEY_FILE" -o StrictHostKeyChecking=accept-new \
     bts/infrastructure/build_ami.sh ubuntu@"$BUILDER_IP":/tmp/
 
 ssh -i "$KEY_FILE" ubuntu@"$BUILDER_IP" \
-    "sudo LESSON_REPO_URL='$LESSON_REPO_URL' \
-          RENV_LOCK_URL='$RENV_LOCK_URL' \
+    "sudo RENV_LOCK_URL='$RENV_LOCK_URL' \
           GITHUB_PAT='$GITHUB_PAT' \
           bash /tmp/build_ami.sh 2>&1 | tee /tmp/build.log"
 ```
 
-Expect **30–60 minutes** for a first build from Ubuntu base, or **10–20 minutes** when `$BASE_AMI` is last year's AMI (most steps are no-ops; only changed packages reinstall).
+Expect **30–60 minutes** for a first build from Ubuntu base, or **10–20 minutes** when `$BASE_AMI` is last year's AMI.
 
 Watch the early log lines:
-- `R version 4.4.3` — confirms rig installed the right R. Anything else (4.6.x in particular) is fatal; abort and investigate.
-- `P3M smoke test: jsonlite installed in X.Xs` — must be **under 15 s**, else the script aborts on its own (the User-Agent handshake to Posit Package Manager isn't working and every package would compile from raw source, taking hours).
 
-### 1.4 — Snapshot the builder into an AMI
+- `R version 4.4.3` — confirms rig installed the right R. Anything else (4.6.x in particular) is fatal; abort and investigate.
+- `P3M smoke test: jsonlite installed in X.Xs` — must be **under 15 s**, else the script aborts on its own.
+
+### 1.5 — Snapshot the builder into an AMI
 
 ```bash
 export AMI_ID=$(aws ec2 create-image \
     --instance-id "$BUILDER_ID" \
     --name "ss-rnaseq-nsb2026-$(date +%Y%m%d)" \
-    --description "RStudio Server + Seurat/DESeq2 stack for NS&B 2026" \
+    --description "RStudio Server + Seurat/DESeq2 stack for NS&B 2026 (no lesson content)" \
     --tag-specifications 'ResourceType=image,Tags=[{Key=Project,Value=nsb2026-workshop}]' \
     --no-reboot \
     --region "$REGION" \
@@ -178,77 +299,167 @@ echo "Waiting for AMI to finish baking (~5–10 min)..."
 aws ec2 wait image-available --image-ids "$AMI_ID" --region "$REGION"
 ```
 
-**Write `$AMI_ID` down somewhere durable** (password manager, Notion, sticky note) — it's the only artifact from this phase you need to keep.
+**Write `$AMI_ID` down somewhere durable.**
 
-### 1.5 — Terminate the builder
+### 1.6 — Terminate the builder
 
 ```bash
 aws ec2 terminate-instances --instance-ids "$BUILDER_ID" --region "$REGION"
 unset BUILDER_ID BUILDER_IP
 ```
 
-> **Resume after losing your shell:** to recover `$AMI_ID` later,
->
-> ```bash
-> export AMI_ID=$(aws ec2 describe-images --owners self --region "$REGION" \
->     --filters "Name=tag:Project,Values=nsb2026-workshop" \
->     --query 'sort_by(Images, &CreationDate)[-1].ImageId' --output text)
-> ```
+**Save the AMI ID to .env:**
+
+```bash
+sed -i.bak "s|^AMI_ID=.*|AMI_ID=$AMI_ID|" bts/infrastructure/.env
+```
 
 ---
 
-## Phase 2 — Day-of launch
+## Phase 2 — Build the data volume snapshot
+
+One-time (or whenever the bulk data changes). Populates a fresh EBS volume from S3, snapshots it. The snapshot is what gets attached to the workshop instance at launch.
+
+### Session setup
+
+```bash
+set -a; source bts/infrastructure/.env; set +a
+```
+
+Phase 2 reads `REGION`, `KEY_*`, `SG_ID`, `WORKSHOP_BUCKET`, and `INSTANCE_PROFILE`.
+
+The instance profile from Phase 0.4 only allows reading `content/*`. Before this phase, temporarily widen its policy to also allow `s3:GetObject` on `arn:aws:s3:::${WORKSHOP_BUCKET}/data/*`, or use a separate "builder" role.
+
+### 2.1 — Launch a builder t3.medium with an empty 500 GB EBS volume attached
+
+```bash
+export BUILDER_ID=$(aws ec2 run-instances \
+    --image-id ami-0fbcf351e82d18381 \
+    --instance-type t3.medium \
+    --key-name "$KEY_NAME" \
+    --security-group-ids "$SG_ID" \
+    --iam-instance-profile "Name=$INSTANCE_PROFILE" \
+    --block-device-mappings \
+        'DeviceName=/dev/sda1,Ebs={VolumeSize=20,VolumeType=gp3}' \
+        'DeviceName=/dev/sdf,Ebs={VolumeSize=500,VolumeType=gp3,DeleteOnTermination=false}' \
+    --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=nsb2026-data-builder},{Key=Project,Value=nsb2026-workshop}]' \
+    --region "$REGION" \
+    --query 'Instances[0].InstanceId' --output text)
+
+aws ec2 wait instance-status-ok --instance-ids "$BUILDER_ID" --region "$REGION"
+
+export BUILDER_IP=$(aws ec2 describe-instances --instance-ids "$BUILDER_ID" --region "$REGION" \
+    --query 'Reservations[0].Instances[0].PublicIpAddress' --output text)
+
+# Find the volume ID of the 500 GB data volume (we'll snapshot it later)
+export DATA_VOL_ID=$(aws ec2 describe-instances --instance-ids "$BUILDER_ID" --region "$REGION" \
+    --query 'Reservations[0].Instances[0].BlockDeviceMappings[?DeviceName==`/dev/sdf`].Ebs.VolumeId' \
+    --output text)
+echo "DATA_VOL_ID=$DATA_VOL_ID"
+```
+
+Note `DeleteOnTermination=false` on the data volume — we want it to persist after we terminate the builder so we can snapshot it.
+
+### 2.2 — Run the populate script
+
+On Nitro instance types, `/dev/sdf` shows up as `/dev/nvme1n1`. Confirm with `lsblk` on the builder first.
+
+```bash
+ssh -i "$KEY_FILE" -o StrictHostKeyChecking=accept-new ubuntu@"$BUILDER_IP" 'lsblk'
+# Verify /dev/nvme1n1 is the 500 GB device with no FS, then:
+
+scp -i "$KEY_FILE" bts/infrastructure/build_data_volume.sh ubuntu@"$BUILDER_IP":/tmp/
+
+ssh -i "$KEY_FILE" ubuntu@"$BUILDER_IP" \
+    "sudo apt-get install -y awscli && \
+     sudo WORKSHOP_BUCKET='$WORKSHOP_BUCKET' DEVICE=/dev/nvme1n1 \
+          bash /tmp/build_data_volume.sh"
+```
+
+When done, the volume is unmounted and ready to snapshot.
+
+### 2.3 — Snapshot the data volume
+
+```bash
+export DATA_SNAPSHOT_ID=$(aws ec2 create-snapshot \
+    --volume-id "$DATA_VOL_ID" \
+    --description "ss-rnaseq-data $(date +%Y%m%d)" \
+    --tag-specifications 'ResourceType=snapshot,Tags=[{Key=Name,Value=ss-rnaseq-data},{Key=Project,Value=nsb2026-workshop}]' \
+    --region "$REGION" \
+    --query 'SnapshotId' --output text)
+echo "DATA_SNAPSHOT_ID=$DATA_SNAPSHOT_ID"
+
+aws ec2 wait snapshot-completed --snapshot-ids "$DATA_SNAPSHOT_ID" --region "$REGION"
+```
+
+**Save to .env:**
+
+```bash
+sed -i.bak "s|^DATA_SNAPSHOT_ID=.*|DATA_SNAPSHOT_ID=$DATA_SNAPSHOT_ID|" bts/infrastructure/.env
+```
+
+### 2.4 — Tear down the builder
+
+```bash
+aws ec2 terminate-instances --instance-ids "$BUILDER_ID" --region "$REGION"
+aws ec2 wait instance-terminated --instance-ids "$BUILDER_ID" --region "$REGION"
+aws ec2 delete-volume --volume-id "$DATA_VOL_ID" --region "$REGION"
+unset BUILDER_ID BUILDER_IP DATA_VOL_ID
+```
+
+---
+
+## Phase 3 — Day-of launch
 
 Do this **June 7 evening** so there's a day to fix anything before students arrive.
 
 ### Session setup
 
 ```bash
-# Carried forward:
-export REGION=us-east-1
-export KEY_NAME=gallant_mbp
-export KEY_FILE=~/.ssh/gallant_mbp.pem
-export SG_ID=sg-0d661b0ecfdeafb41
-export AMI_ID=ami-082b5901888c9cc4d   # from Phase 1.4
-
-# Phase 2 specifics:
-export WORKSHOP_DOMAIN=workshop.efishgenomics.com   # the FQDN students will type into the browser
-export ADMIN_EMAIL=jgallant@msu.edu  # for Let's Encrypt
+set -a; source bts/infrastructure/.env; set +a
 ```
 
-### 2.1 — Allocate the Elastic IP and point DNS at it
+Phase 3 needs `AMI_ID` (Phase 1.5), `DATA_SNAPSHOT_ID` (Phase 2.3), `INSTANCE_PROFILE`, `WORKSHOP_BUCKET`, `WORKSHOP_DOMAIN`, `ADMIN_EMAIL`, and `DATA_DEVICE` — all of which should already be set in `.env`. If you skipped a save step, set the missing values now and re-run the `source` line.
+
+### 3.1 — Allocate the Elastic IP and point DNS at it
 
 ```bash
-# Allocate the EIP
 EIP_JSON=$(aws ec2 allocate-address --domain vpc --region "$REGION" \
     --tag-specifications 'ResourceType=elastic-ip,Tags=[{Key=Project,Value=nsb2026-workshop}]')
 export EIP_ALLOC_ID=$(echo "$EIP_JSON" | jq -r '.AllocationId')
 export EIP_PUBLIC_IP=$(echo "$EIP_JSON" | jq -r '.PublicIp')
 echo "EIP_ALLOC_ID=$EIP_ALLOC_ID"
 echo "EIP_PUBLIC_IP=$EIP_PUBLIC_IP"
+
+# Save to .env so reboots/new shells inherit:
+sed -i.bak \
+    -e "s|^EIP_ALLOC_ID=.*|EIP_ALLOC_ID=$EIP_ALLOC_ID|" \
+    -e "s|^EIP_PUBLIC_IP=.*|EIP_PUBLIC_IP=$EIP_PUBLIC_IP|" \
+    bts/infrastructure/.env
 ```
 
 **Now go set your DNS A record**: `$WORKSHOP_DOMAIN` → `$EIP_PUBLIC_IP`. Then wait for propagation:
 
 ```bash
-# Should return $EIP_PUBLIC_IP. Re-run every 30 sec until it does.
-dig +short "$WORKSHOP_DOMAIN"
+dig +short "$WORKSHOP_DOMAIN"      # should return $EIP_PUBLIC_IP
 ```
 
 Don't move on until `dig` returns the right IP — `certbot` will fail if DNS isn't resolving yet.
 
-### 2.2 — Personalize the cloud-init file
+### 3.2 — Personalize the cloud-init file
 
-The cloud-init template has two placeholders that must be replaced before launch. This creates a one-shot personalized copy without modifying the source file:
+The template has four placeholders to substitute:
 
 ```bash
 sed -e "s/__WORKSHOP_DOMAIN__/$WORKSHOP_DOMAIN/g" \
     -e "s/__ADMIN_EMAIL__/$ADMIN_EMAIL/g" \
+    -e "s|__WORKSHOP_BUCKET__|$WORKSHOP_BUCKET|g" \
+    -e "s|__DATA_DEVICE__|$DATA_DEVICE|g" \
     bts/infrastructure/cloud_init.yaml \
     > /tmp/cloud_init_personalized.yaml
 ```
 
-### 2.3 — Launch the workshop instance
+### 3.3 — Launch the workshop instance with the data volume attached from snapshot
 
 ```bash
 export INSTANCE_ID=$(aws ec2 run-instances \
@@ -256,7 +467,10 @@ export INSTANCE_ID=$(aws ec2 run-instances \
     --instance-type r6i.4xlarge \
     --key-name "$KEY_NAME" \
     --security-group-ids "$SG_ID" \
-    --block-device-mappings 'DeviceName=/dev/sda1,Ebs={VolumeSize=300,VolumeType=gp3}' \
+    --iam-instance-profile "Name=$INSTANCE_PROFILE" \
+    --block-device-mappings \
+        'DeviceName=/dev/sda1,Ebs={VolumeSize=120,VolumeType=gp3}' \
+        "DeviceName=/dev/sdf,Ebs={SnapshotId=$DATA_SNAPSHOT_ID,VolumeType=gp3,DeleteOnTermination=true}" \
     --user-data file:///tmp/cloud_init_personalized.yaml \
     --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=nsb2026-workshop},{Key=Project,Value=nsb2026-workshop}]' \
     --region "$REGION" \
@@ -265,9 +479,14 @@ echo "INSTANCE_ID=$INSTANCE_ID"
 
 echo "Waiting for instance to start..."
 aws ec2 wait instance-running --instance-ids "$INSTANCE_ID" --region "$REGION"
+
+# Save to .env so teardown later can find it:
+sed -i.bak "s|^INSTANCE_ID=.*|INSTANCE_ID=$INSTANCE_ID|" bts/infrastructure/.env
 ```
 
-### 2.4 — Associate the Elastic IP
+The root volume is 120 GB (down from 300 — no bulk data on root anymore). The data volume restored from the snapshot is attached as `/dev/sdf` → appears as `$DATA_DEVICE` to cloud-init.
+
+### 3.4 — Associate the Elastic IP
 
 ```bash
 aws ec2 associate-address \
@@ -276,21 +495,18 @@ aws ec2 associate-address \
     --region "$REGION"
 ```
 
-The instance's public IP is now `$EIP_PUBLIC_IP`, matching the DNS record you set in 2.1.
-
-### 2.5 — Wait for cloud-init to finish
+### 3.5 — Wait for cloud-init to finish
 
 ```bash
-# Give SSH a moment to come up after EIP association
 sleep 30
 
 ssh -i "$KEY_FILE" -o StrictHostKeyChecking=accept-new \
     ubuntu@"$WORKSHOP_DOMAIN" 'sudo cloud-init status --wait'
 ```
 
-When this returns `status: done`, the student accounts have been created, the TLS cert has been issued, and nginx is live.
+When this returns `status: done`, the data volume is mounted RO at `/srv/workshop-data/`, content is synced to `/srv/workshop-content/`, all 7 PAM users exist, each has a populated `~/ssrnaseq/`, and TLS is live.
 
-### 2.6 — Retrieve credentials
+### 3.6 — Retrieve credentials
 
 ```bash
 ssh -i "$KEY_FILE" ubuntu@"$WORKSHOP_DOMAIN" 'sudo cat /root/credentials.txt' \
@@ -301,7 +517,7 @@ ssh -i "$KEY_FILE" ubuntu@"$WORKSHOP_DOMAIN" 'sudo shred -u /root/credentials.tx
 cat workshop-creds.txt
 ```
 
-Distribute the per-user passwords through a secure channel (in person, Signal, 1Password share). To force a password change at first login:
+Distribute the per-user passwords through a secure channel. To force a password change at first login:
 
 ```bash
 for u in student1 student2 student3 student4 student5 student6; do
@@ -309,53 +525,102 @@ for u in student1 student2 student3 student4 student5 student6; do
 done
 ```
 
-> **Resume after losing your shell:** to recover `$INSTANCE_ID` and `$EIP_ALLOC_ID` later,
->
-> ```bash
-> export INSTANCE_ID=$(aws ec2 describe-instances --region "$REGION" \
->     --filters "Name=tag:Name,Values=nsb2026-workshop" "Name=instance-state-name,Values=running" \
->     --query 'Reservations[0].Instances[0].InstanceId' --output text)
-> export EIP_ALLOC_ID=$(aws ec2 describe-addresses --region "$REGION" \
->     --filters "Name=tag:Project,Values=nsb2026-workshop" \
->     --query 'Addresses[0].AllocationId' --output text)
-> ```
+If you ever lose your shell mid-workshop, `set -a; source bts/infrastructure/.env; set +a` recovers every ID you saved. As a last-resort fallback if `.env` got out of sync, you can re-query AWS:
+
+```bash
+export INSTANCE_ID=$(aws ec2 describe-instances --region "$REGION" \
+    --filters "Name=tag:Name,Values=nsb2026-workshop" "Name=instance-state-name,Values=running" \
+    --query 'Reservations[0].Instances[0].InstanceId' --output text)
+export EIP_ALLOC_ID=$(aws ec2 describe-addresses --region "$REGION" \
+    --filters "Name=tag:Project,Values=nsb2026-workshop" \
+    --query 'Addresses[0].AllocationId' --output text)
+```
 
 ---
 
-## Phase 3 — Smoke test (run before Friday June 12)
+## Phase 4 — Smoke test (run before Friday June 12)
 
 1. Browser → `https://$WORKSHOP_DOMAIN/` → RStudio login screen with a valid green padlock.
 2. Log in as `student1` with the password from `workshop-creds.txt`.
-3. In the Files pane, navigate to `~/ssrnaseq/`. Open `episodes/snrnaseq-qc.Rmd`.
-4. In the R console, run:
+3. In the Files pane, navigate to `~/ssrnaseq/`. Confirm the layout:
+   - `workbook/` (with the two `.Rmd` files)
+   - `setup.md`
+   - `data/ssrnaseq_data` (with a chain symbol — symlink to `/srv/workshop-data/...`)
+   - `data/raw` (symlink)
+   - `data/checkpoints/` (actual dir, with the 4 `.rds` files inside)
+4. In the R console, paste the smoke test:
    ```r
-   renv::status()   # expect "synchronized with the lockfile"
-   library(Seurat); library(harmony); library(speckle); library(DESeq2)
+   library(Seurat)
+   stopifnot(file.exists("data/ssrnaseq_data/EO/BB48/barcodes.tsv.gz"))
+   stopifnot(file.exists("data/checkpoints/02_harmony_clustered.rds"))
+   seu <- readRDS("data/checkpoints/02_harmony_clustered.rds")
+   seu
+   table(seu$treatment)
    ```
-   No errors = good.
-5. Open `episodes/normalize-reduce-cluster.Rmd` and run the first three chunks (load → SCTransform → PCA). In a parallel SSH session, watch peak RSS:
+   Expect a Seurat object with 4 samples, ~10,000 nuclei, and treatment labels (`11kt`, `vehicle`).
+5. Confirm read-only enforcement on the mount:
+   ```r
+   file.create("data/ssrnaseq_data/test.txt")   # should return FALSE (EROFS)
+   saveRDS(1, "data/checkpoints/scratch.rds")    # should succeed (writable copy)
+   ```
+6. Open `workbook/snrnaseq-preprocessing.Rmd` and run the chunks from `load-libraries` through `sctransform`. In a parallel SSH session, watch peak RSS:
    ```bash
    ssh -i "$KEY_FILE" ubuntu@"$WORKSHOP_DOMAIN" htop
    ```
    Should hit ~10 GB and stay well below the 128 GB ceiling.
-6. Open a second browser as `student2`; run the same chunks. Both finish without slowdown.
+7. As a second student (open a new private browser window), log in as `student2`. Confirm `student1`'s `scratch.rds` in step 5 is **not** visible — each student has their own writable `data/checkpoints/`.
 
-If anything fails, fix in `build_ami.sh`, rebuild the AMI (Phase 1), relaunch (Phase 2) — don't patch the running box.
+If anything fails, fix in `build_ami.sh` (for environment issues) or in S3/`workbook/` (for content issues), then either rebake (Phase 1) or `refresh-workbooks.sh` (mid-week update — see below).
 
 ---
 
-## Phase 4 — Tear-down (June 14)
+## Mid-week workbook updates (no AMI rebuild)
+
+Workflow for fixing a typo or tweaking a workbook during the workshop:
+
+```bash
+# 1. Edit locally
+vim episodes/workbook/snrnaseq-preprocessing.Rmd
+
+# 2. Push to S3
+aws s3 sync episodes/workbook/ "s3://${WORKSHOP_BUCKET}/content/workbooks/"
+
+# 3. Apply to the running instance (preserves student edits via --backup)
+ssh -i "$KEY_FILE" ubuntu@"$WORKSHOP_DOMAIN" 'sudo /usr/local/sbin/refresh-workbooks.sh'
+```
+
+Students who had local edits will find their previous versions in `~/ssrnaseq/.workbook-backups/<timestamp>/`. They can `diff` against the new copy to merge changes themselves.
+
+Don't push to the workbook S3 during a chunk-running session unless you're prepared to do step 3 immediately — the new instance launch path always syncs from S3, but a running instance only sees changes after `refresh-workbooks.sh` runs.
+
+---
+
+## Keeping `renv.lock` lean
+
+The AMI bake time is dominated by the renv restore step. Every package in `renv.lock` adds 10s–60s of install time. The lockfile accumulates orphan dependencies whenever you delete or refactor episodes, so before each AMI rebake:
+
+```bash
+Rscript bts/infrastructure/rebuild_renv_lock.R
+git diff renv.lock                         # expect removals
+git add renv.lock && git commit -m "..."
+git push                                   # so RENV_LOCK_URL serves the new file
+```
+
+The script re-runs `renv::dependencies()` on the current `.Rmd` files, nukes `renv/library/` and `renv.lock`, then `renv::init()` rebuilds a clean closure. Backs up the old lockfile to `renv.lock.bak-<timestamp>` first.
+
+---
+
+## Phase 5 — Tear-down (June 14)
 
 ### Session setup
 
 ```bash
-export REGION=us-east-1
-export INSTANCE_ID=i-xxxxxxxxxxxxxxxxx   # or recover from the Phase 2 snippet
-export EIP_ALLOC_ID=eipalloc-xxxxxxxxxxxxxxxxx
-export AMI_ID=ami-xxxxxxxxxxxxxxxxx
+set -a; source bts/infrastructure/.env; set +a
 ```
 
-### 4.1 — (Optional) snapshot student work
+Reads `INSTANCE_ID`, `EIP_ALLOC_ID`, `AMI_ID`, and `DATA_SNAPSHOT_ID` from `.env`.
+
+### 5.1 — (Optional) snapshot student work
 
 If a student wants their working directory preserved, snapshot the root volume before terminating:
 
@@ -374,38 +639,45 @@ export SNAPSHOT_ID=$(aws ec2 create-snapshot \
 echo "SNAPSHOT_ID=$SNAPSHOT_ID"
 ```
 
-### 4.2 — Terminate the instance
+### 5.2 — Terminate the instance
 
 ```bash
 aws ec2 terminate-instances --instance-ids "$INSTANCE_ID" --region "$REGION"
 aws ec2 wait instance-terminated --instance-ids "$INSTANCE_ID" --region "$REGION"
 ```
 
-### 4.3 — Release the Elastic IP
+The attached data volume (restored from `$DATA_SNAPSHOT_ID`) is deleted automatically because we launched it with `DeleteOnTermination=true`. The underlying snapshot is preserved.
 
-(Unattached EIPs cost $0.005/hr.)
+### 5.3 — Release the Elastic IP
 
 ```bash
 aws ec2 release-address --allocation-id "$EIP_ALLOC_ID" --region "$REGION"
 ```
 
-### 4.4 — Delete the DNS record
+### 5.4 — Delete the DNS record
 
 (Manual step in your DNS provider's console.)
 
-### 4.5 — Deregister the AMI
+### 5.5 — Deregister the AMI
 
 Wait until you're sure you won't relaunch:
 
 ```bash
-# Find the AMI's underlying snapshot first (so we can delete it after deregister)
 export AMI_SNAPSHOT_ID=$(aws ec2 describe-images --image-ids "$AMI_ID" --region "$REGION" \
     --query 'Images[0].BlockDeviceMappings[?DeviceName==`/dev/sda1`].Ebs.SnapshotId' \
     --output text)
-echo "AMI_SNAPSHOT_ID=$AMI_SNAPSHOT_ID"
 
 aws ec2 deregister-image --image-id "$AMI_ID" --region "$REGION"
 aws ec2 delete-snapshot --snapshot-id "$AMI_SNAPSHOT_ID" --region "$REGION"
+```
+
+### 5.6 — Decide about the data snapshot
+
+The data snapshot (`$DATA_SNAPSHOT_ID`) costs ~$5–$25/month depending on size. Keep it if next year's workshop will reuse the same dataset; delete it if regenerating from S3 next year is fine.
+
+```bash
+# To delete:
+aws ec2 delete-snapshot --snapshot-id "$DATA_SNAPSHOT_ID" --region "$REGION"
 ```
 
 ---
