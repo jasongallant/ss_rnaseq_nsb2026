@@ -153,9 +153,11 @@ aws s3 cp   episodes/setup.md  "s3://${WORKSHOP_BUCKET}/content/setup.md"
 #     s3://${WORKSHOP_BUCKET}/data/checkpoints/0[1-4]_*.rds
 #     s3://${WORKSHOP_BUCKET}/data/raw/{fastq,fastqc,cellranger}/<sample>/
 #     s3://${WORKSHOP_BUCKET}/data/eod_duration/  (optional)
-aws s3 sync /path/to/local/ssrnaseq_data/ "s3://${WORKSHOP_BUCKET}/data/ssrnaseq_data/"
-aws s3 sync /path/to/local/checkpoints/   "s3://${WORKSHOP_BUCKET}/data/checkpoints/"
-aws s3 sync /path/to/local/raw/           "s3://${WORKSHOP_BUCKET}/data/raw/"
+aws s3 sync episodes/data/ssrnaseq_data/  "s3://${WORKSHOP_BUCKET}/data/ssrnaseq_data/" --exclude ".*" --exclude "*/.*"
+aws s3 sync episodes/data/checkpoints  "s3://${WORKSHOP_BUCKET}/data/checkpoints/" --exclude ".*" --exclude "*/.*"
+aws s3 sync bts/data_generation/qc/          "s3://${WORKSHOP_BUCKET}/data/qc/" --exclude ".*" --exclude "*/.*"
+aws s3 sync episodes/data/eod_duration/ "S3://${WORKSHOP_BUCKET}/data/eod_duration" --exclude ".*" --exclude "*/.*"
+
 ```
 
 ### 0.4 — Create the IAM instance profile
@@ -370,9 +372,20 @@ ssh -i "$KEY_FILE" -o StrictHostKeyChecking=accept-new ubuntu@"$BUILDER_IP" 'lsb
 
 scp -i "$KEY_FILE" bts/infrastructure/build_data_volume.sh ubuntu@"$BUILDER_IP":/tmp/
 
+# Install AWS CLI v2 via the official installer (noble's apt no longer ships
+# awscli), then run the populate script. The unzip + curl utilities ARE in apt.
+ssh -i "$KEY_FILE" ubuntu@"$BUILDER_IP" "bash -s" <<'REMOTE'
+set -euo pipefail
+sudo apt-get update -y
+sudo apt-get install -y --no-install-recommends curl unzip
+curl -fSL "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o /tmp/awscliv2.zip
+unzip -q /tmp/awscliv2.zip -d /tmp
+sudo /tmp/aws/install --update
+aws --version
+REMOTE
+
 ssh -i "$KEY_FILE" ubuntu@"$BUILDER_IP" \
-    "sudo apt-get install -y awscli && \
-     sudo WORKSHOP_BUCKET='$WORKSHOP_BUCKET' DEVICE=/dev/nvme1n1 \
+    "sudo WORKSHOP_BUCKET='$WORKSHOP_BUCKET' DEVICE=/dev/nvme1n1 \
           bash /tmp/build_data_volume.sh"
 ```
 
@@ -421,30 +434,25 @@ set -a; source bts/infrastructure/.env; set +a
 
 Phase 3 needs `AMI_ID` (Phase 1.5), `DATA_SNAPSHOT_ID` (Phase 2.3), `INSTANCE_PROFILE`, `WORKSHOP_BUCKET`, `WORKSHOP_DOMAIN`, `ADMIN_EMAIL`, and `DATA_DEVICE` — all of which should already be set in `.env`. If you skipped a save step, set the missing values now and re-run the `source` line.
 
-### 3.1 — Allocate the Elastic IP and point DNS at it
+### 3.1 — Look up the persistent Elastic IP
+
+The workshop uses a **permanent** Elastic IP that DNS (`workshop.efishgenomics.com → 32.197.26.59`) is already wired to. It survives across workshop years — don't release it in teardown. `EIP_PUBLIC_IP` should already be set in your `.env` to the persistent address.
 
 ```bash
-EIP_JSON=$(aws ec2 allocate-address --domain vpc --region "$REGION" \
-    --tag-specifications 'ResourceType=elastic-ip,Tags=[{Key=Project,Value=nsb2026-workshop}]')
-export EIP_ALLOC_ID=$(echo "$EIP_JSON" | jq -r '.AllocationId')
-export EIP_PUBLIC_IP=$(echo "$EIP_JSON" | jq -r '.PublicIp')
+# Recover the allocation ID for the persistent EIP (needed for the associate step).
+export EIP_ALLOC_ID=$(aws ec2 describe-addresses --region "$REGION" \
+    --public-ips "$EIP_PUBLIC_IP" \
+    --query 'Addresses[0].AllocationId' --output text)
 echo "EIP_ALLOC_ID=$EIP_ALLOC_ID"
-echo "EIP_PUBLIC_IP=$EIP_PUBLIC_IP"
 
-# Save to .env so reboots/new shells inherit:
-sed -i.bak \
-    -e "s|^EIP_ALLOC_ID=.*|EIP_ALLOC_ID=$EIP_ALLOC_ID|" \
-    -e "s|^EIP_PUBLIC_IP=.*|EIP_PUBLIC_IP=$EIP_PUBLIC_IP|" \
-    bts/infrastructure/.env
+# Cache the allocation ID in .env so future launches skip the lookup:
+sed -i.bak "s|^EIP_ALLOC_ID=.*|EIP_ALLOC_ID=$EIP_ALLOC_ID|" bts/infrastructure/.env
+
+# Sanity check DNS still points at the EIP (should print $EIP_PUBLIC_IP):
+dig +short "$WORKSHOP_DOMAIN"
 ```
 
-**Now go set your DNS A record**: `$WORKSHOP_DOMAIN` → `$EIP_PUBLIC_IP`. Then wait for propagation:
-
-```bash
-dig +short "$WORKSHOP_DOMAIN"      # should return $EIP_PUBLIC_IP
-```
-
-Don't move on until `dig` returns the right IP — `certbot` will fail if DNS isn't resolving yet.
+If `dig` returns the wrong IP or nothing, fix the DNS A record before continuing — `certbot` will fail otherwise. If the lookup returns `None` for `EIP_ALLOC_ID`, the EIP isn't allocated in `$REGION` (or under your account). Recreating it requires re-allocating and updating DNS — out of scope for this runbook.
 
 ### 3.2 — Personalize the cloud-init file
 
@@ -648,15 +656,20 @@ aws ec2 wait instance-terminated --instance-ids "$INSTANCE_ID" --region "$REGION
 
 The attached data volume (restored from `$DATA_SNAPSHOT_ID`) is deleted automatically because we launched it with `DeleteOnTermination=true`. The underlying snapshot is preserved.
 
-### 5.3 — Release the Elastic IP
+### 5.3 — Disassociate (but DO NOT release) the Elastic IP
+
+The EIP is **persistent across workshop years** — `workshop.efishgenomics.com` DNS is wired to it permanently. Disassociating it from the now-terminated instance is automatic when the instance terminates, so no command is required. **Do not** run `aws ec2 release-address` — that would deallocate it and break DNS for next year.
+
+If you ever truly want to retire the workshop infrastructure for good (no more years), then and only then:
 
 ```bash
-aws ec2 release-address --allocation-id "$EIP_ALLOC_ID" --region "$REGION"
+# DESTRUCTIVE — breaks DNS until you re-point it. Only run if retiring the workshop.
+# aws ec2 release-address --allocation-id "$EIP_ALLOC_ID" --region "$REGION"
 ```
 
-### 5.4 — Delete the DNS record
+### 5.4 — Leave the DNS record alone
 
-(Manual step in your DNS provider's console.)
+DNS (`workshop.efishgenomics.com → 32.197.26.59`) stays pointed at the persistent EIP so next year's instance reuses it. Only delete the DNS record if you're retiring the workshop permanently (see 5.3 note).
 
 ### 5.5 — Deregister the AMI
 

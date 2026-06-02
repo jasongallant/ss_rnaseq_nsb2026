@@ -46,6 +46,8 @@ Once you're logged in, you're inside a full RStudio session running on a shared 
 
 Each of you has a personal home directory (`~/ssrnaseq/`) populated from the workshop's golden image. The same lesson content sits in every student's home; what you change in yours stays in yours.
 
+When you log in, RStudio starts in `~/ssrnaseq/` and you should see **ssrnaseq** in the project indicator at the top-right of the window. If you don't (e.g. you switched projects earlier), open the **Files pane** and click `ssrnaseq.Rproj`. Working inside the project means relative paths like `data/checkpoints/02_harmony_clustered.rds` resolve from `~/ssrnaseq/` no matter which workbook chunk you're running — without the project context, a chunk inside `workbook/snrnaseq-preprocessing.Rmd` would look for `workbook/data/...` and fail.
+
 ## The Files pane: where everything lives
 
 Open the **Files pane** (bottom-right) and navigate to `~/ssrnaseq/`. You should see:

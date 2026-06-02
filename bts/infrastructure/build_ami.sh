@@ -8,7 +8,7 @@
 # the day of the course (see cloud_init.yaml).
 #
 # The AMI is intentionally "R environment only": OS + system libs + R 4.4 +
-# the locked R package set + RStudio Server + nginx + certbot + awscli +
+# the locked R package set + RStudio Server + nginx + certbot + AWS CLI v2 +
 # provision/refresh scripts. It contains NO lesson content. Workbooks and
 # bulk data are delivered at launch (S3 sync + mounted EBS snapshot — see
 # cloud_init.yaml). This lets you fix typos in workbooks without rebaking.
@@ -67,7 +67,19 @@ apt-get install -y --no-install-recommends \
     libudunits2-dev libgdal-dev libproj-dev libgsl-dev \
     libmagick++-dev libgmp-dev libmpfr-dev libnetcdf-dev libcairo2-dev \
     nginx certbot python3-certbot-nginx \
-    awscli pwgen
+    unzip pwgen
+
+###############################################################################
+# 1b. AWS CLI v2 (official installer — noble's apt repo no longer ships awscli)
+###############################################################################
+log "Installing AWS CLI v2"
+AWSCLI_TMP=$(mktemp -d)
+curl -fSL "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" \
+    -o "${AWSCLI_TMP}/awscliv2.zip"
+unzip -q "${AWSCLI_TMP}/awscliv2.zip" -d "$AWSCLI_TMP"
+"${AWSCLI_TMP}/aws/install" --update
+rm -rf "$AWSCLI_TMP"
+aws --version
 
 ###############################################################################
 # 2. R ${R_VERSION} via rig (NOT the CRAN apt repo)
@@ -134,7 +146,34 @@ local({
     Ncpus = max(1L, parallel::detectCores() - 1L)
   )
 })
+
+# Auto-open the ssrnaseq project on first RStudio login. RStudio's
+# restore_last_project preference doesn't fire on a true first login (no
+# prior session to restore from), so without this hook students land in
+# "(None)" and have to click ssrnaseq.Rproj manually. The hook short-
+# circuits if a project is already attached, so the openProject-triggered
+# session restart doesn't loop.
+setHook("rstudio.sessionInit", function(newSession) {
+  if (!isTRUE(newSession)) return(invisible())
+  proj <- path.expand("~/ssrnaseq")
+  if (!dir.exists(proj)) return(invisible())
+  if (!requireNamespace("rstudioapi", quietly = TRUE)) return(invisible())
+  if (!is.null(rstudioapi::getActiveProject())) return(invisible())
+  rstudioapi::openProject(proj, newSession = FALSE)
+}, action = "append")
 RPROFILE
+
+# Bump the default C++ standard for any source builds. Some packages (notably
+# glmGamPoi from Bioconductor, which P3M's CRAN mirror doesn't carry as a
+# binary) still declare CXX_STD = CXX11. Those builds fail against modern
+# RcppArmadillo, which dropped C++11 and requires C++14+. Overriding
+# CXX11STD here makes "C++11 mode" actually compile as gnu++17 — satisfies
+# Armadillo without patching every offending package upstream.
+MAKEVARS_SITE_PATH="${R_HOME_DIR}/etc/Makevars.site"
+log "Writing Makevars.site to ${MAKEVARS_SITE_PATH}"
+cat > "$MAKEVARS_SITE_PATH" <<'MAKEVARS'
+CXX11STD = -std=gnu++17
+MAKEVARS
 
 ###############################################################################
 # 4. RStudio Server Open Source
@@ -157,6 +196,26 @@ www-address=127.0.0.1
 auth-minimum-user-id=1000
 rsession-which-r=/opt/R/${R_VERSION}/bin/R
 RSERVER
+
+# session-default-working-dir is read by rsession (per-R-session), NOT by
+# rserver — putting it in rserver.conf makes the server refuse to start.
+# Relative path resolves against each user's $HOME.
+cat > /etc/rstudio/rsession.conf <<'RSESSION'
+session-default-working-dir=ssrnaseq
+RSESSION
+
+# System-wide RStudio user preference: chunks evaluate in the project root
+# (i.e., ~/ssrnaseq/) instead of the document directory. Without this, a
+# chunk inside ~/ssrnaseq/workbook/foo.Rmd executes with CWD = workbook/,
+# breaking relative paths like "data/ssrnaseq_data/...". Per-user prefs
+# in ~/.config/rstudio/ override this if a student tweaks them.
+cat > /etc/rstudio/rstudio-prefs.json <<'PREFS'
+{
+  "knit_working_dir": "project",
+  "save_workspace": "never",
+  "load_workspace": false
+}
+PREFS
 
 systemctl enable rstudio-server
 systemctl restart rstudio-server
@@ -232,15 +291,13 @@ renv::restore(
   prompt   = FALSE
 )
 
-# harmony and speckle are not in the lockfile per setup.md Step 3.
-# Pre-installing them here means students never see the manual install step.
-install.packages("harmony", lib = "${R_SITE_LIB}")
-BiocManager::install("speckle", lib = "${R_SITE_LIB}", update = FALSE, ask = FALSE)
-
 # --- Sanity check: every required package loads -----------------------------
+# Keep this list aligned with what the current .Rmd files actually `library()`.
+# When you delete an episode and rebuild renv.lock, also prune from this list
+# (clusterProfiler, GO.db, hdf5r used to live here for episodes that no longer
+# exist).
 required <- c("Seurat", "DESeq2", "harmony", "speckle", "limma",
-              "clusterProfiler", "GO.db", "tidyverse", "patchwork",
-              "glmGamPoi", "presto", "hdf5r")
+              "tidyverse", "patchwork", "glmGamPoi", "presto")
 missing <- required[!vapply(required, requireNamespace, logical(1), quietly = TRUE)]
 if (length(missing)) stop("Missing packages after restore: ", paste(missing, collapse = ", "))
 message("All required packages installed.")
@@ -313,6 +370,39 @@ if [[ -d "$DATA/checkpoints" ]]; then
 else
     mkdir -p "$target/data/checkpoints"
 fi
+
+# Drop an RStudio project file so chunks in any Rmd under ~/ssrnaseq/
+# execute with CWD = ~/ssrnaseq/. Combined with the system-wide
+# "knit_working_dir: project" pref, this makes paths like
+# "data/ssrnaseq_data/..." work uniformly from console and chunk.
+cat > "$target/ssrnaseq.Rproj" <<'RPROJ'
+Version: 1.0
+
+RestoreWorkspace: No
+SaveWorkspace: No
+AlwaysSaveHistory: Default
+
+EnableCodeIndexing: Yes
+UseSpacesForTab: Yes
+NumSpacesForTab: 2
+Encoding: UTF-8
+
+RnwWeave: knitr
+LaTeX: pdfLaTeX
+
+AutoAppendNewline: Yes
+StripTrailingWhitespace: Yes
+
+KnitWorkingDir: Project
+RPROJ
+
+# Seed the project MRU so RStudio's restore_last_project (default true)
+# auto-attaches the project on first login. Without this, students land in
+# (None) and have to click ssrnaseq.Rproj in the Files pane themselves.
+state_dir="/home/${user}/.local/share/rstudio/monitored/lists"
+mkdir -p "$state_dir"
+echo '~/ssrnaseq/ssrnaseq.Rproj' > "$state_dir/project_mru"
+chown -R "${user}:${user}" "/home/${user}/.local"
 
 chown -R "${user}:${user}" "$target"
 PROV
