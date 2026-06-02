@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Setup – Electric Fish: Single-Nucleus RNA-seq</title>
+<title>R &amp; RStudio Orientation for the snRNA-seq Sessions – Electric Fish: Single-Nucleus RNA-seq</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -199,7 +199,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../episodes/setup.html">Setup</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../episodes/introduction_to_rnaseq_computation.html">June 12: Preprocessing and Batch Correction</a></li><li class="breadcrumb-item"><a href="../episodes/r-rstudio-orientation.html">R &amp; RStudio Orientation for the snRNA-seq Sessions</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -339,6 +339,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../episodes/r-rstudio-orientation.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">R &amp; RStudio Orientation for the snRNA-seq Sessions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../episodes/snrnaseq-preprocessing.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Preprocessing the Electric Organ snRNA-seq Data</span></a>
   </div>
@@ -365,7 +371,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <li class="px-0"><hr class="sidebar-divider hi "></li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../episodes/setup.html" class="sidebar-item-text sidebar-link active">
+  <a href="../episodes/setup.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Setup</span></a>
   </div>
 </li>
@@ -379,25 +385,23 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#connect-to-the-workshop-server" id="toc-connect-to-the-workshop-server" class="nav-link active" data-scroll-target="#connect-to-the-workshop-server">Connect to the workshop server</a></li>
-  <li><a href="#welcome-to-the-workshop-server" id="toc-welcome-to-the-workshop-server" class="nav-link" data-scroll-target="#welcome-to-the-workshop-server">Welcome to the workshop server</a></li>
+  <li><a href="#welcome-to-the-workshop-server" id="toc-welcome-to-the-workshop-server" class="nav-link active" data-scroll-target="#welcome-to-the-workshop-server">Welcome to the workshop server</a></li>
   <li><a href="#the-files-pane-where-everything-lives" id="toc-the-files-pane-where-everything-lives" class="nav-link" data-scroll-target="#the-files-pane-where-everything-lives">The Files pane: where everything lives</a></li>
   <li><a href="#open-the-workbook" id="toc-open-the-workbook" class="nav-link" data-scroll-target="#open-the-workbook">Open the workbook</a></li>
   <li><a href="#the-___-gap-convention" id="toc-the-___-gap-convention" class="nav-link" data-scroll-target="#the-___-gap-convention">The <code>___</code> gap convention</a></li>
   <li><a href="#the-predict-first-prompts" id="toc-the-predict-first-prompts" class="nav-link" data-scroll-target="#the-predict-first-prompts">The predict-first prompts</a></li>
   <li><a href="#the-checkpoint-load-idiom" id="toc-the-checkpoint-load-idiom" class="nav-link" data-scroll-target="#the-checkpoint-load-idiom">The checkpoint-load idiom</a></li>
   <li><a href="#quick-smoke-test-5-min" id="toc-quick-smoke-test-5-min" class="nav-link" data-scroll-target="#quick-smoke-test-5-min">Quick smoke test (5 min)</a></li>
-  <li><a href="#installing-your-own-packages-for-special-projects" id="toc-installing-your-own-packages-for-special-projects" class="nav-link" data-scroll-target="#installing-your-own-packages-for-special-projects">Installing your own packages for special projects</a></li>
   <li><a href="#keypoints" id="toc-keypoints" class="nav-link" data-scroll-target="#keypoints">Keypoints</a></li>
   </ul>
-<div class="toc-actions"><ul><li><a href="https://github.com/jasongallant/ss_rnaseq_nsb2026/edit/main/episodes/setup.md" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/jasongallant/ss_rnaseq_nsb2026/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
+<div class="toc-actions"><ul><li><a href="https://github.com/jasongallant/ss_rnaseq_nsb2026/edit/main/episodes/r-rstudio-orientation.Rmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/jasongallant/ss_rnaseq_nsb2026/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default">
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../episodes/introduction_to_rnaseq_computation.html">June 12: Preprocessing and Batch Correction</a></li><li class="breadcrumb-item"><a href="../episodes/r-rstudio-orientation.html">R &amp; RStudio Orientation for the snRNA-seq Sessions</a></li></ol></nav>
 <div class="quarto-title">
-<div class="quarto-title-block"><div><h1 class="title">Setup</h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
+<div class="quarto-title-block"><div><h1 class="title">R &amp; RStudio Orientation for the snRNA-seq Sessions</h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
 </div>
 
 
@@ -425,8 +429,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <div class="callout-body-container callout-body">
 <ul>
-<li>How do I connect to the workshop RStudio server?</li>
-<li>Where do the workbook, the rendered episode, the data, and the checkpoints live in my session?</li>
+<li>Where do the workbook, the rendered episode, the data, and the checkpoints live in my RStudio session?</li>
 <li>How do I work in a notebook with <code>___</code> gaps without breaking everything?</li>
 <li>What do I do if I make a mistake mid-pipeline — re-run from scratch, or load a checkpoint?</li>
 </ul>
@@ -443,74 +446,40 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <div class="callout-body-container callout-body">
 <ul>
-<li>Log in to the workshop RStudio server at <code>workshop.efishgenomics.com</code>.</li>
-<li>Locate the workshop project, workbooks, data, and checkpoints on the server.</li>
+<li>Locate the workshop project, workbooks, data, and checkpoints on the RStudio server.</li>
 <li>Open and run an R notebook workbook chunk by chunk.</li>
 <li>Recognize the <code>___</code> gap convention and the predict-first prompts.</li>
 <li>Load a pre-built checkpoint to skip past a slow step (or to recover from a broken state).</li>
 </ul>
 </div>
 </div>
-<section id="connect-to-the-workshop-server" class="level2">
-<h2 class="anchored" data-anchor-id="connect-to-the-workshop-server">Connect to the workshop server</h2>
-<p>All hands-on work in this workshop happens on a shared RStudio Server that we run for the week. You do <strong>not</strong> need to install R, RStudio, or any packages on your laptop, and you do not need to download any data. Everything is pre-installed and pre-loaded on the server.</p>
-<p>To connect:</p>
-<ol type="1">
-<li>Open a modern desktop browser (Chrome, Firefox, Safari, or Edge) on a stable wifi connection.</li>
-<li>Navigate to <strong><a href="https://workshop.efishgenomics.com">https://workshop.efishgenomics.com</a></strong>.</li>
-<li>Log in with the username and one-time password the instructor hands out in person on Day 1. Usernames are of the form <code>student1</code>, <code>student2</code>, …, <code>student6</code>.</li>
-<li>The first time you log in, you will be prompted to change your password. Pick something you can remember for the week — your account is wiped when the server is torn down on June 14.</li>
-</ol>
-<div class="callout callout-style-default callout-warning callout-titled" title="Trouble logging in?">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Warning</span>Trouble logging in?
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<ul>
-<li>If the login page won’t load at all, double-check the URL spelling and your network connection.</li>
-<li>If your username and password are rejected, ask the instructor — passwords can be reset on the spot.</li>
-<li>There is nothing to install locally, so if a teammate’s browser works and yours doesn’t, the problem is almost always a typo in the URL or a captive-portal wifi.</li>
-</ul>
-</div>
-</div>
-</section>
 <section id="welcome-to-the-workshop-server" class="level2">
 <h2 class="anchored" data-anchor-id="welcome-to-the-workshop-server">Welcome to the workshop server</h2>
-<p>Once you’re logged in, you’re inside a full RStudio session running on a shared Linux server. Seurat, DESeq2, Harmony, propeller, and everything else you’ll need are pre-installed. You’ll do all of Friday’s and Saturday’s hands-on work here — no need to install anything on your laptop.</p>
+<p>You are logged into a shared RStudio server at <code>workshop.efishgenomics.com</code>. The server has Seurat, DESeq2, Harmony, propeller, and everything else you’ll need pre-installed. You’ll do all of Friday’s and Saturday’s hands-on work here — no need to install anything on your laptop.</p>
 <p>Each of you has a personal home directory (<code>~/ssrnaseq/</code>) populated from the workshop’s golden image. The same lesson content sits in every student’s home; what you change in yours stays in yours.</p>
-<p>When you log in, RStudio starts in <code>~/ssrnaseq/</code> and you should see <strong>ssrnaseq</strong> in the project indicator at the top-right of the window. If you don’t (e.g.&nbsp;you switched projects earlier), open the <strong>Files pane</strong> and click <code>ssrnaseq.Rproj</code>. Working inside the project means relative paths like <code>data/checkpoints/02_harmony_clustered.rds</code> resolve from <code>~/ssrnaseq/</code> no matter which workbook chunk you’re running — without the project context, a chunk inside <code>workbook/snrnaseq-preprocessing.Rmd</code> would look for <code>workbook/data/...</code> and fail.</p>
 </section>
 <section id="the-files-pane-where-everything-lives" class="level2">
 <h2 class="anchored" data-anchor-id="the-files-pane-where-everything-lives">The Files pane: where everything lives</h2>
 <p>Open the <strong>Files pane</strong> (bottom-right) and navigate to <code>~/ssrnaseq/</code>. You should see:</p>
 <pre><code>~/ssrnaseq/
-├── workbook/
-│   ├── snrnaseq-preprocessing.Rmd      ← Friday's working surface (today)
-│   └── snrnaseq-annotation-and-de.Rmd  ← Saturday's working surface
-├── setup.md                            ← this document (writable local copy)
-└── data/
-    ├── ssrnaseq_data/                  ← Raw 10X counts + gtf (read-only, shared mount)
-    │   ├── EO/
-    │   │   ├── BB48/ BB49INJ/ BB50/ BB50INJ/
-    │   │   └── losilla_et_al_data.csv
-    │   ├── Skin/  Midbrain/  Hindbrain/   ← extra tissues for special projects
-    │   ├── genes.gtf.gz
-    │   └── gene_ontology.gaf.gz
-    ├── raw/                            ← Raw fastqs + FastQC + full CellRanger out (RO)
-    │   ├── fastq/&lt;sample&gt;/
-    │   ├── fastqc/&lt;sample&gt;/
-    │   └── cellranger/&lt;sample&gt;/
-    └── checkpoints/                    ← Pre-built .rds checkpoints (writable; per-student)
-        ├── 01_merged_sct.rds
-        ├── 02_harmony_clustered.rds    ← Saturday's entry state
-        ├── 03_annotated.rds
-        └── 04_pseudobulk_dds.rds</code></pre>
-<p><code>data/ssrnaseq_data/</code> and <code>data/raw/</code> are symlinks into a shared read-only volume — anything in there is the same for everyone and cannot be modified. <code>data/checkpoints/</code> is your own writable copy, so you can overwrite the shipped <code>.rds</code> files freely as you progress.</p>
+├── episodes/
+│   ├── snrnaseq-preprocessing.Rmd          ← Friday's rendered episode (the answer key)
+│   ├── snrnaseq-annotation-and-de.Rmd      ← Saturday's rendered episode
+│   ├── introduction_to_rnaseq_computation.Rmd ← The pre-class QC companion you filled in
+│   ├── workbook/
+│   │   ├── snrnaseq-preprocessing.Rmd      ← Friday's working surface (today)
+│   │   └── snrnaseq-annotation-and-de.Rmd  ← Saturday's working surface
+│   └── data/
+│       ├── ssrnaseq_data/                  ← Raw 10X counts (read-only, shared mount)
+│       │   └── EO/
+│       │       ├── BB48/ BB49INJ/ BB50/ BB50INJ/
+│       │       ├── genes.gtf.gz
+│       │       └── losilla_et_al_data.csv
+│       └── checkpoints/                    ← Pre-built .rds checkpoints
+│           ├── 01_merged_sct.rds
+│           ├── 02_harmony_clustered.rds    ← Saturday's entry state
+│           ├── 03_annotated.rds
+│           └── 04_pseudobulk_dds.rds</code></pre>
 <div class="callout callout-style-default callout-warning callout-titled" title="The website and the workbook are different files">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -521,14 +490,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>The <strong>rendered episodes</strong> live at <a href="https://tutorials.efishgenomics.com">tutorials.efishgenomics.com</a> — they are the <strong>answer keys</strong> with complete code and full explanations. Keep that tab open while you work.</p>
-<p>The <strong>workbooks</strong> (<code>workbook/*.Rmd</code> on this server) are <strong>your working surface</strong>. They have the same overall structure as the rendered episodes, but with key decision points gapped out (<code>___</code>) and predict-first prompts before each one. <strong>You work in the workbook on the server; you consult the rendered episode in your browser.</strong></p>
+<p>The rendered episodes (<code>episodes/snrnaseq-preprocessing.Rmd</code>) are the <strong>answer keys</strong> — they contain complete, runnable code with full explanations. They also appear on the course website at tutorials.efishgenomics.com.</p>
+<p>The workbooks (<code>episodes/workbook/snrnaseq-preprocessing.Rmd</code>) are <strong>your working surface</strong>. They have the same overall structure, but with key decision points gapped out (<code>___</code>) and predict-first prompts before each one. <strong>You work in the workbook.</strong> When stuck, consult the rendered episode.</p>
 </div>
 </div>
 </section>
 <section id="open-the-workbook" class="level2">
 <h2 class="anchored" data-anchor-id="open-the-workbook">Open the workbook</h2>
-<p>In the Files pane, navigate to <code>workbook/</code> and double-click <code>snrnaseq-preprocessing.Rmd</code>. It opens as an R Notebook in the Source pane.</p>
+<p>In the Files pane, navigate to <code>episodes/workbook/</code> and double-click <code>snrnaseq-preprocessing.Rmd</code>. It opens as an R Notebook in the Source pane.</p>
 <div class="callout callout-style-default callout-warning callout-titled" title="Don't click 'Render' or 'Knit' on the workbook">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -569,7 +538,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="the-checkpoint-load-idiom">The checkpoint-load idiom</h2>
 <p>Each major preprocessing step is slow (SCTransform takes a few minutes; Harmony takes about a minute). If you make a mistake mid-pipeline and want to recover without re-running everything, <strong>load the previous checkpoint</strong>:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>merged_seurat <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"data/checkpoints/01_merged_sct.rds"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>The checkpoints shipped on the server are the canonical state. If you’ve been making progress and want to save your own checkpoint mid-session, write to a different name so you don’t overwrite the shipped ones:</p>
+<p>The checkpoints shipped with the AMI are the canonical state. If you’ve been making progress and want to save your own checkpoint mid-session, write to a different name so you don’t overwrite the shipped ones:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(merged_seurat, <span class="st">"data/checkpoints/my_temp_state.rds"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="callout callout-style-default callout-tip callout-titled" title="If Saturday catches you cold">
 <div class="callout-header d-flex align-content-center">
@@ -581,14 +550,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>If you missed Friday entirely, the first chunk of <code>workbook/snrnaseq-annotation-and-de.Rmd</code> loads the shipped <code>02_harmony_clustered.rds</code> and you can join Saturday’s session with a known-good entry state. The same trick works mid-Saturday: if your annotation gets tangled, load <code>03_annotated.rds</code>.</p>
+<p>If you missed Friday entirely, the first chunk of <code>episodes/workbook/snrnaseq-annotation-and-de.Rmd</code> loads the shipped <code>02_harmony_clustered.rds</code> and you can join Saturday’s session with a known-good entry state. The same trick works mid-Saturday: if your annotation gets tangled, load <code>03_annotated.rds</code>.</p>
 </div>
 </div>
 </section>
 <section id="quick-smoke-test-5-min" class="level2">
 <h2 class="anchored" data-anchor-id="quick-smoke-test-5-min">Quick smoke test (5 min)</h2>
-<p>Once you’re logged in, paste the following into the R console to confirm everything works end-to-end:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. Load Seurat</span></span>
+<p>Try this now to confirm everything works end-to-end:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. Load Seurat</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(Seurat)</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. Load the shipped Friday checkpoint</span></span>
@@ -597,52 +567,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. Confirm it loaded and inspect basic metadata</span></span>
 <span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>seu</span>
 <span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(seu<span class="sc">$</span>treatment)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
 <p>If you see a Seurat object with 4 samples, ~10,000 nuclei, and treatment labels (<code>11kt</code>, <code>vehicle</code>), you’re good to go. If you see an error, raise a hand — we’ll fix it before starting the Friday code episode.</p>
-</section>
-<section id="installing-your-own-packages-for-special-projects" class="level2">
-<h2 class="anchored" data-anchor-id="installing-your-own-packages-for-special-projects">Installing your own packages for special projects</h2>
-<p>The “on rails” sessions use the pre-installed package set (Seurat, DESeq2, Harmony, propeller, tidyverse, and friends). For special-project work later in the week, you may want to install other packages. This is fully supported.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"ggrepel"</span>)         <span class="co"># CRAN packages</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>BiocManager<span class="sc">::</span><span class="fu">install</span>(<span class="st">"scater"</span>)      <span class="co"># Bioconductor packages</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>The first time you run <code>install.packages()</code>, RStudio asks “Would you like to use a personal library?” — say <strong>yes</strong>. Your packages go into <code>~/R/x86_64-pc-linux-gnu-library/4.4/</code>, which is your own and doesn’t affect anyone else. Subsequent installs go there automatically.</p>
-<div class="callout callout-style-default callout-tip callout-titled" title="If your package overrides a workshop one">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Tip</span>If your package overrides a workshop one
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>The system library is searched before your personal library, so <code>library(Seurat)</code> always loads the locked workshop version (good — guarantees the on-rails sessions stay reproducible). If you specifically want <strong>your</strong> newer version to win:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">.libPaths</span>(<span class="fu">c</span>(<span class="fu">Sys.getenv</span>(<span class="st">"R_LIBS_USER"</span>), <span class="fu">.libPaths</span>()))   <span class="co"># personal library first</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(Seurat)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>This only affects the current R session.</p>
-</div>
-</div>
-<div class="callout callout-style-default callout-warning callout-titled" title="If install fails with 'cannot find -lwhatever'">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Warning</span>If install fails with ‘cannot find -lwhatever’
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>The R package needs a system library that isn’t installed. Ask the instructor — they have <code>sudo</code> and can <code>apt install</code> what you need in 30 seconds. This is rare for the common Bioconductor packages but does come up occasionally for spatial/imaging/Stan packages.</p>
-</div>
-</div>
 </section>
 <section id="keypoints" class="level2">
 <h2 class="anchored" data-anchor-id="keypoints">Keypoints</h2>
 <ol type="1">
-<li>You connect to the workshop at <strong><a href="https://workshop.efishgenomics.com">https://workshop.efishgenomics.com</a></strong> with the username and password the instructor hands out. Nothing to install locally.</li>
-<li>Your working surface is <code>workbook/*.Rmd</code> on the server. The rendered episodes at <a href="https://tutorials.efishgenomics.com">tutorials.efishgenomics.com</a> are the answer keys you consult when stuck.</li>
+<li>Your working surface is <code>episodes/workbook/*.Rmd</code>. The rendered episodes are answer keys you consult when stuck.</li>
 <li>Run chunks one at a time — <strong>never click “Render” or “Knit” on a workbook.</strong></li>
 <li><code>___</code> is a decision point. Fill it in based on the prediction prompt above it.</li>
 <li>Checkpoints in <code>data/checkpoints/</code> let you skip past slow steps or recover from mistakes — load with <code>readRDS()</code>.</li>
+<li>Raw data and QC reports live on a shared mount; you don’t need to copy or download anything.</li>
 </ol>
 
 
@@ -786,7 +721,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     }
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
       var mailtoRegex = new RegExp(/^mailto:/);
-        var filterRegex = new RegExp("https:\/\/tutorials\.efishgenomics\.com");
+        var filterRegex = new RegExp('/' + window.location.host + '/');
       var isInternal = (href) => {
           return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
       }
@@ -1120,205 +1055,151 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     }
   });
   </script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> Setup</span></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>::: {.callout-note title="Questions"}</span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>How do I connect to the workshop RStudio server?</span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Where do the workbook, the rendered episode, the data, and the checkpoints live in my session?</span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>How do I work in a notebook with <span class="in">`___`</span> gaps without breaking everything?</span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>What do I do if I make a mistake mid-pipeline — re-run from scratch, or load a checkpoint?</span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>::: {.callout-tip title="Objectives"}</span>
-<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Log in to the workshop RStudio server at <span class="in">`workshop.efishgenomics.com`</span>.</span>
-<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Locate the workshop project, workbooks, data, and checkpoints on the server.</span>
-<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Open and run an R notebook workbook chunk by chunk.</span>
-<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Recognize the <span class="in">`___`</span> gap convention and the predict-first prompts.</span>
-<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Load a pre-built checkpoint to skip past a slow step (or to recover from a broken state).</span>
-<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a><span class="fu">## Connect to the workshop server</span></span>
-<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a>All hands-on work in this workshop happens on a shared RStudio Server that we run for the week. You do **not** need to install R, RStudio, or any packages on your laptop, and you do not need to download any data. Everything is pre-installed and pre-loaded on the server.</span>
-<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a>To connect:</span>
-<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Open a modern desktop browser (Chrome, Firefox, Safari, or Edge) on a stable wifi connection.</span>
-<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Navigate to **[https://workshop.efishgenomics.com](https://workshop.efishgenomics.com)**.</span>
-<span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Log in with the username and one-time password the instructor hands out in person on Day 1. Usernames are of the form <span class="in">`student1`</span>, <span class="in">`student2`</span>, …, <span class="in">`student6`</span>.</span>
-<span id="cb8-33"><a href="#cb8-33" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>The first time you log in, you will be prompted to change your password. Pick something you can remember for the week — your account is wiped when the server is torn down on June 14.</span>
-<span id="cb8-34"><a href="#cb8-34" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-35"><a href="#cb8-35" aria-hidden="true" tabindex="-1"></a>::: {.callout-warning title="Trouble logging in?"}</span>
-<span id="cb8-36"><a href="#cb8-36" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-37"><a href="#cb8-37" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>If the login page won't load at all, double-check the URL spelling and your network connection.</span>
-<span id="cb8-38"><a href="#cb8-38" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>If your username and password are rejected, ask the instructor — passwords can be reset on the spot.</span>
-<span id="cb8-39"><a href="#cb8-39" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>There is nothing to install locally, so if a teammate's browser works and yours doesn't, the problem is almost always a typo in the URL or a captive-portal wifi.</span>
-<span id="cb8-40"><a href="#cb8-40" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-41"><a href="#cb8-41" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb8-42"><a href="#cb8-42" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-43"><a href="#cb8-43" aria-hidden="true" tabindex="-1"></a><span class="fu">## Welcome to the workshop server</span></span>
-<span id="cb8-44"><a href="#cb8-44" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-45"><a href="#cb8-45" aria-hidden="true" tabindex="-1"></a>Once you're logged in, you're inside a full RStudio session running on a shared Linux server. Seurat, DESeq2, Harmony, propeller, and everything else you'll need are pre-installed. You'll do all of Friday's and Saturday's hands-on work here — no need to install anything on your laptop.</span>
-<span id="cb8-46"><a href="#cb8-46" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-47"><a href="#cb8-47" aria-hidden="true" tabindex="-1"></a>Each of you has a personal home directory (<span class="in">`~/ssrnaseq/`</span>) populated from the workshop's golden image. The same lesson content sits in every student's home; what you change in yours stays in yours.</span>
-<span id="cb8-48"><a href="#cb8-48" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-49"><a href="#cb8-49" aria-hidden="true" tabindex="-1"></a>When you log in, RStudio starts in <span class="in">`~/ssrnaseq/`</span> and you should see **ssrnaseq** in the project indicator at the top-right of the window. If you don't (e.g. you switched projects earlier), open the **Files pane** and click <span class="in">`ssrnaseq.Rproj`</span>. Working inside the project means relative paths like <span class="in">`data/checkpoints/02_harmony_clustered.rds`</span> resolve from <span class="in">`~/ssrnaseq/`</span> no matter which workbook chunk you're running — without the project context, a chunk inside <span class="in">`workbook/snrnaseq-preprocessing.Rmd`</span> would look for <span class="in">`workbook/data/...`</span> and fail.</span>
-<span id="cb8-50"><a href="#cb8-50" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-51"><a href="#cb8-51" aria-hidden="true" tabindex="-1"></a><span class="fu">## The Files pane: where everything lives</span></span>
-<span id="cb8-52"><a href="#cb8-52" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-53"><a href="#cb8-53" aria-hidden="true" tabindex="-1"></a>Open the **Files pane** (bottom-right) and navigate to <span class="in">`~/ssrnaseq/`</span>. You should see:</span>
-<span id="cb8-54"><a href="#cb8-54" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-55"><a href="#cb8-55" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb8-56"><a href="#cb8-56" aria-hidden="true" tabindex="-1"></a><span class="in">~/ssrnaseq/</span></span>
-<span id="cb8-57"><a href="#cb8-57" aria-hidden="true" tabindex="-1"></a><span class="in">├── workbook/</span></span>
-<span id="cb8-58"><a href="#cb8-58" aria-hidden="true" tabindex="-1"></a><span class="in">│   ├── snrnaseq-preprocessing.Rmd      ← Friday's working surface (today)</span></span>
-<span id="cb8-59"><a href="#cb8-59" aria-hidden="true" tabindex="-1"></a><span class="in">│   └── snrnaseq-annotation-and-de.Rmd  ← Saturday's working surface</span></span>
-<span id="cb8-60"><a href="#cb8-60" aria-hidden="true" tabindex="-1"></a><span class="in">├── setup.md                            ← this document (writable local copy)</span></span>
-<span id="cb8-61"><a href="#cb8-61" aria-hidden="true" tabindex="-1"></a><span class="in">└── data/</span></span>
-<span id="cb8-62"><a href="#cb8-62" aria-hidden="true" tabindex="-1"></a><span class="in">    ├── ssrnaseq_data/                  ← Raw 10X counts + gtf (read-only, shared mount)</span></span>
-<span id="cb8-63"><a href="#cb8-63" aria-hidden="true" tabindex="-1"></a><span class="in">    │   ├── EO/</span></span>
-<span id="cb8-64"><a href="#cb8-64" aria-hidden="true" tabindex="-1"></a><span class="in">    │   │   ├── BB48/ BB49INJ/ BB50/ BB50INJ/</span></span>
-<span id="cb8-65"><a href="#cb8-65" aria-hidden="true" tabindex="-1"></a><span class="in">    │   │   └── losilla_et_al_data.csv</span></span>
-<span id="cb8-66"><a href="#cb8-66" aria-hidden="true" tabindex="-1"></a><span class="in">    │   ├── Skin/  Midbrain/  Hindbrain/   ← extra tissues for special projects</span></span>
-<span id="cb8-67"><a href="#cb8-67" aria-hidden="true" tabindex="-1"></a><span class="in">    │   ├── genes.gtf.gz</span></span>
-<span id="cb8-68"><a href="#cb8-68" aria-hidden="true" tabindex="-1"></a><span class="in">    │   └── gene_ontology.gaf.gz</span></span>
-<span id="cb8-69"><a href="#cb8-69" aria-hidden="true" tabindex="-1"></a><span class="in">    ├── raw/                            ← Raw fastqs + FastQC + full CellRanger out (RO)</span></span>
-<span id="cb8-70"><a href="#cb8-70" aria-hidden="true" tabindex="-1"></a><span class="in">    │   ├── fastq/&lt;sample&gt;/</span></span>
-<span id="cb8-71"><a href="#cb8-71" aria-hidden="true" tabindex="-1"></a><span class="in">    │   ├── fastqc/&lt;sample&gt;/</span></span>
-<span id="cb8-72"><a href="#cb8-72" aria-hidden="true" tabindex="-1"></a><span class="in">    │   └── cellranger/&lt;sample&gt;/</span></span>
-<span id="cb8-73"><a href="#cb8-73" aria-hidden="true" tabindex="-1"></a><span class="in">    └── checkpoints/                    ← Pre-built .rds checkpoints (writable; per-student)</span></span>
-<span id="cb8-74"><a href="#cb8-74" aria-hidden="true" tabindex="-1"></a><span class="in">        ├── 01_merged_sct.rds</span></span>
-<span id="cb8-75"><a href="#cb8-75" aria-hidden="true" tabindex="-1"></a><span class="in">        ├── 02_harmony_clustered.rds    ← Saturday's entry state</span></span>
-<span id="cb8-76"><a href="#cb8-76" aria-hidden="true" tabindex="-1"></a><span class="in">        ├── 03_annotated.rds</span></span>
-<span id="cb8-77"><a href="#cb8-77" aria-hidden="true" tabindex="-1"></a><span class="in">        └── 04_pseudobulk_dds.rds</span></span>
-<span id="cb8-78"><a href="#cb8-78" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb8-79"><a href="#cb8-79" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-80"><a href="#cb8-80" aria-hidden="true" tabindex="-1"></a><span class="in">`data/ssrnaseq_data/`</span> and <span class="in">`data/raw/`</span> are symlinks into a shared read-only volume — anything in there is the same for everyone and cannot be modified. <span class="in">`data/checkpoints/`</span> is your own writable copy, so you can overwrite the shipped <span class="in">`.rds`</span> files freely as you progress.</span>
-<span id="cb8-81"><a href="#cb8-81" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-82"><a href="#cb8-82" aria-hidden="true" tabindex="-1"></a>::: {.callout-warning title="The website and the workbook are different files"}</span>
-<span id="cb8-83"><a href="#cb8-83" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-84"><a href="#cb8-84" aria-hidden="true" tabindex="-1"></a>The **rendered episodes** live at [tutorials.efishgenomics.com](https://tutorials.efishgenomics.com) — they are the **answer keys** with complete code and full explanations. Keep that tab open while you work.</span>
-<span id="cb8-85"><a href="#cb8-85" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-86"><a href="#cb8-86" aria-hidden="true" tabindex="-1"></a>The **workbooks** (`workbook/*.Rmd` on this server) are **your working surface**. They have the same overall structure as the rendered episodes, but with key decision points gapped out (`___`) and predict-first prompts before each one. **You work in the workbook on the server; you consult the rendered episode in your browser.**</span>
-<span id="cb8-87"><a href="#cb8-87" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-88"><a href="#cb8-88" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb8-89"><a href="#cb8-89" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-90"><a href="#cb8-90" aria-hidden="true" tabindex="-1"></a><span class="fu">## Open the workbook</span></span>
-<span id="cb8-91"><a href="#cb8-91" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-92"><a href="#cb8-92" aria-hidden="true" tabindex="-1"></a>In the Files pane, navigate to <span class="in">`workbook/`</span> and double-click <span class="in">`snrnaseq-preprocessing.Rmd`</span>. It opens as an R Notebook in the Source pane.</span>
-<span id="cb8-93"><a href="#cb8-93" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-94"><a href="#cb8-94" aria-hidden="true" tabindex="-1"></a>::: {.callout-warning title="Don't click 'Render' or 'Knit' on the workbook"}</span>
-<span id="cb8-95"><a href="#cb8-95" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-96"><a href="#cb8-96" aria-hidden="true" tabindex="-1"></a>Workbooks are R Notebooks — they're meant to be **run chunk by chunk**, interactively. Clicking the **Render** or **Knit** button tries to execute every chunk in sequence, which will fail at the first <span class="in">`___`</span> gap. Instead:</span>
-<span id="cb8-97"><a href="#cb8-97" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-98"><a href="#cb8-98" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Run a single chunk with the green ▶ button (top-right of the chunk) or **Cmd-Shift-Enter** / **Ctrl-Shift-Enter**.</span>
-<span id="cb8-99"><a href="#cb8-99" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Run all chunks up to here with the small downward triangle to the left of the ▶.</span>
-<span id="cb8-100"><a href="#cb8-100" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Output appears inline below the chunk.</span>
-<span id="cb8-101"><a href="#cb8-101" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-102"><a href="#cb8-102" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb8-103"><a href="#cb8-103" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-104"><a href="#cb8-104" aria-hidden="true" tabindex="-1"></a><span class="fu">## The `___` gap convention</span></span>
-<span id="cb8-105"><a href="#cb8-105" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-106"><a href="#cb8-106" aria-hidden="true" tabindex="-1"></a>When you see <span class="in">`___`</span> in a workbook chunk, that's a decision point you have to fill in:</span>
-<span id="cb8-107"><a href="#cb8-107" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-108"><a href="#cb8-108" aria-hidden="true" tabindex="-1"></a><span class="in">```r</span></span>
-<span id="cb8-109"><a href="#cb8-109" aria-hidden="true" tabindex="-1"></a>n_pcs <span class="ot">&lt;-</span> ___</span>
-<span id="cb8-110"><a href="#cb8-110" aria-hidden="true" tabindex="-1"></a>merged_seurat <span class="ot">&lt;-</span> <span class="fu">RunUMAP</span>(merged_seurat, <span class="at">dims =</span> <span class="dv">1</span><span class="sc">:</span>n_pcs)</span>
-<span id="cb8-111"><a href="#cb8-111" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb8-112"><a href="#cb8-112" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-113"><a href="#cb8-113" aria-hidden="true" tabindex="-1"></a>If you run the chunk with <span class="in">`___`</span> left in place, R errors out — by design. The error reminds you that this line is a place to think, not a line to skim.</span>
-<span id="cb8-114"><a href="#cb8-114" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-115"><a href="#cb8-115" aria-hidden="true" tabindex="-1"></a>The chunks with <span class="in">`___`</span> also have <span class="in">`eval=FALSE`</span> set in their chunk options. That means they're skipped if you try to render the whole notebook in one go — another guardrail against accidental "I clicked Knit and now everything broke" moments.</span>
-<span id="cb8-116"><a href="#cb8-116" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-117"><a href="#cb8-117" aria-hidden="true" tabindex="-1"></a><span class="fu">## The predict-first prompts</span></span>
-<span id="cb8-118"><a href="#cb8-118" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-119"><a href="#cb8-119" aria-hidden="true" tabindex="-1"></a>Before most gapped chunks there's a blockquote like this:</span>
-<span id="cb8-120"><a href="#cb8-120" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-121"><a href="#cb8-121" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; **Predict first.** Looking at the elbow plot, where do you think the curve flattens — around PC 15? PC 25? Write your guess before running any code.</span></span>
-<span id="cb8-122"><a href="#cb8-122" aria-hidden="true" tabindex="-1"></a><span class="at">&gt;</span></span>
-<span id="cb8-123"><a href="#cb8-123" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; _Your prediction:_</span></span>
-<span id="cb8-124"><a href="#cb8-124" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-125"><a href="#cb8-125" aria-hidden="true" tabindex="-1"></a>These exist because the analytical skill we're building is **judgment**, not typing. Predict, run, compare. If your prediction was wrong, the discrepancy is the most valuable feedback in the lesson.</span>
-<span id="cb8-126"><a href="#cb8-126" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-127"><a href="#cb8-127" aria-hidden="true" tabindex="-1"></a><span class="fu">## The checkpoint-load idiom</span></span>
-<span id="cb8-128"><a href="#cb8-128" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-129"><a href="#cb8-129" aria-hidden="true" tabindex="-1"></a>Each major preprocessing step is slow (SCTransform takes a few minutes; Harmony takes about a minute). If you make a mistake mid-pipeline and want to recover without re-running everything, **load the previous checkpoint**:</span>
-<span id="cb8-130"><a href="#cb8-130" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-131"><a href="#cb8-131" aria-hidden="true" tabindex="-1"></a><span class="in">```r</span></span>
-<span id="cb8-132"><a href="#cb8-132" aria-hidden="true" tabindex="-1"></a>merged_seurat <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"data/checkpoints/01_merged_sct.rds"</span>)</span>
-<span id="cb8-133"><a href="#cb8-133" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb8-134"><a href="#cb8-134" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-135"><a href="#cb8-135" aria-hidden="true" tabindex="-1"></a>The checkpoints shipped on the server are the canonical state. If you've been making progress and want to save your own checkpoint mid-session, write to a different name so you don't overwrite the shipped ones:</span>
-<span id="cb8-136"><a href="#cb8-136" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-137"><a href="#cb8-137" aria-hidden="true" tabindex="-1"></a><span class="in">```r</span></span>
-<span id="cb8-138"><a href="#cb8-138" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(merged_seurat, <span class="st">"data/checkpoints/my_temp_state.rds"</span>)</span>
-<span id="cb8-139"><a href="#cb8-139" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb8-140"><a href="#cb8-140" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-141"><a href="#cb8-141" aria-hidden="true" tabindex="-1"></a>::: {.callout-tip title="If Saturday catches you cold"}</span>
-<span id="cb8-142"><a href="#cb8-142" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-143"><a href="#cb8-143" aria-hidden="true" tabindex="-1"></a>If you missed Friday entirely, the first chunk of <span class="in">`workbook/snrnaseq-annotation-and-de.Rmd`</span> loads the shipped <span class="in">`02_harmony_clustered.rds`</span> and you can join Saturday's session with a known-good entry state. The same trick works mid-Saturday: if your annotation gets tangled, load <span class="in">`03_annotated.rds`</span>.</span>
-<span id="cb8-144"><a href="#cb8-144" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-145"><a href="#cb8-145" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb8-146"><a href="#cb8-146" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-147"><a href="#cb8-147" aria-hidden="true" tabindex="-1"></a><span class="fu">## Quick smoke test (5 min)</span></span>
-<span id="cb8-148"><a href="#cb8-148" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-149"><a href="#cb8-149" aria-hidden="true" tabindex="-1"></a>Once you're logged in, paste the following into the R console to confirm everything works end-to-end:</span>
-<span id="cb8-150"><a href="#cb8-150" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-151"><a href="#cb8-151" aria-hidden="true" tabindex="-1"></a><span class="in">```r</span></span>
-<span id="cb8-152"><a href="#cb8-152" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. Load Seurat</span></span>
-<span id="cb8-153"><a href="#cb8-153" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(Seurat)</span>
-<span id="cb8-154"><a href="#cb8-154" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-155"><a href="#cb8-155" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. Load the shipped Friday checkpoint</span></span>
-<span id="cb8-156"><a href="#cb8-156" aria-hidden="true" tabindex="-1"></a>seu <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"data/checkpoints/02_harmony_clustered.rds"</span>)</span>
-<span id="cb8-157"><a href="#cb8-157" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-158"><a href="#cb8-158" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. Confirm it loaded and inspect basic metadata</span></span>
-<span id="cb8-159"><a href="#cb8-159" aria-hidden="true" tabindex="-1"></a>seu</span>
-<span id="cb8-160"><a href="#cb8-160" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(seu<span class="sc">$</span>treatment)</span>
-<span id="cb8-161"><a href="#cb8-161" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb8-162"><a href="#cb8-162" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-163"><a href="#cb8-163" aria-hidden="true" tabindex="-1"></a>If you see a Seurat object with 4 samples, ~10,000 nuclei, and treatment labels (<span class="in">`11kt`</span>, <span class="in">`vehicle`</span>), you're good to go. If you see an error, raise a hand — we'll fix it before starting the Friday code episode.</span>
-<span id="cb8-164"><a href="#cb8-164" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-165"><a href="#cb8-165" aria-hidden="true" tabindex="-1"></a><span class="fu">## Installing your own packages for special projects</span></span>
-<span id="cb8-166"><a href="#cb8-166" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-167"><a href="#cb8-167" aria-hidden="true" tabindex="-1"></a>The "on rails" sessions use the pre-installed package set (Seurat, DESeq2, Harmony, propeller, tidyverse, and friends). For special-project work later in the week, you may want to install other packages. This is fully supported.</span>
-<span id="cb8-168"><a href="#cb8-168" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-169"><a href="#cb8-169" aria-hidden="true" tabindex="-1"></a><span class="in">```r</span></span>
-<span id="cb8-170"><a href="#cb8-170" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"ggrepel"</span>)         <span class="co"># CRAN packages</span></span>
-<span id="cb8-171"><a href="#cb8-171" aria-hidden="true" tabindex="-1"></a>BiocManager<span class="sc">::</span><span class="fu">install</span>(<span class="st">"scater"</span>)      <span class="co"># Bioconductor packages</span></span>
-<span id="cb8-172"><a href="#cb8-172" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb8-173"><a href="#cb8-173" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-174"><a href="#cb8-174" aria-hidden="true" tabindex="-1"></a>The first time you run <span class="in">`install.packages()`</span>, RStudio asks "Would you like to use a personal library?" — say **yes**. Your packages go into <span class="in">`~/R/x86_64-pc-linux-gnu-library/4.4/`</span>, which is your own and doesn't affect anyone else. Subsequent installs go there automatically.</span>
-<span id="cb8-175"><a href="#cb8-175" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-176"><a href="#cb8-176" aria-hidden="true" tabindex="-1"></a>::: {.callout-tip title="If your package overrides a workshop one"}</span>
-<span id="cb8-177"><a href="#cb8-177" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-178"><a href="#cb8-178" aria-hidden="true" tabindex="-1"></a>The system library is searched before your personal library, so <span class="in">`library(Seurat)`</span> always loads the locked workshop version (good — guarantees the on-rails sessions stay reproducible). If you specifically want **your** newer version to win:</span>
-<span id="cb8-179"><a href="#cb8-179" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-180"><a href="#cb8-180" aria-hidden="true" tabindex="-1"></a><span class="in">```r</span></span>
-<span id="cb8-181"><a href="#cb8-181" aria-hidden="true" tabindex="-1"></a><span class="fu">.libPaths</span>(<span class="fu">c</span>(<span class="fu">Sys.getenv</span>(<span class="st">"R_LIBS_USER"</span>), <span class="fu">.libPaths</span>()))   <span class="co"># personal library first</span></span>
-<span id="cb8-182"><a href="#cb8-182" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(Seurat)</span>
-<span id="cb8-183"><a href="#cb8-183" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb8-184"><a href="#cb8-184" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-185"><a href="#cb8-185" aria-hidden="true" tabindex="-1"></a>This only affects the current R session.</span>
-<span id="cb8-186"><a href="#cb8-186" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb8-187"><a href="#cb8-187" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-188"><a href="#cb8-188" aria-hidden="true" tabindex="-1"></a>::: {.callout-warning title="If install fails with 'cannot find -lwhatever'"}</span>
-<span id="cb8-189"><a href="#cb8-189" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-190"><a href="#cb8-190" aria-hidden="true" tabindex="-1"></a>The R package needs a system library that isn't installed. Ask the instructor — they have <span class="in">`sudo`</span> and can <span class="in">`apt install`</span> what you need in 30 seconds. This is rare for the common Bioconductor packages but does come up occasionally for spatial/imaging/Stan packages.</span>
-<span id="cb8-191"><a href="#cb8-191" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb8-192"><a href="#cb8-192" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-193"><a href="#cb8-193" aria-hidden="true" tabindex="-1"></a><span class="fu">## Keypoints</span></span>
-<span id="cb8-194"><a href="#cb8-194" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-195"><a href="#cb8-195" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>You connect to the workshop at **[https://workshop.efishgenomics.com](https://workshop.efishgenomics.com)** with the username and password the instructor hands out. Nothing to install locally.</span>
-<span id="cb8-196"><a href="#cb8-196" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Your working surface is <span class="in">`workbook/*.Rmd`</span> on the server. The rendered episodes at <span class="co">[</span><span class="ot">tutorials.efishgenomics.com</span><span class="co">](https://tutorials.efishgenomics.com)</span> are the answer keys you consult when stuck.</span>
-<span id="cb8-197"><a href="#cb8-197" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Run chunks one at a time — **never click "Render" or "Knit" on a workbook.**</span>
-<span id="cb8-198"><a href="#cb8-198" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span><span class="in">`___`</span> is a decision point. Fill it in based on the prediction prompt above it.</span>
-<span id="cb8-199"><a href="#cb8-199" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>Checkpoints in <span class="in">`data/checkpoints/`</span> let you skip past slow steps or recover from mistakes — load with <span class="in">`readRDS()`</span>.</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "R &amp; RStudio Orientation for the snRNA-seq Sessions"</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="an">teaching:</span><span class="co"> 25</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="an">exercises:</span><span class="co"> 5</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>::: {.callout-note title="Questions"}</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Where do the workbook, the rendered episode, the data, and the checkpoints live in my RStudio session?</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>How do I work in a notebook with <span class="in">`___`</span> gaps without breaking everything?</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>What do I do if I make a mistake mid-pipeline — re-run from scratch, or load a checkpoint?</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>::: {.callout-tip title="Objectives"}</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Locate the workshop project, workbooks, data, and checkpoints on the RStudio server.</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Open and run an R notebook workbook chunk by chunk.</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Recognize the <span class="in">`___`</span> gap convention and the predict-first prompts.</span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Load a pre-built checkpoint to skip past a slow step (or to recover from a broken state).</span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a><span class="fu">## Welcome to the workshop server</span></span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>You are logged into a shared RStudio server at <span class="in">`workshop.efishgenomics.com`</span>. The server has Seurat, DESeq2, Harmony, propeller, and everything else you'll need pre-installed. You'll do all of Friday's and Saturday's hands-on work here — no need to install anything on your laptop.</span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>Each of you has a personal home directory (<span class="in">`~/ssrnaseq/`</span>) populated from the workshop's golden image. The same lesson content sits in every student's home; what you change in yours stays in yours.</span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a><span class="fu">## The Files pane: where everything lives</span></span>
+<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a>Open the **Files pane** (bottom-right) and navigate to <span class="in">`~/ssrnaseq/`</span>. You should see:</span>
+<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a><span class="in">~/ssrnaseq/</span></span>
+<span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a><span class="in">├── episodes/</span></span>
+<span id="cb6-37"><a href="#cb6-37" aria-hidden="true" tabindex="-1"></a><span class="in">│   ├── snrnaseq-preprocessing.Rmd          ← Friday's rendered episode (the answer key)</span></span>
+<span id="cb6-38"><a href="#cb6-38" aria-hidden="true" tabindex="-1"></a><span class="in">│   ├── snrnaseq-annotation-and-de.Rmd      ← Saturday's rendered episode</span></span>
+<span id="cb6-39"><a href="#cb6-39" aria-hidden="true" tabindex="-1"></a><span class="in">│   ├── introduction_to_rnaseq_computation.Rmd ← The pre-class QC companion you filled in</span></span>
+<span id="cb6-40"><a href="#cb6-40" aria-hidden="true" tabindex="-1"></a><span class="in">│   ├── workbook/</span></span>
+<span id="cb6-41"><a href="#cb6-41" aria-hidden="true" tabindex="-1"></a><span class="in">│   │   ├── snrnaseq-preprocessing.Rmd      ← Friday's working surface (today)</span></span>
+<span id="cb6-42"><a href="#cb6-42" aria-hidden="true" tabindex="-1"></a><span class="in">│   │   └── snrnaseq-annotation-and-de.Rmd  ← Saturday's working surface</span></span>
+<span id="cb6-43"><a href="#cb6-43" aria-hidden="true" tabindex="-1"></a><span class="in">│   └── data/</span></span>
+<span id="cb6-44"><a href="#cb6-44" aria-hidden="true" tabindex="-1"></a><span class="in">│       ├── ssrnaseq_data/                  ← Raw 10X counts (read-only, shared mount)</span></span>
+<span id="cb6-45"><a href="#cb6-45" aria-hidden="true" tabindex="-1"></a><span class="in">│       │   └── EO/</span></span>
+<span id="cb6-46"><a href="#cb6-46" aria-hidden="true" tabindex="-1"></a><span class="in">│       │       ├── BB48/ BB49INJ/ BB50/ BB50INJ/</span></span>
+<span id="cb6-47"><a href="#cb6-47" aria-hidden="true" tabindex="-1"></a><span class="in">│       │       ├── genes.gtf.gz</span></span>
+<span id="cb6-48"><a href="#cb6-48" aria-hidden="true" tabindex="-1"></a><span class="in">│       │       └── losilla_et_al_data.csv</span></span>
+<span id="cb6-49"><a href="#cb6-49" aria-hidden="true" tabindex="-1"></a><span class="in">│       └── checkpoints/                    ← Pre-built .rds checkpoints</span></span>
+<span id="cb6-50"><a href="#cb6-50" aria-hidden="true" tabindex="-1"></a><span class="in">│           ├── 01_merged_sct.rds</span></span>
+<span id="cb6-51"><a href="#cb6-51" aria-hidden="true" tabindex="-1"></a><span class="in">│           ├── 02_harmony_clustered.rds    ← Saturday's entry state</span></span>
+<span id="cb6-52"><a href="#cb6-52" aria-hidden="true" tabindex="-1"></a><span class="in">│           ├── 03_annotated.rds</span></span>
+<span id="cb6-53"><a href="#cb6-53" aria-hidden="true" tabindex="-1"></a><span class="in">│           └── 04_pseudobulk_dds.rds</span></span>
+<span id="cb6-54"><a href="#cb6-54" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb6-55"><a href="#cb6-55" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-56"><a href="#cb6-56" aria-hidden="true" tabindex="-1"></a>::: {.callout-warning title="The website and the workbook are different files"}</span>
+<span id="cb6-57"><a href="#cb6-57" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-58"><a href="#cb6-58" aria-hidden="true" tabindex="-1"></a>The rendered episodes (<span class="in">`episodes/snrnaseq-preprocessing.Rmd`</span>) are the **answer keys** — they contain complete, runnable code with full explanations. They also appear on the course website at tutorials.efishgenomics.com.</span>
+<span id="cb6-59"><a href="#cb6-59" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-60"><a href="#cb6-60" aria-hidden="true" tabindex="-1"></a>The workbooks (<span class="in">`episodes/workbook/snrnaseq-preprocessing.Rmd`</span>) are **your working surface**. They have the same overall structure, but with key decision points gapped out (`___`) and predict-first prompts before each one. **You work in the workbook.** When stuck, consult the rendered episode.</span>
+<span id="cb6-61"><a href="#cb6-61" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-62"><a href="#cb6-62" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb6-63"><a href="#cb6-63" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-64"><a href="#cb6-64" aria-hidden="true" tabindex="-1"></a><span class="fu">## Open the workbook</span></span>
+<span id="cb6-65"><a href="#cb6-65" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-66"><a href="#cb6-66" aria-hidden="true" tabindex="-1"></a>In the Files pane, navigate to <span class="in">`episodes/workbook/`</span> and double-click <span class="in">`snrnaseq-preprocessing.Rmd`</span>. It opens as an R Notebook in the Source pane.</span>
+<span id="cb6-67"><a href="#cb6-67" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-68"><a href="#cb6-68" aria-hidden="true" tabindex="-1"></a>::: {.callout-warning title="Don't click 'Render' or 'Knit' on the workbook"}</span>
+<span id="cb6-69"><a href="#cb6-69" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-70"><a href="#cb6-70" aria-hidden="true" tabindex="-1"></a>Workbooks are R Notebooks — they're meant to be **run chunk by chunk**, interactively. Clicking the **Render** or **Knit** button tries to execute every chunk in sequence, which will fail at the first <span class="in">`___`</span> gap. Instead:</span>
+<span id="cb6-71"><a href="#cb6-71" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-72"><a href="#cb6-72" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Run a single chunk with the green ▶ button (top-right of the chunk) or **Cmd-Shift-Enter** / **Ctrl-Shift-Enter**.</span>
+<span id="cb6-73"><a href="#cb6-73" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Run all chunks up to here with the small downward triangle to the left of the ▶.</span>
+<span id="cb6-74"><a href="#cb6-74" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Output appears inline below the chunk.</span>
+<span id="cb6-75"><a href="#cb6-75" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-76"><a href="#cb6-76" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb6-77"><a href="#cb6-77" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-78"><a href="#cb6-78" aria-hidden="true" tabindex="-1"></a><span class="fu">## The `___` gap convention</span></span>
+<span id="cb6-79"><a href="#cb6-79" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-80"><a href="#cb6-80" aria-hidden="true" tabindex="-1"></a>When you see <span class="in">`___`</span> in a workbook chunk, that's a decision point you have to fill in:</span>
+<span id="cb6-81"><a href="#cb6-81" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-82"><a href="#cb6-82" aria-hidden="true" tabindex="-1"></a><span class="in">```r</span></span>
+<span id="cb6-83"><a href="#cb6-83" aria-hidden="true" tabindex="-1"></a>n_pcs <span class="ot">&lt;-</span> ___</span>
+<span id="cb6-84"><a href="#cb6-84" aria-hidden="true" tabindex="-1"></a>merged_seurat <span class="ot">&lt;-</span> <span class="fu">RunUMAP</span>(merged_seurat, <span class="at">dims =</span> <span class="dv">1</span><span class="sc">:</span>n_pcs)</span>
+<span id="cb6-85"><a href="#cb6-85" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb6-86"><a href="#cb6-86" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-87"><a href="#cb6-87" aria-hidden="true" tabindex="-1"></a>If you run the chunk with <span class="in">`___`</span> left in place, R errors out — by design. The error reminds you that this line is a place to think, not a line to skim.</span>
+<span id="cb6-88"><a href="#cb6-88" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-89"><a href="#cb6-89" aria-hidden="true" tabindex="-1"></a>The chunks with <span class="in">`___`</span> also have <span class="in">`eval=FALSE`</span> set in their chunk options. That means they're skipped if you try to render the whole notebook in one go — another guardrail against accidental "I clicked Knit and now everything broke" moments.</span>
+<span id="cb6-90"><a href="#cb6-90" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-91"><a href="#cb6-91" aria-hidden="true" tabindex="-1"></a><span class="fu">## The predict-first prompts</span></span>
+<span id="cb6-92"><a href="#cb6-92" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-93"><a href="#cb6-93" aria-hidden="true" tabindex="-1"></a>Before most gapped chunks there's a blockquote like this:</span>
+<span id="cb6-94"><a href="#cb6-94" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-95"><a href="#cb6-95" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; **Predict first.** Looking at the elbow plot, where do you think the curve flattens — around PC 15? PC 25? Write your guess before running any code.</span></span>
+<span id="cb6-96"><a href="#cb6-96" aria-hidden="true" tabindex="-1"></a><span class="at">&gt;</span></span>
+<span id="cb6-97"><a href="#cb6-97" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; _Your prediction:_</span></span>
+<span id="cb6-98"><a href="#cb6-98" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-99"><a href="#cb6-99" aria-hidden="true" tabindex="-1"></a>These exist because the analytical skill we're building is **judgment**, not typing. Predict, run, compare. If your prediction was wrong, the discrepancy is the most valuable feedback in the lesson.</span>
+<span id="cb6-100"><a href="#cb6-100" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-101"><a href="#cb6-101" aria-hidden="true" tabindex="-1"></a><span class="fu">## The checkpoint-load idiom</span></span>
+<span id="cb6-102"><a href="#cb6-102" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-103"><a href="#cb6-103" aria-hidden="true" tabindex="-1"></a>Each major preprocessing step is slow (SCTransform takes a few minutes; Harmony takes about a minute). If you make a mistake mid-pipeline and want to recover without re-running everything, **load the previous checkpoint**:</span>
+<span id="cb6-104"><a href="#cb6-104" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-105"><a href="#cb6-105" aria-hidden="true" tabindex="-1"></a><span class="in">```r</span></span>
+<span id="cb6-106"><a href="#cb6-106" aria-hidden="true" tabindex="-1"></a>merged_seurat <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"data/checkpoints/01_merged_sct.rds"</span>)</span>
+<span id="cb6-107"><a href="#cb6-107" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb6-108"><a href="#cb6-108" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-109"><a href="#cb6-109" aria-hidden="true" tabindex="-1"></a>The checkpoints shipped with the AMI are the canonical state. If you've been making progress and want to save your own checkpoint mid-session, write to a different name so you don't overwrite the shipped ones:</span>
+<span id="cb6-110"><a href="#cb6-110" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-111"><a href="#cb6-111" aria-hidden="true" tabindex="-1"></a><span class="in">```r</span></span>
+<span id="cb6-112"><a href="#cb6-112" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(merged_seurat, <span class="st">"data/checkpoints/my_temp_state.rds"</span>)</span>
+<span id="cb6-113"><a href="#cb6-113" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb6-114"><a href="#cb6-114" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-115"><a href="#cb6-115" aria-hidden="true" tabindex="-1"></a>::: {.callout-tip title="If Saturday catches you cold"}</span>
+<span id="cb6-116"><a href="#cb6-116" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-117"><a href="#cb6-117" aria-hidden="true" tabindex="-1"></a>If you missed Friday entirely, the first chunk of <span class="in">`episodes/workbook/snrnaseq-annotation-and-de.Rmd`</span> loads the shipped <span class="in">`02_harmony_clustered.rds`</span> and you can join Saturday's session with a known-good entry state. The same trick works mid-Saturday: if your annotation gets tangled, load <span class="in">`03_annotated.rds`</span>.</span>
+<span id="cb6-118"><a href="#cb6-118" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-119"><a href="#cb6-119" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb6-120"><a href="#cb6-120" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-121"><a href="#cb6-121" aria-hidden="true" tabindex="-1"></a><span class="fu">## Quick smoke test (5 min)</span></span>
+<span id="cb6-122"><a href="#cb6-122" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-123"><a href="#cb6-123" aria-hidden="true" tabindex="-1"></a>Try this now to confirm everything works end-to-end:</span>
+<span id="cb6-124"><a href="#cb6-124" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-125"><a href="#cb6-125" aria-hidden="true" tabindex="-1"></a><span class="in">```{r smoke-test, eval=FALSE}</span></span>
+<span id="cb6-126"><a href="#cb6-126" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. Load Seurat</span></span>
+<span id="cb6-127"><a href="#cb6-127" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(Seurat)</span>
+<span id="cb6-128"><a href="#cb6-128" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-129"><a href="#cb6-129" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. Load the shipped Friday checkpoint</span></span>
+<span id="cb6-130"><a href="#cb6-130" aria-hidden="true" tabindex="-1"></a>seu <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"data/checkpoints/02_harmony_clustered.rds"</span>)</span>
+<span id="cb6-131"><a href="#cb6-131" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-132"><a href="#cb6-132" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. Confirm it loaded and inspect basic metadata</span></span>
+<span id="cb6-133"><a href="#cb6-133" aria-hidden="true" tabindex="-1"></a>seu</span>
+<span id="cb6-134"><a href="#cb6-134" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(seu<span class="sc">$</span>treatment)</span>
+<span id="cb6-135"><a href="#cb6-135" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb6-136"><a href="#cb6-136" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-137"><a href="#cb6-137" aria-hidden="true" tabindex="-1"></a>If you see a Seurat object with 4 samples, ~10,000 nuclei, and treatment labels (<span class="in">`11kt`</span>, <span class="in">`vehicle`</span>), you're good to go. If you see an error, raise a hand — we'll fix it before starting the Friday code episode.</span>
+<span id="cb6-138"><a href="#cb6-138" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-139"><a href="#cb6-139" aria-hidden="true" tabindex="-1"></a><span class="fu">## Keypoints</span></span>
+<span id="cb6-140"><a href="#cb6-140" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-141"><a href="#cb6-141" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Your working surface is <span class="in">`episodes/workbook/*.Rmd`</span>. The rendered episodes are answer keys you consult when stuck.</span>
+<span id="cb6-142"><a href="#cb6-142" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Run chunks one at a time — **never click "Render" or "Knit" on a workbook.**</span>
+<span id="cb6-143"><a href="#cb6-143" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span><span class="in">`___`</span> is a decision point. Fill it in based on the prediction prompt above it.</span>
+<span id="cb6-144"><a href="#cb6-144" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>Checkpoints in <span class="in">`data/checkpoints/`</span> let you skip past slow steps or recover from mistakes — load with <span class="in">`readRDS()`</span>.</span>
+<span id="cb6-145"><a href="#cb6-145" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>Raw data and QC reports live on a shared mount; you don't need to copy or download anything.</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 <footer class="footer">
@@ -1328,7 +1209,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     </div>   
     <div class="nav-footer-center">
 <p>Content by Dr.&nbsp;Jason R. Gallant - Michigan State University &nbsp;|&nbsp; Licensed <a href="https://creativecommons.org/licenses/by/4.0/">CC-BY 4.0</a> &nbsp;|&nbsp; <a href="https://github.com/jasongallant/ss_rnaseq_nsb2026">Source on GitHub</a></p>
-<div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/jasongallant/ss_rnaseq_nsb2026/edit/main/episodes/setup.md" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/jasongallant/ss_rnaseq_nsb2026/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
+<div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/jasongallant/ss_rnaseq_nsb2026/edit/main/episodes/r-rstudio-orientation.Rmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/jasongallant/ss_rnaseq_nsb2026/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
     <div class="nav-footer-right">
       &nbsp;
     </div>

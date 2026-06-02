@@ -2,19 +2,19 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://tutorials.efishgenomics.com/episodes/setup.html</loc>
-    <lastmod>2026-05-29T02:26:20.159Z</lastmod>
+    <lastmod>2026-06-02T17:52:15.903Z</lastmod>
   </url>
   <url>
-    <loc>https://tutorials.efishgenomics.com/episodes/nuclei_isolation.html</loc>
-    <lastmod>2026-06-01T21:19:10.179Z</lastmod>
+    <loc>https://tutorials.efishgenomics.com/episodes/snrnaseq-annotation-and-de.html</loc>
+    <lastmod>2026-06-02T00:43:00.538Z</lastmod>
   </url>
   <url>
-    <loc>https://tutorials.efishgenomics.com/episodes/introduction_to_rnaseq.html</loc>
-    <lastmod>2026-05-29T02:26:20.157Z</lastmod>
+    <loc>https://tutorials.efishgenomics.com/episodes/introduction_to_rnaseq_computation.html</loc>
+    <lastmod>2026-06-02T00:44:46.315Z</lastmod>
   </url>
   <url>
-    <loc>https://tutorials.efishgenomics.com/episodes/inject-11kt.html</loc>
-    <lastmod>2026-06-01T14:17:20.152Z</lastmod>
+    <loc>https://tutorials.efishgenomics.com/episodes/introduction.html</loc>
+    <lastmod>2026-05-29T02:26:20.155Z</lastmod>
   </url>
   <url>
     <loc>https://tutorials.efishgenomics.com/episodes/examine-eod-duration.html</loc>
@@ -33,19 +33,19 @@
     <lastmod>2026-05-29T02:26:20.083Z</lastmod>
   </url>
   <url>
-    <loc>https://tutorials.efishgenomics.com/episodes/gene-expression-change.html</loc>
-    <lastmod>2026-05-29T02:26:20.152Z</lastmod>
+    <loc>https://tutorials.efishgenomics.com/episodes/inject-11kt.html</loc>
+    <lastmod>2026-06-01T14:17:20.152Z</lastmod>
   </url>
   <url>
-    <loc>https://tutorials.efishgenomics.com/episodes/introduction.html</loc>
-    <lastmod>2026-05-29T02:26:20.155Z</lastmod>
+    <loc>https://tutorials.efishgenomics.com/episodes/introduction_to_rnaseq.html</loc>
+    <lastmod>2026-05-29T02:26:20.157Z</lastmod>
   </url>
   <url>
-    <loc>https://tutorials.efishgenomics.com/episodes/normalize-reduce-cluster.html</loc>
-    <lastmod>2026-05-29T02:26:20.158Z</lastmod>
+    <loc>https://tutorials.efishgenomics.com/episodes/nuclei_isolation.html</loc>
+    <lastmod>2026-06-02T13:17:49.602Z</lastmod>
   </url>
   <url>
-    <loc>https://tutorials.efishgenomics.com/episodes/snrnaseq-qc.html</loc>
-    <lastmod>2026-05-29T02:26:20.159Z</lastmod>
+    <loc>https://tutorials.efishgenomics.com/episodes/snrnaseq-preprocessing.html</loc>
+    <lastmod>2026-06-02T00:39:33.236Z</lastmod>
   </url>
 </urlset>
