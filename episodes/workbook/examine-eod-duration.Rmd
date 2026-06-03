@@ -1,0 +1,349 @@
+---
+title: "Workbook — Examining EOD Duration from Raw Recordings"
+output: html_notebook
+editor_options:
+  chunk_output_type: inline
+---
+
+# Workbook — EOD Duration from Raw Recordings
+
+This is your hands-on working surface for the EOD-analysis session. Run chunks one at a time. Where you see `___`, fill in the value — the chunk is set to `eval=FALSE` and will fail informatively if you leave a blank.
+
+When you get stuck, the full episode at the same name on the course website is the answer key. Don't peek before you predict.
+
+> **Setup check before you start:** Confirm `getwd()` returns the course project root; you should see `data/eod_duration/` in the file pane. If not, set the working directory via Session → Set Working Directory → To Project Directory.
+
+## Setup
+
+```{r load-libraries, message=FALSE, warning=FALSE}
+library(jsonlite)
+library(ggplot2)
+library(dplyr)
+```
+
+## Load a single EOD recording file
+
+```{r load-json, message=FALSE, warning=FALSE}
+eod_data <- read_json("data/eod_duration/BB_T48_DAY0_MAY7.json")
+
+cat("Number of recordings:", length(eod_data), "\n")
+```
+
+Each element of `eod_data` is one recording trial, stored as a named list.
+
+## Explore the recording metadata
+
+> **Predict first.** What fields does a recording trial expose? Before running the next chunk, list three fields you'd expect a single trial to contain (think: who, what conditions, what hardware).
+>
+> _Your prediction:_
+
+```{r explore-metadata, eval=FALSE}
+names(eod_data[[___]])
+
+cat("Specimen:", eod_data[[1]]$___, "\n")
+cat("Species: ", eod_data[[1]]$___, "\n")
+cat("Temp:    ", eod_data[[1]]$___, "\n")
+cat("Rate:    ", eod_data[[1]]$___, "\n")
+cat("Samples: ", length(eod_data[[1]]$___), "\n")
+```
+
+::: {.callout-tip title="Hint / solution" collapse="true"}
+The available fields include `specimenno`, `species`, `temp`, `Rate`, and `wave`. `length(eod_data[[1]]$wave)` gives the number of samples in the waveform.
+:::
+
+## Visualize one waveform
+
+> **Predict first.** Sample index → milliseconds. What does the conversion require? Sampling rate, and which sample to call "time zero." Write the formula in words before coding it.
+>
+> _Your prediction:_ time in ms = (sample index − ____) / ____ × ____
+
+```{r build-time-axis, eval=FALSE}
+rate_hz <- eod_data[[1]]$___
+wave    <- unlist(eod_data[[1]]$___)
+p1_idx  <- which.___(wave)               # index of P1 peak — "time zero"
+time_ms <- (seq_along(wave) - ___) / ___ * 1000
+
+waveform_df <- data.frame(time_ms = time_ms, voltage = wave)
+```
+
+::: {.callout-tip title="Hint / solution" collapse="true"}
+`rate_hz <- eod_data[[1]]$Rate`; `wave <- unlist(eod_data[[1]]$wave)`; `which.max(wave)` because P1 is the positive peak; subtract `p1_idx` to centre time on the peak; divide by `rate_hz` and multiply by 1000 to convert seconds to ms.
+:::
+
+```{r plot-waveform, eval=FALSE, message=FALSE, warning=FALSE}
+ggplot(waveform_df, aes(x = ___, y = ___)) +
+  geom_line(linewidth = 0.6) +
+  coord_cartesian(xlim = c(-2, 2)) +
+  theme_classic() +
+  labs(
+    x = "Time (ms)",
+    y = "Voltage (V)",
+    title = paste("Raw EOD waveform —", eod_data[[1]]$specimenno, "Day 0")
+  )
+```
+
+## Compare Day 0 vs Day 1 waveforms
+
+> **Predict first.** Why must we normalize before overlaying two waveforms recorded on different days? What feature of the recordings is *not* biologically meaningful and would otherwise dominate the comparison?
+>
+> _Your prediction:_
+
+```{r load-day1, eval=FALSE, message=FALSE, warning=FALSE}
+eod_day1 <- read_json("data/eod_duration/BB_T48_DAY1_MAY8.json")
+wave1    <- unlist(eod_day1[[1]]$wave)
+p1_idx1  <- which.max(wave1)
+time1_ms <- (seq_along(wave1) - p1_idx1) / eod_day1[[1]]$Rate * 1000
+```
+
+```{r normalize-and-compare, eval=FALSE}
+# Normalize each waveform to peak-to-peak = 1 so amplitudes are comparable
+wave0_norm <- wave  / (max(wave)  - min(wave))
+wave1_norm <- wave1 / (___        - ___)
+
+df_compare <- rbind(
+  data.frame(time_ms = time_ms,  voltage = wave0_norm, session = "Day 0"),
+  data.frame(time_ms = time1_ms, voltage = wave1_norm, session = "Day 1")
+)
+
+ggplot(df_compare, aes(x = time_ms, y = voltage, color = session)) +
+  geom_line(linewidth = 0.6) +
+  coord_cartesian(xlim = c(-2, 2)) +
+  theme_classic() +
+  scale_colour_manual(values = c("Day 0" = "grey50", "Day 1" = "tomato")) +
+  labs(
+    x = "Time (ms)", y = "Normalized voltage",
+    title = "BB48 EOD waveforms — Day 0 vs Day 1",
+    color = NULL
+  )
+```
+
+::: {.callout-important title="Challenge — Do the shapes match?"}
+These are the first two days of recording for BB48, before treatment has had time to act. Do the two waveforms overlap? If not, where do they differ — in the rising phase, the trough, or the tail? What would a difference here imply about the recording or the animal?
+
+::: {.callout-tip title="Hint / solution" collapse="true"}
+At Day 0 vs Day 1 (pre-treatment effect), the normalized waveforms should be nearly identical. A meaningful difference at this stage would point to a recording artefact (electrode position, temperature, water conductivity) rather than biology.
+:::
+:::
+
+## Measure EOD duration from one waveform
+
+> **Predict first.** The duration algorithm has three steps: **normalize**, **threshold**, **measure**. What does each step do, and why in that order? Why does normalization come *first*?
+>
+> _Your prediction:_
+
+```{r measure-duration, eval=FALSE}
+# 1. Normalize peak-to-peak to 1
+wave_norm <- wave / (___ - ___)
+
+# 2. Apply 10% threshold to the absolute value
+threshold    <- ___ * max(abs(wave_norm))
+above_thresh <- which(abs(wave_norm) ___ threshold)
+
+# 3. Duration = time between first and last threshold crossings
+start_idx <- ___(above_thresh)
+end_idx   <- ___(above_thresh)
+duration_ms <- (___ - ___) / rate_hz * 1000
+
+cat("EOD duration (10% threshold):", round(duration_ms, 3), "ms\n")
+```
+
+::: {.callout-tip title="Hint / solution" collapse="true"}
+Normalize so the threshold is a *fraction* of the waveform's own amplitude (not an absolute voltage that varies between animals). The comparison operator is `>`. `min(above_thresh)` and `max(above_thresh)` give the first and last samples above threshold; their difference, divided by the sampling rate and times 1000, is the duration in ms.
+:::
+
+```{r plot-threshold, eval=FALSE, message=FALSE, warning=FALSE}
+norm_df <- data.frame(time_ms = time_ms, voltage = wave_norm)
+
+ggplot(norm_df, aes(x = time_ms, y = voltage)) +
+  geom_line(linewidth = 0.6) +
+  geom_hline(
+    yintercept = c(threshold, -threshold),
+    linetype = "dashed", color = "steelblue", linewidth = 0.5
+  ) +
+  geom_vline(
+    xintercept = c(time_ms[start_idx], time_ms[end_idx]),
+    linetype = "dashed", color = "tomato", linewidth = 0.5
+  ) +
+  coord_cartesian(xlim = c(-2, 2)) +
+  theme_classic() +
+  labs(
+    x     = "Time (ms)",
+    y     = "Normalized voltage",
+    title = "EOD duration measurement (10% threshold)"
+  )
+```
+
+## Sensitivity to the threshold choice
+
+> **Predict first.** Will a **higher** threshold (e.g. 20% instead of 10%) yield a *longer* or a *shorter* measured duration? Why?
+>
+> _Your prediction:_
+
+```{r threshold-sensitivity, eval=FALSE}
+threshold_20  <- ___ * max(abs(wave_norm))
+above_20      <- which(abs(wave_norm) > threshold_20)
+
+duration_20ms <- (max(above_20) - min(above_20)) / rate_hz * 1000
+
+cat("Duration at 20% threshold:", round(duration_20ms, 3), "ms\n")
+cat("Duration at 10% threshold:", round(duration_ms,   3), "ms\n")
+```
+
+::: {.callout-important title="Challenge — Is one threshold right?"}
+Neither 10% nor 20% is universally "correct." What matters in practice? Write one sentence on what a paper using EOD duration must report alongside its numbers.
+
+::: {.callout-tip title="Hint / solution" collapse="true"}
+A higher threshold excludes the low-amplitude tails of the waveform, making the measured duration **shorter**. The choice of threshold must be consistent across all animals in a study and clearly reported in any publication.
+:::
+:::
+
+## Build a `mean_eod_duration` function
+
+This is the moment where you go from "I can measure one waveform" to "I can measure a study."
+
+> **Predict first.** Your function takes a file path. What does it return? What does it loop over inside the function — trials within a file, or files within the metadata?
+>
+> _Your prediction:_
+
+```{r duration-function, eval=FALSE}
+mean_eod_duration <- function(file_path, threshold = 0.1) {
+  recs <- read_json(___)
+  durations <- sapply(recs, function(rec) {
+    w      <- unlist(rec$___)
+    rate   <- rec$___
+    w_norm <- ___
+    thresh <- ___ * max(abs(w_norm))
+    above  <- which(abs(w_norm) > thresh)
+    (max(above) - min(above)) / ___ * 1000
+  })
+  ___(durations)
+}
+```
+
+::: {.callout-tip title="Hint / solution" collapse="true"}
+`read_json(file_path)`; `rec$wave` and `rec$Rate`; `w_norm <- w / (max(w) - min(w))`; `thresh <- threshold * max(abs(w_norm))`; divide by `rate`; return `mean(durations)`.
+:::
+
+## Apply the function across all sessions
+
+```{r load-metadata, message=FALSE, warning=FALSE, eval=file.exists("data/eod_duration/all_surviving_recordings.csv")}
+metadata <- read.csv("data/eod_duration/all_surviving_recordings.csv")
+metadata$Treatment <- as.factor(metadata$Treatment)
+
+head(metadata)
+```
+
+> **Predict first.** Which column of `metadata` points to a JSON file? Which function do you pass to `sapply()` to compute the mean duration for each row?
+>
+> _Your prediction:_
+
+```{r compute-durations, eval=FALSE}
+metadata$EOD <- sapply(
+  file.path("data/eod_duration", metadata$___),
+  ___
+)
+
+head(metadata)
+```
+
+::: {.callout-tip title="Hint / solution" collapse="true"}
+The column is `metadata$file`. The function passed to `sapply()` is the one you just wrote: `mean_eod_duration`.
+:::
+
+## Longitudinal trajectory
+
+> **Predict first.** Error bars: what summary statistic should they represent? What does ±1 SD imply about the underlying distribution of EOD durations within a group on a given day?
+>
+> _Your prediction:_
+
+```{r longitudinal-plot, eval=FALSE, message=FALSE, warning=FALSE}
+ggplot(metadata, aes(x = ___, y = ___, group = Treatment, color = Treatment)) +
+  stat_summary(
+    fun     = ___,
+    geom    = "pointrange",
+    fun.max = function(x) mean(x) + ___,
+    fun.min = function(x) mean(x) - ___,
+    position = position_dodge(width = 0.2, preserve = "total"),
+    size = 0.7,
+    fatten = 0.5
+  ) +
+  scale_x_continuous(name = "Day", breaks = 0:4) +
+  scale_y_continuous(
+    name   = "EOD duration (ms)",
+    breaks = scales::breaks_pretty(10)
+  ) +
+  scale_colour_manual(values = c("11-kt" = "tomato", "control" = "grey40")) +
+  theme_classic() +
+  theme(
+    axis.text    = element_text(size = 9),
+    legend.text  = element_text(size = 8),
+    legend.title = element_text(size = 9)
+  )
+```
+
+::: {.callout-tip title="Hint / solution" collapse="true"}
+`aes(x = day, y = EOD, ...)`; `fun = "mean"`; `fun.max = function(x) mean(x) + sd(x)`; `fun.min = function(x) mean(x) - sd(x)`. ±1 SD assumes the within-group durations are roughly symmetric — a reasonable starting summary, but at n = 2 fish per group, the SD is a very noisy estimate.
+:::
+
+## Waveform shape change by individual
+
+The next chunk uses `lapply` + `bind_rows` to load and normalize the Day 0 and Day 4 recordings for every fish, centred on each waveform's P1 peak. The plotting plumbing is given; your job is to read the figure.
+
+```{r waveform-by-subject, eval=FALSE, message=FALSE, warning=FALSE}
+load_waveform_norm <- function(file_path) {
+  recs   <- read_json(file_path)
+  rec    <- recs[[1]]
+  w      <- unlist(rec$wave)
+  rate   <- rec$Rate
+  p1_idx <- which.max(w)
+  w_norm <- w / (max(w) - min(w))
+  data.frame(
+    time_ms      = (seq_along(w) - p1_idx) / rate * 1000,
+    voltage_norm = w_norm
+  )
+}
+
+d0d4 <- metadata %>% filter(day %in% c(0, 4))
+
+waveform_overlay <- bind_rows(lapply(seq_len(nrow(d0d4)), function(i) {
+  fp <- file.path("data/eod_duration", d0d4$file[i])
+  df <- load_waveform_norm(fp)
+  df$fish_label <- paste0(d0d4$specimenno[i], " (", d0d4$Treatment[i], ")")
+  df$Day        <- paste0("Day ", d0d4$day[i])
+  df
+}))
+
+ggplot(waveform_overlay, aes(x = time_ms, y = voltage_norm, color = Day)) +
+  geom_line(linewidth = 0.6, alpha = 0.85) +
+  coord_cartesian(xlim = c(-1.5, 3)) +
+  facet_wrap(~fish_label, ncol = 2) +
+  scale_colour_manual(values = c("Day 0" = "grey50", "Day 4" = "tomato")) +
+  theme_classic() +
+  theme(
+    strip.background = element_blank(),
+    strip.text       = element_text(face = "bold"),
+    legend.position  = "top"
+  ) +
+  labs(
+    x     = "Time (ms)",
+    y     = "Normalized voltage",
+    color = NULL,
+    title = "EOD waveforms by individual: Day 0 vs Day 4"
+  )
+```
+
+::: {.callout-important title="Challenge — Read the figure"}
+Which fish show a lengthened P2 by Day 4? Which look unchanged? Cross-reference with your treatment map from the QC episode. Do the visible waveform changes line up with the longitudinal duration plot from the previous section?
+
+::: {.callout-tip title="Hint / solution" collapse="true"}
+BB48 and BB49INJ received 11-KT; BB50 and BB51INJ received vehicle. The two 11-KT fish should show a rightward extension of the P2 phase by Day 4; the vehicle fish should look essentially identical across days. The faceted plot and the longitudinal-mean plot should tell the same story.
+:::
+:::
+
+::: {.callout-tip title="Key Points"}
+
+- `jsonlite::read_json()` loads JSON files as nested R lists; each recording trial is a named list with fields like `wave`, `Rate`, `temp`, and `specimenno`
+- EOD duration is defined by a threshold criterion applied to the normalized waveform — the choice of threshold is an analytical decision that must be reported
+- A metadata CSV that maps files to experimental conditions lets you build a tidy dataset by applying a duration function across all recording sessions
+
+:::
