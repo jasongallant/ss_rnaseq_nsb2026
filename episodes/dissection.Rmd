@@ -1,7 +1,9 @@
 ---
 title: "Dissection of Electric Organ, Skin, and Brain for snRNA-seq"
+mode: in-class
 teaching: 15
 exercises: 60
+optional: false
 ---
 
 ::: {.callout-note title="Questions"}
@@ -27,7 +29,7 @@ You have already injected 11-KT and watched the EOD waveform shift over the foll
 This episode walks through the three dissections you will perform on the same fish — **electric organ**, **opercular skin**, and **brain** — in the order you will do them on the bench. Each dissection is a small protocol on its own, but they all sit on top of the same two rules: work cold and fast to limit RNA degradation, and work in an RNase-free field to limit RNA destruction. Get those two right and the molecular work downstream becomes a matter of execution; get them wrong and no amount of sequencing depth will recover what was lost.
 
 ::: {.callout-tip title="Scenario"}
-You will be handed a freshly euthanized fish and roughly ten minutes per tissue before the cumulative warm time starts to show up as elevated mitochondrial reads and depressed gene counts in the data you analyze later in the week. The bench in front of you needs to be ready *before* the fish arrives — tools out, RNase-ZAP wiped down, liquid nitrogen open, cryovials labeled.
+You will be handed a live fish in a recovery container and a beaker of dosed MS-222 water. From the moment you euthanize the fish, you have roughly ten minutes per tissue before the cumulative warm time starts to show up as elevated mitochondrial reads and depressed gene counts in the data you analyze later in the week. The bench in front of you needs to be ready *before* the fish arrives — tools out, RNase-ZAP wiped down, liquid nitrogen open, cryovials labeled.
 :::
 
 ## Theory of Operation
@@ -85,7 +87,7 @@ Students new to this protocol almost always underestimate prep time. Walk them t
 
 The electric organ sits in the caudal peduncle, posterior to the muscle bulk and immediately ventral to the spinal column. The skin over it is thin and the boundary with surrounding muscle is sharp, so a clean isolation is achievable with two scissor cuts and a careful trim. Work directly on the dissection tray, then move the tissue to a petri dish for the final cleanup.
 
-![Electric organ dissection landmarks: incisions just anterior to the caudal peduncle, skin pulled laterally to expose the organ, and the spinal column cut anterior and posterior to free the columns for transfer.](files/dissection/eo_dissection.png)
+![Electric organ dissection landmarks: incisions just anterior to the caudal peduncle, skin pulled laterally to expose the organ, and the spinal column cut anterior and posterior to free the columns for transfer.](files/dissection/eo_dissection.png){fig-alt="Diagram of a mormyrid fish from a lateral and dorsal view, showing the location of incisions used to access the electric organ in the caudal peduncle."}
 
 1.  With a sharp scalpel, make an incision just prior to the caudal peduncle, continuing to the fork. Flip the fish over and repeat the incision on the other side.
 2.  With sturdy forceps, dig into the muscle of the fish anterior to the caudal peduncle and pull laterally apart — the skin should easily pull away from the fish. Repeat for the other side.
@@ -110,7 +112,7 @@ Every additional minute the electric organ spends warm and disconnected from a b
 
 The opercular skin is thin and overlies facial muscle and mucus glands. A clean dissection lifts the skin off as a single piece, leaving fascia and muscle behind on the fish. Cutting into the muscle, or trapping mucus inside the sample, will both contaminate the library with non-skin transcripts.
 
-![Opercular skin dissection landmarks: contour traced along the opercular margin, scalpel slid parallel to the fish surface to free skin from underlying fascia and muscle, lifted away as a single uniform piece.](files/dissection/skin_dissection.png)
+![Opercular skin dissection landmarks: contour traced along the opercular margin, scalpel slid parallel to the fish surface to free skin from underlying fascia and muscle, lifted away as a single uniform piece.](files/dissection/skin_dissection.png){fig-alt="Diagram of a mormyrid fish head, with a dashed contour traced around the operculum showing the area of skin to be removed for snRNA-seq sampling."}
 
 1.  Using a fine scalpel, trace a contour along the opercular area of the face as shown in the figure.
 2.  Parallel to the surface of the fish, insert the scalpel underneath the skin to be removed, slowly cutting away the fascia and muscle. A good dissection will come off in a uniform single piece.
@@ -125,7 +127,7 @@ Angling the blade into the fish is the most common error. The blade should ride 
 
 The brain sits inside a small cranium directly under the dorsal surface of the skull, and in mormyrids it is dominated by an extremely large, fatty **valvula cerebelli** that overlies the brain proper. The dissection is a sequence of careful cuts: locate the back of the cranium, follow the spinal cord forward through the skull, then peel the skull open. The brain is delicate and the cranial bone is thin, so the danger is going either too shallow (cutting only skin) or too deep (slicing the brain).
 
-![Brain dissection landmarks: slit cut at the back of the cranium, scissors followed forward along the spinal cord through the skull case to the nose, skull pulled apart with forceps to expose the brain, valvula cerebelli lifted away to reveal the underlying brain regions.](files/dissection/brain_dissection.png)
+![Brain dissection landmarks: slit cut at the back of the cranium, scissors followed forward along the spinal cord through the skull case to the nose, skull pulled apart with forceps to expose the brain, valvula cerebelli lifted away to reveal the underlying brain regions.](files/dissection/brain_dissection.png){fig-alt="Diagram of a mormyrid fish head from above, showing the skull cuts used to access the brain and the anatomy of the brain after the valvula cerebelli is lifted away."}
 
 1.  With a sharp pair of scissors, find the back of the cranium by poking into the fish's dorsal surface. Once located, make a cut perpendicular to the spinal cord, creating a "slit" in the fish's neck.
 2.  With the scissors, follow the spinal cord, cutting through the cranial case. Don't go too shallow that you cut only the skin, and not too deep to damage the brain. Cut from the slit in the neck to the tip of the nose.

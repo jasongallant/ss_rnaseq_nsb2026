@@ -1,5 +1,6 @@
 ---
 title: 'Examining EOD Duration from Raw Recordings'
+mode: in-class
 teaching: 20
 exercises: 25
 optional: false
@@ -57,7 +58,7 @@ Using the `eod_data` object already loaded, print the specimen number, species, 
 
 :::: {.callout-tip title="Solution" collapse="true"}
 
-```{r challenge-1-solution, eval=FALSE}
+```{r challenge-1-solution}
 names(eod_data[[1]])
 cat("Specimen:", eod_data[[1]]$specimenno, "\n")
 cat("Species: ", eod_data[[1]]$species, "\n")
@@ -102,7 +103,7 @@ The Day 0 waveform for BB48 is already loaded as `eod_data`. Now load the Day 1 
 
 :::: {.callout-tip title="Solution" collapse="true"}
 
-```{r challenge-2-solution, eval=FALSE}
+```{r challenge-2-solution}
 eod_day1 <- read_json("data/eod_duration/BB_T48_DAY1_MAY8.json")
 wave1 <- unlist(eod_day1[[1]]$wave)
 p1_idx1 <- which.max(wave1)
@@ -191,7 +192,7 @@ This is important: the choice of threshold is an **analytical decision** that mu
 
 :::: {.callout-tip title="Solution" collapse="true"}
 
-```{r challenge-3-solution, eval=FALSE}
+```{r challenge-3-solution}
 threshold_20 <- 0.2 * max(abs(wave_norm))
 above_20 <- which(abs(wave_norm) > threshold_20)
 
@@ -210,7 +211,7 @@ A higher threshold excludes the low-amplitude tails of the waveform, making the 
 
 Now that we know how to measure EOD duration from a single file, we can apply the same logic to every recording session in the study. Rather than computing durations by hand for each file, we write a function and let R do the work.
 
-The study metadata is stored in `recordings.csv`, which maps each JSON file to its animal, day, and treatment group:
+The study metadata is stored in `all_surviving_recordings.csv`, which maps each JSON file to its animal, day, and treatment group:
 
 ```{r load-metadata, message=FALSE, warning=FALSE, eval=file.exists("data/eod_duration/all_surviving_recordings.csv")}
 library(dplyr)
@@ -283,7 +284,7 @@ ggplot(metadata, aes(x = day, y = EOD, group = Treatment, color = Treatment)) +
 
 Looking at the raw waveforms makes the treatment effect intuitive. Here we load the Day 0 and Day 4 recordings for each fish, normalize every waveform to a peak-to-peak amplitude of 1, and centre on the P1 peak. Overlaying the two traces for each animal shows directly how the waveform lengthens — or stays the same — depending on treatment.
 
-```{r waveform-by-subject, message=FALSE, warning=FALSE, eval=file.exists("data/eod_duration/all_surviving_recordings.csv"), fig.alt="Four faceted panels, one per fish. Each panel shows two overlaid normalized EOD waveforms: Day 0 in grey and Day 4 in red, centred on the P1 peak. The two 11-kt fish show a clear rightward extension of the waveform by Day 4; the two control fish waveforms are nearly identical across days.", fig.cap="Day 0 (grey) and Day 4 (red) EOD waveforms for each individual fish, normalized to peak-to-peak amplitude and centred on P1. Waveforms from the 11-kt-treated fish (BB48, BB49INJ) show a lengthened P2 phase by Day 4; control fish (BB50, BB51INJ) are largely unchanged."}
+```{r waveform-by-subject, message=FALSE, warning=FALSE, eval=file.exists("data/eod_duration/all_surviving_recordings.csv"), fig.alt="Four faceted panels, one per fish. Each panel shows two overlaid normalized EOD waveforms: Day 0 in grey and Day 4 in red, centred on the P1 peak. The two 11-kt fish show a clear rightward extension of the waveform by Day 4; the two control fish waveforms are nearly identical across days.", fig.cap="Day 0 (grey) and Day 4 (red) EOD waveforms for each individual fish, normalized to peak-to-peak amplitude and centred on P1. Waveforms from the 11-kt-treated fish (BB48, BB49INJ) show a lengthened P2 phase by Day 4; control fish (BB50, BB50INJ) are largely unchanged."}
 load_waveform_norm <- function(file_path) {
   recs <- read_json(file_path)
   rec <- recs[[1]]

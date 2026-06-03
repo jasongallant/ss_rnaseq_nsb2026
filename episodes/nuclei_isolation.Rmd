@@ -1,7 +1,8 @@
 ---
 title: "Isolating Nuclei from Mormyrid Tissues: Theoretical Overview"
-teaching: 30
-exercises: 15
+mode: self-paced
+reading: 45
+optional: false
 ---
 
 ::: {.callout-note title="Questions"}
@@ -154,11 +155,11 @@ Numbers on the CellDrop give you Extraction Efficiency and concentration, but th
 
 The cushion is the single step that separates a usable mormyrid hindbrain prep from one that will clog the Chromium chip. The transformation it accomplishes is visible by eye on a hemocytometer.
 
-![Mormyrid hindbrain on a hemocytometer grid before the 1.8 M sucrose cushion. The field is crowded with small irregular particulates and stringy fragments — nuclei are present but surrounded by myelin debris and lipid membrane fragments at high density.](files/nuclei_isolation/hindbrain_pre_sucrose.20x.png)
+![Mormyrid hindbrain on a hemocytometer grid before the 1.8 M sucrose cushion. The field is crowded with small irregular particulates and stringy fragments — nuclei are present but surrounded by myelin debris and lipid membrane fragments at high density.](files/nuclei_isolation/hindbrain_pre_sucrose.20x.png){fig-alt="20x brightfield micrograph of a hemocytometer field showing dense, crowded particulate matter with stringy fragments and small irregular debris, in which discrete nuclei are hard to distinguish from the surrounding myelin debris."}
 
 *Pre-cushion: nuclei are in there, but so is every myelin fragment the hindbrain released during homogenization. Loading this on a Chromium chip would put the lipid debris into droplets alongside the nuclei.*
 
-![Same field after the 1.8 M sucrose cushion. The grid is now sparse and clean — most of the small debris is gone, with only a few well-separated particles visible. Nuclei recovery is lower but the suspension is dramatically cleaner.](files/nuclei_isolation/hindbrain_post_sucrose.20x.png)
+![Same field after the 1.8 M sucrose cushion. The grid is now sparse and clean — most of the small debris is gone, with only a few well-separated particles visible. Nuclei recovery is lower but the suspension is dramatically cleaner.](files/nuclei_isolation/hindbrain_post_sucrose.20x.png){fig-alt="20x brightfield micrograph of a hemocytometer field showing a mostly empty grid with a small number of well-separated round particles distributed across the field — a dramatic visual contrast with the dense pre-cushion field."}
 
 *Post-cushion: most of the small particulate debris has been left behind in the cushion supernatant or at the lipid film on top. This is what 18% recovery looks like — fewer particles, but each one is much more likely to be a nucleus.*
 
@@ -170,11 +171,11 @@ The post-cushion field looks emptier — that is the point, not a failure mode. 
 
 For electric organ, the contaminant is fragmented ECM rather than myelin. Below is what happens when an early-filtration EO prep does not catch the ECM in time (brightfield, pre-gradient attempt) compared to a clean EO prep counted on the CellDrop with AO/PI.
 
-![Brightfield image of a mormyrid electric organ prep before any cleanup step. The field is dominated by large irregular dark clumps and stringy ECM-like debris with relatively few discrete round particles. This is the kind of suspension that will not load cleanly on a Chromium chip.](files/nuclei_isolation/eo_cellcounter_pregradient_bf.png)
+![Brightfield image of a mormyrid electric organ prep before any cleanup step. The field is dominated by large irregular dark clumps and stringy ECM-like debris with relatively few discrete round particles. This is the kind of suspension that will not load cleanly on a Chromium chip.](files/nuclei_isolation/eo_cellcounter_pregradient_bf.png){fig-alt="Brightfield micrograph of a cell counter chamber dominated by large irregular dark clumps and stringy debris with few discrete round particles, characteristic of a poorly cleaned electric organ prep contaminated with extracellular matrix fragments."}
 
 *Dirty EO prep, brightfield: large dark clumps and stringy debris are fragmented ECM and tissue chunks. Trypan-blue counting on this field would call most of these "particles" and badly overestimate the nuclei concentration — which is exactly the failure mode that drove the switch to AO/PI.*
 
-![AO/PI fluorescence image of a clean mormyrid electric organ prep on the DeNovix CellDrop. The dark field is densely populated with discrete, sharp-edged red dots representing nuclei, with only a few scattered green particles indicating intact cells. A small number of yellow/green aggregates are visible but the suspension is dominated by red singlet nuclei.](files/nuclei_isolation/BB50_EO_result.png)
+![AO/PI fluorescence image of a clean mormyrid electric organ prep on the DeNovix CellDrop. The dark field is densely populated with discrete, sharp-edged red dots representing nuclei, with only a few scattered green particles indicating intact cells. A small number of yellow/green aggregates are visible but the suspension is dominated by red singlet nuclei.](files/nuclei_isolation/BB50_EO_result.png){fig-alt="Fluorescence micrograph of a CellDrop chamber showing a dark background populated with many discrete sharp-edged red dots (PI-stained nuclei), a small number of green dots (AO-stained intact cells), and a few yellow-green aggregates."}
 
 *Clean EO prep, AO/PI on the CellDrop: hundreds of sharp red dots (nuclei, PI⁺), a small number of green dots (intact cells, AO⁺/PI⁻), and a couple of larger yellow-green aggregates that the size gate will exclude. This is what an Extraction Efficiency ≥ 85% looks like at the channel-image level — most of what you see is red.*
 
@@ -257,12 +258,7 @@ Your brain pre-cushion count comes back at 8 × 10⁵ nuclei/µL — normal for 
 
 ## Linked bench protocols
 
-The full step-by-step bench protocols will be linked here:
-
-- Brain nuclei isolation (1.8 M sucrose cushion workflow)
-- Electric organ and skin nuclei isolation
-- Nuclei AO/PI counting on the DeNovix CellDrop FLi
-- Nuclei banking (cryopreservation for later Chromium loading)
+The full step-by-step bench protocols (brain sucrose-cushion workflow, electric organ and skin filter workflow, AO/PI counting on the DeNovix CellDrop FLi, and nuclei banking for later Chromium loading) will be distributed on paper at the start of the Thursday wet-lab session.
 
 ## References
 

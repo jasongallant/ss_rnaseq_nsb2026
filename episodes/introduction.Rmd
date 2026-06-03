@@ -1,7 +1,7 @@
 ---
 title: "Introduction: Single-Cell Transcriptomics in Weakly Electric Fish"
-teaching: 5
-exercises: 15
+mode: self-paced
+reading: 45
 optional: false
 ---
 
@@ -40,9 +40,9 @@ The gap single-nucleus RNA-seq fills is cell-type resolution. Prior work used bu
 
 ## The Sensorimotor Loop
 
-When a mormyrid fires its electric organ, the command originates in the **command nucleus (CN)** in the hindbrain, travels via spinal electromotor neurons, and synchronously activates hundreds of flat, coin-shaped cells called **electrocytes** in the electric organ. The resulting EOD waveform depends directly on electrocyte membrane area and ion channel composition: more anterior-face membrane area raises capacitance and delays spike initiation, producing a longer waveform ([Bass, Denizot & Marchaterre 1986](files/introduction/Bass_etal_1986_androgen_binding_brain_electric_organ.pdf); [Bass & Volman 1987](files/introduction/Bass_etal_1987_behavior_to_membranes_testosterone_AP_duration.pdf); [Freedman et al. 1989](files/introduction/Freedman_etal_1989_temporal_analysis_testosterone_electric_organs.pdf)).
+When a mormyrid fires its electric organ, the command originates in the **command nucleus (CN)** in the hindbrain, travels via spinal electromotor neurons, and synchronously activates hundreds of flat, coin-shaped cells called **electrocytes** in the electric organ. The resulting EOD waveform depends directly on electrocyte membrane area and ion channel composition: more anterior-face membrane area raises capacitance and broadens the action potential, producing a longer waveform ([Bass, Segil & Kelley 1986](files/introduction/Bass_etal_1986_androgen_binding_brain_electric_organ.pdf); [Bass & Volman 1987](files/introduction/Bass_etal_1987_behavior_to_membranes_testosterone_AP_duration.pdf); [Freedman et al. 1989](files/introduction/Freedman_etal_1989_temporal_analysis_testosterone_electric_organs.pdf)).
 
-The incoming signal from another fish is detected by **knollenorgans (KOs)** — electroreceptors specialized for conspecific communication signals. [Raman & Hopkins (2025)](files/introduction/Raman_Hopkins_2025_high_frequency_tuning_knollenorgan.pdf) showed these are precisely tuned to the species' own EOD frequency spectrum, functioning as matched filters. When testosterone elongates the EOD, KO tuning shifts to match — but through an **indirect mechanism**: the changed EOD itself drives receptor cell turnover ([Bass & Hopkins 1984](files/introduction/Bass_Hopkins_1984_androgen_shifts_knollenorgan_tuning.pdf)).
+The incoming signal from another fish is detected by **knollenorgans (KOs)** — electroreceptors specialized for conspecific communication signals. [Raman & Hopkins (2025)](files/introduction/Raman_Hopkins_2025_high_frequency_tuning_knollenorgan.pdf) showed these are precisely tuned to the species' own EOD frequency spectrum, functioning as matched filters. When testosterone elongates the EOD, KO tuning shifts to match — primarily through an **indirect mechanism** in which the changed EOD itself drives receptor cell turnover ([Bass & Hopkins 1984](files/introduction/Bass_Hopkins_1984_androgen_shifts_knollenorgan_tuning.pdf)).
 
 The brain keeps the loop coherent using a **corollary discharge (CD)** pathway: a copy of each motor command routes from CN through the bulbar (BCA) and mesencephalic (MCA) command-associated nuclei to the sublemniscal nucleus (slem), which inhibits the electrosensory nucleus (nELL) just as the fish's own EOD arrives there — making the fish effectively deaf to its own signal ([Bell & Grant 1989](https://doi.org/10.1523/JNEUROSCI.09-03-01029.1989)). [Fukutomi & Carlson (2023)](files/introduction/Fukutomi_etal_2023_hormonal_coordination_motor_sensory_electric_fish.pdf) showed this CD timing window shifts under testosterone to match the elongated EOD — and it does so **directly**, without requiring altered sensory feedback. [Jarzyna & Carlson (2026)](files/introduction/Jarzyna_etal_2026_shared_neural_substrates_sensorimotor_integration.pdf) further showed that MCA is a conserved temporal hub: the same circuit node adjusts CD timing across seasonal (days), developmental (years), and evolutionary (millions of years) timescales.
 

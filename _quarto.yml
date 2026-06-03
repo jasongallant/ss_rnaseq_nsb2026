@@ -11,7 +11,7 @@ project:
     - "!slides/" # Ignores an entire folder
     - "!_includes/" # HTML partials, not pages
     - "!episodes/episodes_style_guide.md"
-    - "!episodes/workbook/" # student notebooks, run interactively — not rendered
+    - "!episodes/workbook/" # student notebooks, run interactively -- not rendered
 
 website:
   title: "Electric Fish: Single-Nucleus RNA-seq"

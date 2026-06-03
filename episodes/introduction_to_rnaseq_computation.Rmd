@@ -1,7 +1,7 @@
 ---
 title: "snRNA-seq Computation & QC"
-teaching: 35
-exercises: 25
+mode: self-paced
+reading: 60
 optional: false
 ---
 
@@ -83,19 +83,16 @@ Q30 measures sequencer performance — how accurately the base calls were made. 
 
 ## QC Worksheet — Four Pools
 
-Open the actual reports for each pool in side tabs, walk through them, and fill in the table below. The reports live on the workshop server:
+Open the actual reports for each pool in side tabs, walk through them, and fill in the table below.
 
-- **CellRanger `qc_report.html`** for pool *N*: `https://workshop.efishgenomics.com/qc/poolN_<tissue>/outs/qc_report.html`
-- **FastQC HTMLs** for pool *N*: `https://workshop.efishgenomics.com/qc/poolN_<tissue>/fastqc_fcA/` and `fastqc_fcB/`
+The reports live on the workshop server inside your RStudio session — they are **not** published to this public site. To open each one, find the file in the **Files** pane on the right side of RStudio (navigate into `data/qc/...`), click it, and choose **View in Web Browser**. That opens the rendered HTML in a new tab served through your authenticated RStudio session.
 
-The four pools are:
-
-| Pool | Tissue | Fish |
-|---|---|---|
-| 1 | Hindbrain | BB48, BB50 |
-| 2 | Midbrain | BB48, BB49INJ, BB50, BB50INJ |
-| 3 | Electric organ (EO) | BB48, BB49INJ, BB50, BB50INJ |
-| 4 | Skin / Knollenorgan | BB48, BB49INJ, BB50, BB50INJ |
+| Pool | Tissue | Fish | CellRanger | FastQC (flow cell A / B) |
+|---|---|---|---|---|
+| 1 | Hindbrain | BB48, BB50 | `data/qc/pool1_hindbrain/outs/qc_report.html` | `data/qc/pool1_hindbrain/fastqc_fcA/` &nbsp;/&nbsp; `fastqc_fcB/` |
+| 2 | Midbrain | BB48, BB49INJ, BB50, BB50INJ | `data/qc/pool2_midbrain/outs/qc_report.html` | `data/qc/pool2_midbrain/fastqc_fcA/` &nbsp;/&nbsp; `fastqc_fcB/` |
+| 3 | Electric organ (EO) | BB48, BB49INJ, BB50, BB50INJ | `data/qc/pool3_eo/outs/qc_report.html` | `data/qc/pool3_eo/fastqc_fcA/` &nbsp;/&nbsp; `fastqc_fcB/` |
+| 4 | Skin / Knollenorgan | BB48, BB49INJ, BB50, BB50INJ | `data/qc/pool4_skin/outs/qc_report.html` | `data/qc/pool4_skin/fastqc_fcA/` &nbsp;/&nbsp; `fastqc_fcB/` |
 
 ### Per-pool comparison table
 
@@ -206,6 +203,16 @@ Pseudobulk aggregates raw counts to the (cell-type × fish) level, restoring n=2
 ::::
 
 :::
+
+## Reference documents (10X Genomics)
+
+For deeper reading on the upstream chemistry, run protocols, and yield planning that feed the Cell Ranger output you read above:
+
+- [10x Chromium GEM-X Universal 3′ v4 — 4-plex OCM User Guide](files/snrnaseq-qc/10x_GEMX_Universal_3prime_v4_4plex_OCM_UserGuide.pdf) — the exact chemistry used for the four EO samples.
+- [Chromium Nuclei Isolation Kit user guide (CG000505 Rev B)](files/snrnaseq-qc/CG000505_Chromium_Nuclei_Isolation_Kit_UG_RevB.pdf) — alternate kit-based nuclei prep (we use the open-protocol workflow described in Thursday's episode).
+- [Demonstrated Protocol: Nuclei isolation for snRNA-seq (CG000124 Rev G)](files/snrnaseq-qc/CG000124_Demonstrated_Protocol_Nuclei_isolation_RevG.pdf) — 10X's reference nuclei-isolation protocol for context.
+- [10X Sequencing Handbook](files/snrnaseq-qc/10x_Sequencing_Handbook.pdf) — sequencing planning and per-sample read budgets.
+- [Flow Cell Calculator (CG000604 Rev B)](files/snrnaseq-qc/CG000604_FlowCellCalculator_RevB.xlsx) — Excel calculator we used to spec the four-pool flow cell loading.
 
 ## Keypoints
 

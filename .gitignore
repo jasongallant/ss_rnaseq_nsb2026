@@ -2,7 +2,13 @@ episodes/data/*
 slides/
 
 # Workshop infrastructure secrets (AWS resource IDs + GitHub PAT)
-bts/infrastructure/.env
+bts/infrastructure/.env*
+
+# macOS Finder metadata
+.DS_Store
+
+# Office lock/temp files (e.g., ~$workbook.xlsx)
+~$*
 
 /.quarto/
 /_site/

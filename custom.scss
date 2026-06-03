@@ -4,6 +4,11 @@ $primary: #0092ca;
 $primary-color: #0092ca;
 $dark-blue: #1a3a5c;
 
+// AA-passing variants of the brand cyan, for use against white/light backgrounds.
+// #0092ca is 3.52:1 on white (fails AA 4.5:1); #006c95 is 4.7:1.
+$brand-cyan-aa: #006c95;
+$link-color: $brand-cyan-aa;
+
 /*-- scss:rules --*/
 
 // Objectives and Key Points (tip callouts) — green
@@ -38,7 +43,7 @@ $dark-blue: #1a3a5c;
   border-left-color: #f39c12;
 
   .callout-title-container {
-    color: #d68910;
+    color: #9a6309; // darkened from #d68910 (2.82:1) for AA contrast
   }
 }
 
@@ -60,7 +65,7 @@ pre.sourceCode {
   }
 
   .nav-link:hover {
-    color: #0092ca !important;
+    color: $brand-cyan-aa !important;
   }
 
   img.navbar-logo {
@@ -68,9 +73,10 @@ pre.sourceCode {
   }
 }
 
-// Footer: cyan background matching efishgenomics.com footer
+// Footer: cyan background matching efishgenomics.com footer.
+// Darker variant chosen so white text/links meet AA contrast.
 .nav-footer {
-  background-color: #0092ca;
+  background-color: $brand-cyan-aa;
   color: #ffffff;
 
   .nav-footer-center,
@@ -94,6 +100,26 @@ h2 {
   border-bottom: 1px solid #dee2e6;
   padding-bottom: 0.25rem;
   margin-top: 2rem;
+}
+
+// Schedule tables on index.qmd — force consistent column widths across days.
+// Each day renders its own kable, so by default the Episode column auto-fits
+// the longest title in *that* table; without these rules, day-to-day tables
+// have different column widths and visibly misalign.
+#schedule {
+  table {
+    table-layout: fixed;
+    width: 100%;
+  }
+  // Episode column wide; time columns narrow and uniform.
+  th:first-child,
+  td:first-child {
+    width: 70%;
+  }
+  th:not(:first-child),
+  td:not(:first-child) {
+    width: 15%;
+  }
 }
 
 // Responsive Plyr video player

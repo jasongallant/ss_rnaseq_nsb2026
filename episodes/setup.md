@@ -28,7 +28,7 @@ All hands-on work in this workshop happens on a shared RStudio Server that we ru
 To connect:
 
 1. Open a modern desktop browser (Chrome, Firefox, Safari, or Edge) on a stable wifi connection.
-2. Navigate to **[https://workshop.efishgenomics.com](https://workshop.efishgenomics.com)**.
+2. Open the **[workshop RStudio server](https://workshop.efishgenomics.com)**.
 3. Log in with the username and one-time password the instructor hands out in person on Day 1. Usernames are of the form `student1`, `student2`, …, `student6`.
 4. The first time you log in, you will be prompted to change your password. Pick something you can remember for the week — your account is wiped when the server is torn down on June 14.
 
@@ -59,17 +59,19 @@ Open the **Files pane** (bottom-right) and navigate to `~/ssrnaseq/`. You should
 │   └── snrnaseq-annotation-and-de.Rmd  ← Saturday's working surface
 ├── setup.md                            ← this document (writable local copy)
 └── data/
-    ├── ssrnaseq_data/                  ← Raw 10X counts + gtf (read-only, shared mount)
+    ├── ssrnaseq_data/                  ← Cell Ranger filtered counts + gtf (read-only)
     │   ├── EO/
     │   │   ├── BB48/ BB49INJ/ BB50/ BB50INJ/
     │   │   └── losilla_et_al_data.csv
     │   ├── Skin/  Midbrain/  Hindbrain/   ← extra tissues for special projects
     │   ├── genes.gtf.gz
     │   └── gene_ontology.gaf.gz
-    ├── raw/                            ← Raw fastqs + FastQC + full CellRanger out (RO)
-    │   ├── fastq/<sample>/
-    │   ├── fastqc/<sample>/
-    │   └── cellranger/<sample>/
+    ├── qc/                             ← Per-pool QC reports (read-only)
+    │   ├── pool1_hindbrain/
+    │   │   ├── outs/qc_report.html         ← Cell Ranger web summary
+    │   │   ├── fastqc_fcA/                 ← FastQC HTMLs, flow cell A
+    │   │   └── fastqc_fcB/                 ← FastQC HTMLs, flow cell B
+    │   ├── pool2_midbrain/  pool3_eo/  pool4_skin/   ← same layout
     └── checkpoints/                    ← Pre-built .rds checkpoints (writable; per-student)
         ├── 01_merged_sct.rds
         ├── 02_harmony_clustered.rds    ← Saturday's entry state
@@ -77,7 +79,7 @@ Open the **Files pane** (bottom-right) and navigate to `~/ssrnaseq/`. You should
         └── 04_pseudobulk_dds.rds
 ```
 
-`data/ssrnaseq_data/` and `data/raw/` are symlinks into a shared read-only volume — anything in there is the same for everyone and cannot be modified. `data/checkpoints/` is your own writable copy, so you can overwrite the shipped `.rds` files freely as you progress.
+`data/ssrnaseq_data/` and `data/qc/` are symlinks into a shared read-only volume — anything in there is the same for everyone and cannot be modified. `data/checkpoints/` is your own writable copy, so you can overwrite the shipped `.rds` files freely as you progress.
 
 ::: {.callout-warning title="The website and the workbook are different files"}
 
@@ -160,7 +162,7 @@ seu
 table(seu$treatment)
 ```
 
-If you see a Seurat object with 4 samples, ~10,000 nuclei, and treatment labels (`11kt`, `vehicle`), you're good to go. If you see an error, raise a hand — we'll fix it before starting the Friday code episode.
+If you see a Seurat object with 4 samples (`BB48`, `BB49INJ`, `BB50`, `BB50INJ`), ~2,900 nuclei total, and treatment labels (`11kt`, `vehicle`) splitting roughly evenly, you're good to go. If you see an error, raise a hand — we'll fix it before starting the Friday code episode.
 
 ## Installing your own packages for special projects
 
@@ -192,7 +194,7 @@ The R package needs a system library that isn't installed. Ask the instructor �
 
 ## Keypoints
 
-1. You connect to the workshop at **[https://workshop.efishgenomics.com](https://workshop.efishgenomics.com)** with the username and password the instructor hands out. Nothing to install locally.
+1. You connect to the **[workshop RStudio server](https://workshop.efishgenomics.com)** with the username and password the instructor hands out. Nothing to install locally.
 2. Your working surface is `workbook/*.Rmd` on the server. The rendered episodes at [tutorials.efishgenomics.com](https://tutorials.efishgenomics.com) are the answer keys you consult when stuck.
 3. Run chunks one at a time — **never click "Render" or "Knit" on a workbook.**
 4. `___` is a decision point. Fill it in based on the prediction prompt above it.

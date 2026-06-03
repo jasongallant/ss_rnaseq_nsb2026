@@ -31,12 +31,11 @@ library(yaml)
 library(knitr)
 
 # Read YAML frontmatter from an episode file.
-# Returns a named list with at least title, teaching, exercises.
 read_episode_meta <- function(path) {
-  if (!file.exists(path)) return(list(title = NULL, teaching = NULL, exercises = NULL))
+  if (!file.exists(path)) return(list())
   lines <- readLines(path, warn = FALSE)
   bounds <- which(lines == "---")
-  if (length(bounds) < 2) return(list(title = NULL, teaching = NULL, exercises = NULL))
+  if (length(bounds) < 2) return(list())
   yaml::yaml.load(paste(lines[2:(bounds[2] - 1)], collapse = "\n"))
 }
 
@@ -45,7 +44,25 @@ fmt_time <- function(x) {
   paste0(x, " min")
 }
 
-cfg      <- yaml::read_yaml("_quarto.yml")
+# Build one row of metadata for an episode path.
+episode_row <- function(path) {
+  meta   <- read_episode_meta(path)
+  exists <- file.exists(path)
+  title  <- if (!is.null(meta$title)) meta$title else sub("\\.(Rmd|qmd|md)$", "", basename(path))
+  label  <- if (isTRUE(meta$optional)) paste0("*(Optional)* ", title) else title
+  link   <- sub("\\.(Rmd|qmd)$", ".html", path)
+  ep_col <- if (exists) paste0("[", label, "](", link, ")") else paste0("*", label, "* (coming soon)")
+  mode <- if (!is.null(meta$mode)) meta$mode else "in-class"
+  list(
+    episode  = ep_col,
+    mode     = mode,
+    reading  = meta$reading,
+    teaching = meta$teaching,
+    exercises = meta$exercises
+  )
+}
+
+cfg      <- yaml::yaml.load_file("_quarto.yml")
 sections <- cfg$website$sidebar$contents
 
 for (sec in sections) {
@@ -54,13 +71,11 @@ for (sec in sections) {
   day      <- sec[["section"]]
   contents <- sec[["contents"]]
 
-  # Keep only episode file paths (skip index.md, separators, etc.)
   episode_paths <- Filter(
     function(x) is.character(x) && grepl("^episodes/", x),
     contents
   )
 
-  # Skip sections whose only contents are non-episode files (e.g. the index itself)
   if (length(contents) > 0 && length(episode_paths) == 0) next
 
   cat("### ", day, "\n\n")
@@ -70,24 +85,34 @@ for (sec in sections) {
     next
   }
 
-  rows <- lapply(episode_paths, function(path) {
-    exists    <- file.exists(path)
-    meta      <- read_episode_meta(path)
-    title     <- if (!is.null(meta$title)) meta$title else sub("\\.(Rmd|qmd|md)$", "", basename(path))
-    label     <- if (isTRUE(meta$optional)) paste0("*(Optional)* ", title) else title
-    link      <- sub("\\.(Rmd|qmd)$", ".html", path)
-    ep_col    <- if (exists) paste0("[", label, "](", link, ")") else paste0("*", label, "* (coming soon)")
-    data.frame(
-      Episode   = ep_col,
-      Teaching  = fmt_time(meta$teaching),
-      Exercises = fmt_time(meta$exercises),
-      stringsAsFactors = FALSE
-    )
-  })
+  rows <- lapply(episode_paths, episode_row)
 
-  tbl <- do.call(rbind, rows)
-  print(kable(tbl, row.names = FALSE))
-  cat("\n\n")
+  selfpaced <- Filter(function(r) r$mode == "self-paced", rows)
+  inclass   <- Filter(function(r) r$mode != "self-paced", rows)
+
+  if (length(selfpaced) > 0) {
+    tbl <- do.call(rbind, lapply(selfpaced, function(r) data.frame(
+      Episode = r$episode,
+      `Reading time` = fmt_time(r$reading),
+      check.names = FALSE,
+      stringsAsFactors = FALSE
+    )))
+    cat("**Self-paced (homework: video + reading)**\n\n")
+    print(kable(tbl, row.names = FALSE))
+    cat("\n\n")
+  }
+
+  if (length(inclass) > 0) {
+    tbl <- do.call(rbind, lapply(inclass, function(r) data.frame(
+      Episode   = r$episode,
+      Teaching  = fmt_time(r$teaching),
+      Exercises = fmt_time(r$exercises),
+      stringsAsFactors = FALSE
+    )))
+    cat("**Scheduled (instructor-led)**\n\n")
+    print(kable(tbl, row.names = FALSE))
+    cat("\n\n")
+  }
 }
 ```
 

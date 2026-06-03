@@ -1,7 +1,7 @@
 ---
 title: "EOD Recording: A Practical Overview"
-teaching: 20
-exercises: 0
+mode: self-paced
+reading: 25
 optional: true
 ---
 
@@ -35,7 +35,7 @@ The electric organ acts like a **dipole**: a separation of positive and negative
 
 Our electrodes sample the potential difference between two points inside that field. A useful analogy is a topographic map: the density of contour lines represents the steepness of potential change between two nearby points. Two electrodes close together measure a small difference; the same electrodes far apart — spanning more of the gradient — measure a larger one.
 
-![Dipole field produced by a weakly electric fish. Dashed lines show equipotential contours; arrows indicate field direction.](files/eod-recording/image1.png)
+![Dipole field produced by a weakly electric fish. Dashed lines show equipotential contours; arrows indicate field direction.](files/eod-recording/image1.png){fig-alt="Schematic of an electric fish viewed from above, surrounded by curved dashed lines representing equipotential contours of the dipole field, with arrows indicating the direction of current flow from head to tail."}
 
 This means **electrode spacing must be matched to the fish size and water conductivity**. There is no single "correct" amplitude — only amplitude relative to a known recording geometry.
 
@@ -53,11 +53,11 @@ The amplifier output is an analog voltage. To store it digitally, an **analog-to
 
 **Sample rate** determines how many voltage measurements are taken per second. A signal is faithfully reconstructed only if it is sampled at more than twice its highest frequency (the Nyquist criterion). Standard mormyrid EODs are well encoded at 100 kHz; very brief species (*Petrocephalus*, some *Paramormyrops*) require 250 kHz or higher.
 
-![Effect of sample rate on waveform reconstruction.](files/eod-recording/image2.png)
+![Effect of sample rate on waveform reconstruction.](files/eod-recording/image2.png){fig-alt="Two stacked plots of the same underlying continuous waveform: the upper one sampled densely shows a smooth biphasic shape, the lower one sampled sparsely shows a jagged, distorted reconstruction missing the peaks of the original."}
 
 **Resolution** (bit depth) determines how finely voltage is quantized. A 16-bit converter divides a ±10 V range into 65,536 steps — roughly 0.3 mV per step. To maximize usable resolution, record at the highest amplitude that does not clip.
 
-![A/D conversion at low vs. high bit depth.](files/eod-recording/image3.gif)
+![A/D conversion at low vs. high bit depth.](files/eod-recording/image3.gif){fig-alt="Animated comparison of two digitizations of the same waveform: low bit depth produces a coarse staircase that loses fine voltage steps, high bit depth produces a smooth curve nearly indistinguishable from the analog source."}
 
 ::: {.callout-warning title="Clipping"}
 
@@ -71,7 +71,7 @@ Metal electrodes in water behave like a battery, creating a slow-drifting **DC o
 
 Because the EOD carries almost no energy below 20 Hz, AC coupling introduces negligible distortion for most mormyrid species. **DC coupling** is required only when you need to compare baseline potentials or record extremely long-duration waveforms. Sound cards (e.g., Steinberg UR22) always AC couple; National Instruments boards (NI-6211, NI-6216) do not.
 
-![Frequency content of a passive bioelectric field versus a mormyrid EOD.](files/eod-recording/image4.png)
+![Frequency content of a passive bioelectric field versus a mormyrid EOD.](files/eod-recording/image4.png){fig-alt="Power spectrum plot with frequency on the x-axis and power on the y-axis. The passive bioelectric trace shows energy concentrated below 20 Hz, while the mormyrid EOD trace has its energy distributed across a much higher frequency band well above the AC-coupling cutoff."}
 
 ::: {.callout-warning title="AC coupling and waveform duration"}
 

@@ -1,5 +1,6 @@
 ---
 title: "11-Ketotestosterone Injection in Mormyrid Electric Fish"
+mode: in-class
 teaching: 20
 exercises: 75
 optional: false
@@ -64,7 +65,7 @@ hand-cut pellet.
 
 ## Equipment
 
-- Hamilton syringe (e.g., 50–100 µL, gas-tight) with `[needle gauge validated in your hands]`
+- Hamilton syringe (50–100 µL, gas-tight) with 26G ½″ needle
 - Dry bath (used at both ~40 °C for melting/holding and ~70 °C for ethanol evaporation)
 - Milligram balance (for stock preparation)
 - P20 / P200 pipette + tips (for dose preparation)

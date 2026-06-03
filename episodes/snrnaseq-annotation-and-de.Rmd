@@ -1,7 +1,9 @@
 ---
 title: "Cell-Type Annotation and Differential Expression in the Electric Organ"
+mode: in-class
 teaching: 140
 exercises: 55
+optional: false
 ---
 
 ::: {.callout-note title="Questions"}
@@ -141,7 +143,7 @@ Generic GO enrichment performs poorly when one cell type dominates a tissue. Ins
 
 Two electrocyte markers are unambiguous across the literature:
 
-- **scn4aa** (`LOC125742960`) — Nav1.4a, the principal electrogenic Na⁺ channel. Convergently recruited into electric organs across six independent lineages (Gallant et al. 2014 *Science*; Thompson et al. 2018 *Curr Biol*).
+- **scn4aa** (`LOC125742960`) — Nav1.4a, the principal electrogenic Na⁺ channel. Convergently recruited into electric organs across multiple independent electric-fish lineages (Gallant et al. 2014 *Science*; Thompson et al. 2018 *Curr Biol*).
 - **kcna7a** (`LOC125743019`) — Kv1.7a, the delayed-rectifier K⁺ channel setting EOD repolarization kinetics (Losilla & Gallant 2025 *JEB*).
 
 Electrocytes are myogenic in origin (derived from muscle), so muscle satellite cells (*pax7b*, myomesins) typically sit near electrocytes on the UMAP. Schwann cells, vascular endothelial cells, and a small motor neuron population round out the expected atlas.
@@ -369,9 +371,18 @@ Skepticism is healthy. A "Schwann" cluster with no *col28a1a* expression deserve
 
 :::
 
-## Electrocyte face sub-classification
+::: {.callout-tip title="Stretch break — and a fork in the road"}
+This is the end of the cell-type annotation block. The remaining material is denser than what came before it:
 
-Each electrocyte has two electrochemically distinct membranes: the **posterior (innervated) face**, which generates the action potential, and the **anterior (non-innervated) face**, which generates a counter-potential. The exact channel inventory of each face is not fully resolved in *B. brachyistius*. Our data can begin to address this.
+- The **face sub-classification** section below (k-means on UMAP centroids, markers, biology check) is conceptually optional — if you're running short on time, **skip directly to "Pseudobulk aggregation"** and come back to this on your own. Anything downstream uses `cell_type_label`, which is already in the saved checkpoint.
+- The **DESeq2 + propeller + cross-study scatter** sections are the central statistical payoff and should be hit live.
+
+If you're on pace, take five minutes to stand up, stretch, and refill your water. The rest of the episode runs straight through to differential expression.
+:::
+
+## Electrocyte face sub-classification {#sec-face-subclass}
+
+*Optional for fast finishers — skippable if the room is tight on time.* Each electrocyte has two electrochemically distinct membranes: the **posterior (innervated) face**, which generates the action potential, and the **anterior (non-innervated) face**, which generates a counter-potential. The exact channel inventory of each face is not fully resolved in *B. brachyistius*. Our data can begin to address this.
 
 Below we split the non-stalk electrocyte clusters into two candidate face groups using k-means on UMAP centroids, find markers that distinguish them, and judge whether the split is biologically coherent.
 

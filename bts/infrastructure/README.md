@@ -27,7 +27,7 @@ Architecture and sizing rationale: see [`~/.claude/plans/okay-let-s-work-on-abst
 |           ├── setup.md                                        |
 |           └── data/                                           |
 |               ├── ssrnaseq_data -> /srv/workshop-data/...     |
-|               ├── raw           -> /srv/workshop-data/raw     |
+|               ├── qc            -> /srv/workshop-data/qc      |
 |               └── checkpoints/  <- writable per-student cp    |
 +---------------------------------------------------------------+
        ^                                ^                 ^
@@ -147,11 +147,11 @@ aws s3 mb "s3://${WORKSHOP_BUCKET}" --region "$REGION"
 aws s3 sync episodes/workbook/ "s3://${WORKSHOP_BUCKET}/content/workbooks/"
 aws s3 cp   episodes/setup.md  "s3://${WORKSHOP_BUCKET}/content/setup.md"
 
-# Push the bulk data (your existing fastq/cellranger outputs)
+# Push the bulk data (Cell Ranger filtered counts + per-pool QC outputs)
 #   The exact layout is:
 #     s3://${WORKSHOP_BUCKET}/data/ssrnaseq_data/...
 #     s3://${WORKSHOP_BUCKET}/data/checkpoints/0[1-4]_*.rds
-#     s3://${WORKSHOP_BUCKET}/data/raw/{fastq,fastqc,cellranger}/<sample>/
+#     s3://${WORKSHOP_BUCKET}/data/qc/pool{1..4}_<tissue>/{outs,fastqc_fcA,fastqc_fcB}/
 #     s3://${WORKSHOP_BUCKET}/data/eod_duration/  (optional)
 aws s3 sync episodes/data/ssrnaseq_data/  "s3://${WORKSHOP_BUCKET}/data/ssrnaseq_data/" --exclude ".*" --exclude "*/.*"
 aws s3 sync episodes/data/checkpoints  "s3://${WORKSHOP_BUCKET}/data/checkpoints/" --exclude ".*" --exclude "*/.*"
@@ -554,7 +554,7 @@ export EIP_ALLOC_ID=$(aws ec2 describe-addresses --region "$REGION" \
    - `workbook/` (with the two `.Rmd` files)
    - `setup.md`
    - `data/ssrnaseq_data` (with a chain symbol — symlink to `/srv/workshop-data/...`)
-   - `data/raw` (symlink)
+   - `data/qc` (symlink, with `pool1_hindbrain/`, `pool2_midbrain/`, `pool3_eo/`, `pool4_skin/` inside)
    - `data/checkpoints/` (actual dir, with the 4 `.rds` files inside)
 4. In the R console, paste the smoke test:
    ```r
@@ -565,7 +565,7 @@ export EIP_ALLOC_ID=$(aws ec2 describe-addresses --region "$REGION" \
    seu
    table(seu$treatment)
    ```
-   Expect a Seurat object with 4 samples, ~10,000 nuclei, and treatment labels (`11kt`, `vehicle`).
+   Expect a Seurat object with 4 samples (BB48, BB49INJ, BB50, BB50INJ), ~2,900 nuclei total, and treatment labels (`11kt`, `vehicle`) splitting roughly evenly.
 5. Confirm read-only enforcement on the mount:
    ```r
    file.create("data/ssrnaseq_data/test.txt")   # should return FALSE (EROFS)

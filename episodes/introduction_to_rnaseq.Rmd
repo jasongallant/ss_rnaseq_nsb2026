@@ -1,7 +1,7 @@
 ---
 title: "Introduction to Single-Nucleus RNA-seq"
-teaching: 5
-exercises: 10
+mode: self-paced
+reading: 40
 optional: false
 ---
 

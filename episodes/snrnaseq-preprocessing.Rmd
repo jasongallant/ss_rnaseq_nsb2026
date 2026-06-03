@@ -1,7 +1,9 @@
 ---
 title: "Preprocessing the Electric Organ snRNA-seq Data"
+mode: in-class
 teaching: 90
 exercises: 45
+optional: false
 ---
 
 ::: {.callout-note title="Questions"}
@@ -182,6 +184,10 @@ Raw UMI counts vary across nuclei for two reasons: real biology (some cell types
 
 We use **SCTransform**, which fits a regularized negative binomial regression per gene. The residuals from those fits are variance-stabilized and depth-corrected; they replace raw counts as the working expression matrix (in a new `SCT` assay).
 
+::: {.callout-note title="Heads up — longest chunk in the lesson"}
+SCTransform on four samples takes roughly **3–8 minutes**. The chunk runs with `verbose = FALSE`, so the Console will look quiet — that's expected. Watch the R session indicator (or check `top` in a Terminal) to confirm it's still working before assuming the kernel hung.
+:::
+
 ```{r sctransform, message=FALSE, warning=FALSE}
 merged_seurat <- SCTransform(merged_seurat, verbose = FALSE)
 ```
@@ -219,7 +225,7 @@ merged_seurat <- RunPCA(merged_seurat, verbose = FALSE, assay = "SCT")
 
 The elbow plot ranks PCs by variance explained. We pick enough PCs to be safely past the elbow.
 
-```{r elbow-plot, message=FALSE, warning=FALSE, fig.alt="Elbow plot showing variance explained by each principal component.", fig.cap="Elbow plot for the EO dataset. The curve flattens around PC 15–20; using 20 PCs comfortably covers the informative range."}
+```{r elbow-plot, message=FALSE, warning=FALSE, fig.alt="Elbow plot showing variance explained by each principal component.", fig.cap="Elbow plot for the EO dataset. The variance-explained curve flattens once the elbow is past."}
 ElbowPlot(merged_seurat, ndims = 30)
 ```
 
@@ -229,9 +235,12 @@ There is no single correct cutoff. Common practice:
 
 - Use enough PCs that the elbow is comfortably included (15–30 for most datasets).
 - Err on the side of more — including a few extra noisy PCs rarely hurts, but dropping informative ones can merge biologically distinct clusters.
-- We use **20 PCs** throughout this episode.
 
 :::
+
+:::: {.callout-tip title="Workshop choice (predict first!)" collapse="true"}
+We use **20 PCs** throughout this episode — comfortably past the elbow and well within the "more is safer than fewer" zone.
+::::
 
 We also store an un-integrated UMAP at this point so we can compare it to the Harmony-corrected version a few chunks down. This is purely for the before/after visual check.
 
@@ -413,7 +422,7 @@ merged_seurat <- FindClusters(merged_seurat, resolution = 0.8, verbose = FALSE)
 
 :::
 
-::: {.callout-important title="Challenge 3: Are any clusters sample-dominated? (10 min)"}
+::: {.callout-important title="Challenge 3 (optional, 10 min): Are any clusters sample-dominated?"}
 
 Use a contingency table to check whether any cluster is more than ~80% from a single sample.
 
