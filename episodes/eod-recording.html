@@ -77,7 +77,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-29bd56fb2c8eaacfda1e825872b9b126.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-389f73fc23c3c3d3fb84ba62a2b360f2.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -462,7 +462,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Our electrodes sample the potential difference between two points inside that field. A useful analogy is a topographic map: the density of contour lines represents the steepness of potential change between two nearby points. Two electrodes close together measure a small difference; the same electrodes far apart — spanning more of the gradient — measure a larger one.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="files/eod-recording/image1.png" class="img-fluid figure-img"></p>
+<p><img src="files/eod-recording/image1.png" class="img-fluid figure-img" alt="Schematic of an electric fish viewed from above, surrounded by curved dashed lines representing equipotential contours of the dipole field, with arrows indicating the direction of current flow from head to tail."></p>
 <figcaption>Dipole field produced by a weakly electric fish. Dashed lines show equipotential contours; arrows indicate field direction.</figcaption>
 </figure>
 </div>
@@ -481,14 +481,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p><strong>Sample rate</strong> determines how many voltage measurements are taken per second. A signal is faithfully reconstructed only if it is sampled at more than twice its highest frequency (the Nyquist criterion). Standard mormyrid EODs are well encoded at 100 kHz; very brief species (<em>Petrocephalus</em>, some <em>Paramormyrops</em>) require 250 kHz or higher.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="files/eod-recording/image2.png" class="img-fluid figure-img"></p>
+<p><img src="files/eod-recording/image2.png" class="img-fluid figure-img" alt="Two stacked plots of the same underlying continuous waveform: the upper one sampled densely shows a smooth biphasic shape, the lower one sampled sparsely shows a jagged, distorted reconstruction missing the peaks of the original."></p>
 <figcaption>Effect of sample rate on waveform reconstruction.</figcaption>
 </figure>
 </div>
 <p><strong>Resolution</strong> (bit depth) determines how finely voltage is quantized. A 16-bit converter divides a ±10 V range into 65,536 steps — roughly 0.3 mV per step. To maximize usable resolution, record at the highest amplitude that does not clip.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="files/eod-recording/image3.gif" class="img-fluid figure-img"></p>
+<p><img src="files/eod-recording/image3.gif" class="img-fluid figure-img" alt="Animated comparison of two digitizations of the same waveform: low bit depth produces a coarse staircase that loses fine voltage steps, high bit depth produces a smooth curve nearly indistinguishable from the analog source."></p>
 <figcaption>A/D conversion at low vs.&nbsp;high bit depth.</figcaption>
 </figure>
 </div>
@@ -512,7 +512,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Because the EOD carries almost no energy below 20 Hz, AC coupling introduces negligible distortion for most mormyrid species. <strong>DC coupling</strong> is required only when you need to compare baseline potentials or record extremely long-duration waveforms. Sound cards (e.g., Steinberg UR22) always AC couple; National Instruments boards (NI-6211, NI-6216) do not.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="files/eod-recording/image4.png" class="img-fluid figure-img"></p>
+<p><img src="files/eod-recording/image4.png" class="img-fluid figure-img" alt="Power spectrum plot with frequency on the x-axis and power on the y-axis. The passive bioelectric trace shows energy concentrated below 20 Hz, while the mormyrid EOD trace has its energy distributed across a much higher frequency band well above the AC-coupling cutoff."></p>
 <figcaption>Frequency content of a passive bioelectric field versus a mormyrid EOD.</figcaption>
 </figure>
 </div>
@@ -1044,8 +1044,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "EOD Recording: A Practical Overview"</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="an">teaching:</span><span class="co"> 20</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="an">exercises:</span><span class="co"> 0</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="an">mode:</span><span class="co"> self-paced</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="an">reading:</span><span class="co"> 25</span></span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="an">optional:</span><span class="co"> true</span></span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
@@ -1079,7 +1079,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>Our electrodes sample the potential difference between two points inside that field. A useful analogy is a topographic map: the density of contour lines represents the steepness of potential change between two nearby points. Two electrodes close together measure a small difference; the same electrodes far apart — spanning more of the gradient — measure a larger one.</span>
 <span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a><span class="al">![Dipole field produced by a weakly electric fish. Dashed lines show equipotential contours; arrows indicate field direction.](files/eod-recording/image1.png)</span></span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a><span class="al">![Dipole field produced by a weakly electric fish. Dashed lines show equipotential contours; arrows indicate field direction.](files/eod-recording/image1.png)</span>{fig-alt="Schematic of an electric fish viewed from above, surrounded by curved dashed lines representing equipotential contours of the dipole field, with arrows indicating the direction of current flow from head to tail."}</span>
 <span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>This means **electrode spacing must be matched to the fish size and water conductivity**. There is no single "correct" amplitude — only amplitude relative to a known recording geometry.</span>
 <span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a></span>
@@ -1097,11 +1097,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a>**Sample rate** determines how many voltage measurements are taken per second. A signal is faithfully reconstructed only if it is sampled at more than twice its highest frequency (the Nyquist criterion). Standard mormyrid EODs are well encoded at 100 kHz; very brief species (*Petrocephalus*, some *Paramormyrops*) require 250 kHz or higher.</span>
 <span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a><span class="al">![Effect of sample rate on waveform reconstruction.](files/eod-recording/image2.png)</span></span>
+<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a><span class="al">![Effect of sample rate on waveform reconstruction.](files/eod-recording/image2.png)</span>{fig-alt="Two stacked plots of the same underlying continuous waveform: the upper one sampled densely shows a smooth biphasic shape, the lower one sampled sparsely shows a jagged, distorted reconstruction missing the peaks of the original."}</span>
 <span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a>**Resolution** (bit depth) determines how finely voltage is quantized. A 16-bit converter divides a ±10 V range into 65,536 steps — roughly 0.3 mV per step. To maximize usable resolution, record at the highest amplitude that does not clip.</span>
 <span id="cb1-59"><a href="#cb1-59" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-60"><a href="#cb1-60" aria-hidden="true" tabindex="-1"></a><span class="al">![A/D conversion at low vs. high bit depth.](files/eod-recording/image3.gif)</span></span>
+<span id="cb1-60"><a href="#cb1-60" aria-hidden="true" tabindex="-1"></a><span class="al">![A/D conversion at low vs. high bit depth.](files/eod-recording/image3.gif)</span>{fig-alt="Animated comparison of two digitizations of the same waveform: low bit depth produces a coarse staircase that loses fine voltage steps, high bit depth produces a smooth curve nearly indistinguishable from the analog source."}</span>
 <span id="cb1-61"><a href="#cb1-61" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-62"><a href="#cb1-62" aria-hidden="true" tabindex="-1"></a>::: {.callout-warning title="Clipping"}</span>
 <span id="cb1-63"><a href="#cb1-63" aria-hidden="true" tabindex="-1"></a></span>
@@ -1115,7 +1115,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-71"><a href="#cb1-71" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-72"><a href="#cb1-72" aria-hidden="true" tabindex="-1"></a>Because the EOD carries almost no energy below 20 Hz, AC coupling introduces negligible distortion for most mormyrid species. **DC coupling** is required only when you need to compare baseline potentials or record extremely long-duration waveforms. Sound cards (e.g., Steinberg UR22) always AC couple; National Instruments boards (NI-6211, NI-6216) do not.</span>
 <span id="cb1-73"><a href="#cb1-73" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-74"><a href="#cb1-74" aria-hidden="true" tabindex="-1"></a><span class="al">![Frequency content of a passive bioelectric field versus a mormyrid EOD.](files/eod-recording/image4.png)</span></span>
+<span id="cb1-74"><a href="#cb1-74" aria-hidden="true" tabindex="-1"></a><span class="al">![Frequency content of a passive bioelectric field versus a mormyrid EOD.](files/eod-recording/image4.png)</span>{fig-alt="Power spectrum plot with frequency on the x-axis and power on the y-axis. The passive bioelectric trace shows energy concentrated below 20 Hz, while the mormyrid EOD trace has its energy distributed across a much higher frequency band well above the AC-coupling cutoff."}</span>
 <span id="cb1-75"><a href="#cb1-75" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-76"><a href="#cb1-76" aria-hidden="true" tabindex="-1"></a>::: {.callout-warning title="AC coupling and waveform duration"}</span>
 <span id="cb1-77"><a href="#cb1-77" aria-hidden="true" tabindex="-1"></a></span>

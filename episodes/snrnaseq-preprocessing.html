@@ -77,7 +77,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-29bd56fb2c8eaacfda1e825872b9b126.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-389f73fc23c3c3d3fb84ba62a2b360f2.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -675,6 +675,19 @@ BB48_AACAGGCGTTGAAGGC-1      11kt</code></pre>
 <h2 class="anchored" data-anchor-id="normalization-with-sctransform">Normalization with SCTransform</h2>
 <p>Raw UMI counts vary across nuclei for two reasons: real biology (some cell types transcribe more RNA) and technical noise (nuclei were captured and sequenced at different depths). Normalization removes the technical component so downstream comparisons reflect biology.</p>
 <p>We use <strong>SCTransform</strong>, which fits a regularized negative binomial regression per gene. The residuals from those fits are variance-stabilized and depth-corrected; they replace raw counts as the working expression matrix (in a new <code>SCT</code> assay).</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Heads up — longest chunk in the lesson">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Heads up — longest chunk in the lesson
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>SCTransform on four samples takes roughly <strong>3–8 minutes</strong>. The chunk runs with <code>verbose = FALSE</code>, so the Console will look quiet — that’s expected. Watch the R session indicator (or check <code>top</code> in a Terminal) to confirm it’s still working before assuming the kernel hung.</p>
+</div>
+</div>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>merged_seurat <span class="ot">&lt;-</span> <span class="fu">SCTransform</span>(merged_seurat, <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
@@ -694,7 +707,7 @@ BB48_AACAGGCGTTGAAGGC-1      11kt</code></pre>
 <li>Compare a few values from <code>merged_seurat[["RNA"]]$counts[1:5, 1:3]</code> and <code>merged_seurat[["SCT"]]$scale.data[1:5, 1:3]</code>. What’s different about the SCT values?</li>
 </ol>
 <div class="callout callout-style-default callout-tip callout-titled" title="Solution">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-7-contents" aria-controls="callout-7" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-8-contents" aria-controls="callout-8" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -703,7 +716,7 @@ BB48_AACAGGCGTTGAAGGC-1      11kt</code></pre>
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-7" class="callout-7-contents callout-collapse collapse">
+<div id="callout-8" class="callout-8-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">length</span>(<span class="fu">VariableFeatures</span>(merged_seurat))</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="co"># SCTransform selects ~3,000 variable features by default</span></span>
@@ -730,7 +743,7 @@ BB48_AACAGGCGTTGAAGGC-1      11kt</code></pre>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="snrnaseq-preprocessing_files/figure-html/elbow-plot-1.png" class="img-fluid figure-img" alt="Elbow plot showing variance explained by each principal component." width="672"></p>
-<figcaption>Elbow plot for the EO dataset. The curve flattens around PC 15–20; using 20 PCs comfortably covers the informative range.</figcaption>
+<figcaption>Elbow plot for the EO dataset. The variance-explained curve flattens once the elbow is past.</figcaption>
 </figure>
 </div>
 </div>
@@ -749,8 +762,23 @@ BB48_AACAGGCGTTGAAGGC-1      11kt</code></pre>
 <ul>
 <li>Use enough PCs that the elbow is comfortably included (15–30 for most datasets).</li>
 <li>Err on the side of more — including a few extra noisy PCs rarely hurts, but dropping informative ones can merge biologically distinct clusters.</li>
-<li>We use <strong>20 PCs</strong> throughout this episode.</li>
 </ul>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled" title="Workshop choice (predict first!)">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-11-contents" aria-controls="callout-11" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Workshop choice (predict first!)
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-11" class="callout-11-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>We use <strong>20 PCs</strong> throughout this episode — comfortably past the elbow and well within the “more is safer than fewer” zone.</p>
+</div>
 </div>
 </div>
 <p>We also store an un-integrated UMAP at this point so we can compare it to the Harmony-corrected version a few chunks down. This is purely for the before/after visual check.</p>
@@ -861,7 +889,7 @@ BB48_AACAGGCGTTGAAGGC-1      11kt</code></pre>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="snrnaseq-preprocessing_files/figure-html/harmony-umap-comparison-1.png" class="img-fluid figure-img" alt="A 2-by-2 grid of UMAP plots: PCA and Harmony embeddings, each colored by sample and by treatment." width="1344"></p>
-<figcaption>Un-integrated (PCA) and Harmony-integrated UMAPs, colored by sample (left) and treatment (right). After Harmony correction, sample-specific islands should dissolve while treatment-level separation is preserved. For this low-batch dataset, the two embeddings are often similar — a sign of good sample quality.</figcaption>
+<figcaption>Un-integrated (PCA) and Harmony-integrated UMAPs, colored by sample (left) and treatment (right). After Harmony correction, sample-specific islands should dissolve while treatment-level separation is preserved. For this low-batch dataset, the two embeddings are often similar &lt;U+2014&gt; a sign of good sample quality.</figcaption>
 </figure>
 </div>
 </div>
@@ -942,7 +970,7 @@ BB48_AACAGGCGTTGAAGGC-1      11kt</code></pre>
 </ol>
 <p>After exploring, set resolution back to <strong>0.8</strong> so the rest of the pipeline (and tomorrow’s annotation) is reproducible.</p>
 <div class="callout callout-style-default callout-tip callout-titled" title="Solution">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-12-contents" aria-controls="callout-12" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-14-contents" aria-controls="callout-14" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -951,7 +979,7 @@ BB48_AACAGGCGTTGAAGGC-1      11kt</code></pre>
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-12" class="callout-12-contents callout-collapse collapse">
+<div id="callout-14" class="callout-14-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>Low resolution (0.3) gives ~5–8 broad clusters — useful for separating electrocytes from non-electrocytes. High resolution (1.5) can produce 20+ clusters, splitting electrocytes into sub-types (anterior face, posterior face, stalk) and possibly fragmenting the rare populations.</p>
 <p>The “right” resolution depends on the question. For the cell-type atlas tomorrow, ~10–14 clusters typically work — enough to resolve stalk vs.&nbsp;face electrocytes without over-splitting the smaller populations. Resolution 0.8 is a defensible starting point.</p>
@@ -961,13 +989,13 @@ BB48_AACAGGCGTTGAAGGC-1      11kt</code></pre>
 </div>
 </div>
 </div>
-<div class="callout callout-style-default callout-important callout-titled" title="Challenge 3: Are any clusters sample-dominated? (10 min)">
+<div class="callout callout-style-default callout-important callout-titled" title="Challenge 3 (optional, 10 min): Are any clusters sample-dominated?">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Important</span>Challenge 3: Are any clusters sample-dominated? (10 min)
+<span class="screen-reader-only">Important</span>Challenge 3 (optional, 10 min): Are any clusters sample-dominated?
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -983,7 +1011,7 @@ BB48_AACAGGCGTTGAAGGC-1      11kt</code></pre>
 <li>List two biological and two technical explanations for why a cluster might be sample-dominated.</li>
 </ol>
 <div class="callout callout-style-default callout-tip callout-titled" title="Solution">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-14-contents" aria-controls="callout-14" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-16-contents" aria-controls="callout-16" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -992,7 +1020,7 @@ BB48_AACAGGCGTTGAAGGC-1      11kt</code></pre>
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-14" class="callout-14-contents callout-collapse collapse">
+<div id="callout-16" class="callout-16-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>For the EO dataset most clusters should be reasonably balanced because the dominant cell type (electrocytes) is captured from all four fish. A sample-dominated cluster could indicate:</p>
 <p><strong>Biological:</strong> - A rare cell type that only happened to be captured in one fish (sampling). - A real biological state enriched in one treatment group (not an artifact).</p>
@@ -1510,473 +1538,482 @@ BB48_AACAGGCGTTGAAGGC-1      11kt</code></pre>
   </script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "Preprocessing the Electric Organ snRNA-seq Data"</span></span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="an">teaching:</span><span class="co"> 90</span></span>
-<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="an">exercises:</span><span class="co"> 45</span></span>
-<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>::: {.callout-note title="Questions"}</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="an">mode:</span><span class="co"> in-class</span></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="an">teaching:</span><span class="co"> 90</span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a><span class="an">exercises:</span><span class="co"> 45</span></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a><span class="an">optional:</span><span class="co"> false</span></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
 <span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>How do we load a CellRanger output and combine four samples into a single Seurat object?</span>
-<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Why does SCTransform need to run before PCA, and what does each step contribute?</span>
-<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>When does GEM-well batch correction matter, and how do we check that Harmony actually helped?</span>
-<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>How do we choose a clustering resolution that produces biologically interpretable groups?</span>
-<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>::: {.callout-note title="Questions"}</span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>How do we load a CellRanger output and combine four samples into a single Seurat object?</span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Why does SCTransform need to run before PCA, and what does each step contribute?</span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>When does GEM-well batch correction matter, and how do we check that Harmony actually helped?</span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>How do we choose a clustering resolution that produces biologically interpretable groups?</span>
 <span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a>::: {.callout-tip title="Objectives"}</span>
+<span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a>:::</span>
 <span id="cb20-17"><a href="#cb20-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-18"><a href="#cb20-18" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Load CellRanger-derived 10X count matrices for four EO samples and merge them into one Seurat object.</span>
-<span id="cb20-19"><a href="#cb20-19" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Attach experimental metadata (sample, fish ID, treatment) before any downstream analysis.</span>
-<span id="cb20-20"><a href="#cb20-20" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Apply SCTransform variance-stabilizing normalization and identify highly variable genes.</span>
-<span id="cb20-21"><a href="#cb20-21" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Run PCA and read an elbow plot to pick how many PCs to retain.</span>
-<span id="cb20-22"><a href="#cb20-22" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Correct for GEM-well batch with Harmony; compare PCA and Harmony UMAPs to confirm the correction.</span>
-<span id="cb20-23"><a href="#cb20-23" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Build a kNN graph on the Harmony embedding, cluster with Louvain, and visualize the result by sample, treatment, and cluster.</span>
-<span id="cb20-24"><a href="#cb20-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-25"><a href="#cb20-25" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb20-18"><a href="#cb20-18" aria-hidden="true" tabindex="-1"></a>::: {.callout-tip title="Objectives"}</span>
+<span id="cb20-19"><a href="#cb20-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-20"><a href="#cb20-20" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Load CellRanger-derived 10X count matrices for four EO samples and merge them into one Seurat object.</span>
+<span id="cb20-21"><a href="#cb20-21" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Attach experimental metadata (sample, fish ID, treatment) before any downstream analysis.</span>
+<span id="cb20-22"><a href="#cb20-22" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Apply SCTransform variance-stabilizing normalization and identify highly variable genes.</span>
+<span id="cb20-23"><a href="#cb20-23" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Run PCA and read an elbow plot to pick how many PCs to retain.</span>
+<span id="cb20-24"><a href="#cb20-24" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Correct for GEM-well batch with Harmony; compare PCA and Harmony UMAPs to confirm the correction.</span>
+<span id="cb20-25"><a href="#cb20-25" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Build a kNN graph on the Harmony embedding, cluster with Louvain, and visualize the result by sample, treatment, and cluster.</span>
 <span id="cb20-26"><a href="#cb20-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-27"><a href="#cb20-27" aria-hidden="true" tabindex="-1"></a><span class="fu">## Introduction</span></span>
+<span id="cb20-27"><a href="#cb20-27" aria-hidden="true" tabindex="-1"></a>:::</span>
 <span id="cb20-28"><a href="#cb20-28" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-29"><a href="#cb20-29" aria-hidden="true" tabindex="-1"></a>You watched the QC video and worked through the four-pool worksheet before class. The verdict was unambiguous: **Pool 3 — the electric organ — is the focus of this workshop.** Pool 4 was excluded, Pools 1 and 2 are available for special projects, and the EO library is real, with reasonable Cell Ranger cell calls and intronic fraction that — while lower than ideal — supports analysis.</span>
+<span id="cb20-29"><a href="#cb20-29" aria-hidden="true" tabindex="-1"></a><span class="fu">## Introduction</span></span>
 <span id="cb20-30"><a href="#cb20-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-31"><a href="#cb20-31" aria-hidden="true" tabindex="-1"></a>This episode takes that raw count matrix and walks it through everything you need before you can ask any biological question:</span>
+<span id="cb20-31"><a href="#cb20-31" aria-hidden="true" tabindex="-1"></a>You watched the QC video and worked through the four-pool worksheet before class. The verdict was unambiguous: **Pool 3 — the electric organ — is the focus of this workshop.** Pool 4 was excluded, Pools 1 and 2 are available for special projects, and the EO library is real, with reasonable Cell Ranger cell calls and intronic fraction that — while lower than ideal — supports analysis.</span>
 <span id="cb20-32"><a href="#cb20-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-33"><a href="#cb20-33" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Load the four samples and merge them.</span>
-<span id="cb20-34"><a href="#cb20-34" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Stamp every nucleus with its sample, fish, and treatment label.</span>
-<span id="cb20-35"><a href="#cb20-35" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Normalize with SCTransform.</span>
-<span id="cb20-36"><a href="#cb20-36" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>Reduce dimensionality with PCA.</span>
-<span id="cb20-37"><a href="#cb20-37" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>Correct GEM-well batch with Harmony.</span>
-<span id="cb20-38"><a href="#cb20-38" aria-hidden="true" tabindex="-1"></a><span class="ss">6. </span>Cluster on the Harmony embedding.</span>
-<span id="cb20-39"><a href="#cb20-39" aria-hidden="true" tabindex="-1"></a><span class="ss">7. </span>Visualize and save a checkpoint for Saturday.</span>
-<span id="cb20-40"><a href="#cb20-40" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-41"><a href="#cb20-41" aria-hidden="true" tabindex="-1"></a>By the end of class today you will have an annotated Seurat object with clusters laid out on a UMAP. Tomorrow we use that object to assign cell types and run the 11-KT contrast.</span>
+<span id="cb20-33"><a href="#cb20-33" aria-hidden="true" tabindex="-1"></a>This episode takes that raw count matrix and walks it through everything you need before you can ask any biological question:</span>
+<span id="cb20-34"><a href="#cb20-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-35"><a href="#cb20-35" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Load the four samples and merge them.</span>
+<span id="cb20-36"><a href="#cb20-36" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Stamp every nucleus with its sample, fish, and treatment label.</span>
+<span id="cb20-37"><a href="#cb20-37" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Normalize with SCTransform.</span>
+<span id="cb20-38"><a href="#cb20-38" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>Reduce dimensionality with PCA.</span>
+<span id="cb20-39"><a href="#cb20-39" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>Correct GEM-well batch with Harmony.</span>
+<span id="cb20-40"><a href="#cb20-40" aria-hidden="true" tabindex="-1"></a><span class="ss">6. </span>Cluster on the Harmony embedding.</span>
+<span id="cb20-41"><a href="#cb20-41" aria-hidden="true" tabindex="-1"></a><span class="ss">7. </span>Visualize and save a checkpoint for Saturday.</span>
 <span id="cb20-42"><a href="#cb20-42" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-43"><a href="#cb20-43" aria-hidden="true" tabindex="-1"></a>::: {.callout-tip title="Where the data lives"}</span>
+<span id="cb20-43"><a href="#cb20-43" aria-hidden="true" tabindex="-1"></a>By the end of class today you will have an annotated Seurat object with clusters laid out on a UMAP. Tomorrow we use that object to assign cell types and run the 11-KT contrast.</span>
 <span id="cb20-44"><a href="#cb20-44" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-45"><a href="#cb20-45" aria-hidden="true" tabindex="-1"></a>The four EO samples live on the workshop server under <span class="in">`data/ssrnaseq_data/EO/`</span>. Each sample (<span class="in">`BB48`</span>, <span class="in">`BB49INJ`</span>, <span class="in">`BB50`</span>, <span class="in">`BB50INJ`</span>) is its own folder of 10X-format files: <span class="in">`barcodes.tsv.gz`</span>, <span class="in">`features.tsv.gz`</span>, <span class="in">`matrix.mtx.gz`</span>. The genome annotation (<span class="in">`genes.gtf.gz`</span>) sits one directory up. You do not need to copy any of this — <span class="in">`Read10X()`</span> reads directly from the folder structure.</span>
+<span id="cb20-45"><a href="#cb20-45" aria-hidden="true" tabindex="-1"></a>::: {.callout-tip title="Where the data lives"}</span>
 <span id="cb20-46"><a href="#cb20-46" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-47"><a href="#cb20-47" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb20-47"><a href="#cb20-47" aria-hidden="true" tabindex="-1"></a>The four EO samples live on the workshop server under <span class="in">`data/ssrnaseq_data/EO/`</span>. Each sample (<span class="in">`BB48`</span>, <span class="in">`BB49INJ`</span>, <span class="in">`BB50`</span>, <span class="in">`BB50INJ`</span>) is its own folder of 10X-format files: <span class="in">`barcodes.tsv.gz`</span>, <span class="in">`features.tsv.gz`</span>, <span class="in">`matrix.mtx.gz`</span>. The genome annotation (<span class="in">`genes.gtf.gz`</span>) sits one directory up. You do not need to copy any of this — <span class="in">`Read10X()`</span> reads directly from the folder structure.</span>
 <span id="cb20-48"><a href="#cb20-48" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-49"><a href="#cb20-49" aria-hidden="true" tabindex="-1"></a><span class="fu">## Setup</span></span>
+<span id="cb20-49"><a href="#cb20-49" aria-hidden="true" tabindex="-1"></a>:::</span>
 <span id="cb20-50"><a href="#cb20-50" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-51"><a href="#cb20-51" aria-hidden="true" tabindex="-1"></a>We use Seurat for everything single-cell, tidyverse for data manipulation, and three specialized packages: <span class="in">`glmGamPoi`</span> (accelerates SCTransform), <span class="in">`presto`</span> (accelerates Wilcoxon for FindMarkers tomorrow), and <span class="in">`harmony`</span> (batch correction).</span>
+<span id="cb20-51"><a href="#cb20-51" aria-hidden="true" tabindex="-1"></a><span class="fu">## Setup</span></span>
 <span id="cb20-52"><a href="#cb20-52" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-53"><a href="#cb20-53" aria-hidden="true" tabindex="-1"></a><span class="in">```{r load-libraries, message=FALSE, warning=FALSE}</span></span>
-<span id="cb20-54"><a href="#cb20-54" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(Seurat)</span>
-<span id="cb20-55"><a href="#cb20-55" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb20-56"><a href="#cb20-56" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(patchwork)</span>
-<span id="cb20-57"><a href="#cb20-57" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(glmGamPoi)</span>
-<span id="cb20-58"><a href="#cb20-58" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(presto)</span>
-<span id="cb20-59"><a href="#cb20-59" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(harmony)</span>
-<span id="cb20-60"><a href="#cb20-60" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb20-61"><a href="#cb20-61" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-62"><a href="#cb20-62" aria-hidden="true" tabindex="-1"></a><span class="fu">## Load the four EO samples</span></span>
+<span id="cb20-53"><a href="#cb20-53" aria-hidden="true" tabindex="-1"></a>We use Seurat for everything single-cell, tidyverse for data manipulation, and three specialized packages: <span class="in">`glmGamPoi`</span> (accelerates SCTransform), <span class="in">`presto`</span> (accelerates Wilcoxon for FindMarkers tomorrow), and <span class="in">`harmony`</span> (batch correction).</span>
+<span id="cb20-54"><a href="#cb20-54" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-55"><a href="#cb20-55" aria-hidden="true" tabindex="-1"></a><span class="in">```{r load-libraries, message=FALSE, warning=FALSE}</span></span>
+<span id="cb20-56"><a href="#cb20-56" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(Seurat)</span>
+<span id="cb20-57"><a href="#cb20-57" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb20-58"><a href="#cb20-58" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(patchwork)</span>
+<span id="cb20-59"><a href="#cb20-59" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(glmGamPoi)</span>
+<span id="cb20-60"><a href="#cb20-60" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(presto)</span>
+<span id="cb20-61"><a href="#cb20-61" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(harmony)</span>
+<span id="cb20-62"><a href="#cb20-62" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb20-63"><a href="#cb20-63" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-64"><a href="#cb20-64" aria-hidden="true" tabindex="-1"></a><span class="in">`Read10X()`</span> reads a 10X-format folder and returns a sparse count matrix; <span class="in">`CreateSeuratObject()`</span> wraps it with metadata structure. We loop over the four samples and keep each as a separate Seurat object for now — the merge step is cleaner that way.</span>
+<span id="cb20-64"><a href="#cb20-64" aria-hidden="true" tabindex="-1"></a><span class="fu">## Load the four EO samples</span></span>
 <span id="cb20-65"><a href="#cb20-65" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-66"><a href="#cb20-66" aria-hidden="true" tabindex="-1"></a><span class="in">```{r load-data, message=FALSE, warning=FALSE}</span></span>
-<span id="cb20-67"><a href="#cb20-67" aria-hidden="true" tabindex="-1"></a>tissue <span class="ot">&lt;-</span> <span class="st">"EO"</span></span>
-<span id="cb20-68"><a href="#cb20-68" aria-hidden="true" tabindex="-1"></a>sample_names <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"BB48"</span>, <span class="st">"BB49INJ"</span>, <span class="st">"BB50"</span>, <span class="st">"BB50INJ"</span>)</span>
-<span id="cb20-69"><a href="#cb20-69" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-70"><a href="#cb20-70" aria-hidden="true" tabindex="-1"></a>list_seurat <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb20-66"><a href="#cb20-66" aria-hidden="true" tabindex="-1"></a><span class="in">`Read10X()`</span> reads a 10X-format folder and returns a sparse count matrix; <span class="in">`CreateSeuratObject()`</span> wraps it with metadata structure. We loop over the four samples and keep each as a separate Seurat object for now — the merge step is cleaner that way.</span>
+<span id="cb20-67"><a href="#cb20-67" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-68"><a href="#cb20-68" aria-hidden="true" tabindex="-1"></a><span class="in">```{r load-data, message=FALSE, warning=FALSE}</span></span>
+<span id="cb20-69"><a href="#cb20-69" aria-hidden="true" tabindex="-1"></a>tissue <span class="ot">&lt;-</span> <span class="st">"EO"</span></span>
+<span id="cb20-70"><a href="#cb20-70" aria-hidden="true" tabindex="-1"></a>sample_names <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"BB48"</span>, <span class="st">"BB49INJ"</span>, <span class="st">"BB50"</span>, <span class="st">"BB50INJ"</span>)</span>
 <span id="cb20-71"><a href="#cb20-71" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-72"><a href="#cb20-72" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (sample <span class="cf">in</span> sample_names) {</span>
-<span id="cb20-73"><a href="#cb20-73" aria-hidden="true" tabindex="-1"></a>  data_dir <span class="ot">&lt;-</span> <span class="fu">file.path</span>(<span class="st">"data/ssrnaseq_data"</span>, tissue, sample)</span>
-<span id="cb20-74"><a href="#cb20-74" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-75"><a href="#cb20-75" aria-hidden="true" tabindex="-1"></a>  seurat_data <span class="ot">&lt;-</span> <span class="fu">Read10X</span>(<span class="at">data.dir =</span> data_dir)</span>
-<span id="cb20-76"><a href="#cb20-76" aria-hidden="true" tabindex="-1"></a>  seurat_obj <span class="ot">&lt;-</span> <span class="fu">CreateSeuratObject</span>(</span>
-<span id="cb20-77"><a href="#cb20-77" aria-hidden="true" tabindex="-1"></a>    <span class="at">counts =</span> seurat_data,</span>
-<span id="cb20-78"><a href="#cb20-78" aria-hidden="true" tabindex="-1"></a>    <span class="at">min.features =</span> <span class="dv">1</span>,</span>
-<span id="cb20-79"><a href="#cb20-79" aria-hidden="true" tabindex="-1"></a>    <span class="at">project =</span> <span class="fu">paste0</span>(tissue, <span class="st">"_"</span>, sample)</span>
-<span id="cb20-80"><a href="#cb20-80" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb20-81"><a href="#cb20-81" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-82"><a href="#cb20-82" aria-hidden="true" tabindex="-1"></a>  list_seurat[[sample]] <span class="ot">&lt;-</span> seurat_obj</span>
-<span id="cb20-83"><a href="#cb20-83" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb20-84"><a href="#cb20-84" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb20-85"><a href="#cb20-85" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-86"><a href="#cb20-86" aria-hidden="true" tabindex="-1"></a>::: {.callout-note title="Why we do not filter further"}</span>
+<span id="cb20-72"><a href="#cb20-72" aria-hidden="true" tabindex="-1"></a>list_seurat <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb20-73"><a href="#cb20-73" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-74"><a href="#cb20-74" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (sample <span class="cf">in</span> sample_names) {</span>
+<span id="cb20-75"><a href="#cb20-75" aria-hidden="true" tabindex="-1"></a>  data_dir <span class="ot">&lt;-</span> <span class="fu">file.path</span>(<span class="st">"data/ssrnaseq_data"</span>, tissue, sample)</span>
+<span id="cb20-76"><a href="#cb20-76" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-77"><a href="#cb20-77" aria-hidden="true" tabindex="-1"></a>  seurat_data <span class="ot">&lt;-</span> <span class="fu">Read10X</span>(<span class="at">data.dir =</span> data_dir)</span>
+<span id="cb20-78"><a href="#cb20-78" aria-hidden="true" tabindex="-1"></a>  seurat_obj <span class="ot">&lt;-</span> <span class="fu">CreateSeuratObject</span>(</span>
+<span id="cb20-79"><a href="#cb20-79" aria-hidden="true" tabindex="-1"></a>    <span class="at">counts =</span> seurat_data,</span>
+<span id="cb20-80"><a href="#cb20-80" aria-hidden="true" tabindex="-1"></a>    <span class="at">min.features =</span> <span class="dv">1</span>,</span>
+<span id="cb20-81"><a href="#cb20-81" aria-hidden="true" tabindex="-1"></a>    <span class="at">project =</span> <span class="fu">paste0</span>(tissue, <span class="st">"_"</span>, sample)</span>
+<span id="cb20-82"><a href="#cb20-82" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb20-83"><a href="#cb20-83" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-84"><a href="#cb20-84" aria-hidden="true" tabindex="-1"></a>  list_seurat[[sample]] <span class="ot">&lt;-</span> seurat_obj</span>
+<span id="cb20-85"><a href="#cb20-85" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb20-86"><a href="#cb20-86" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb20-87"><a href="#cb20-87" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-88"><a href="#cb20-88" aria-hidden="true" tabindex="-1"></a>Older snRNA-seq tutorials apply heavy manual filtering — minimum UMI thresholds, gene-per-cell cutoffs, mitochondrial-percent caps. We trust Cell Ranger's cell calls in this workshop and skip that step. Two reasons:</span>
+<span id="cb20-88"><a href="#cb20-88" aria-hidden="true" tabindex="-1"></a>::: {.callout-note title="Why we do not filter further"}</span>
 <span id="cb20-89"><a href="#cb20-89" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-90"><a href="#cb20-90" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>CellRanger's barcode-rank algorithm gave clean cell calls for the EO pool (see the QC worksheet you completed before class — there is a clear knee).</span>
-<span id="cb20-91"><a href="#cb20-91" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Manual thresholds on UMI and gene counts encode arbitrary judgment calls. We learn more by reading the Cell Ranger metrics carefully than by re-running a hand-tuned filter in Seurat.</span>
-<span id="cb20-92"><a href="#cb20-92" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-93"><a href="#cb20-93" aria-hidden="true" tabindex="-1"></a>For a production analysis you would also run CellBender for ambient-RNA removal. We skip that here to keep the pipeline self-contained; it is something to revisit before publishing.</span>
+<span id="cb20-90"><a href="#cb20-90" aria-hidden="true" tabindex="-1"></a>Older snRNA-seq tutorials apply heavy manual filtering — minimum UMI thresholds, gene-per-cell cutoffs, mitochondrial-percent caps. We trust Cell Ranger's cell calls in this workshop and skip that step. Two reasons:</span>
+<span id="cb20-91"><a href="#cb20-91" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-92"><a href="#cb20-92" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>CellRanger's barcode-rank algorithm gave clean cell calls for the EO pool (see the QC worksheet you completed before class — there is a clear knee).</span>
+<span id="cb20-93"><a href="#cb20-93" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Manual thresholds on UMI and gene counts encode arbitrary judgment calls. We learn more by reading the Cell Ranger metrics carefully than by re-running a hand-tuned filter in Seurat.</span>
 <span id="cb20-94"><a href="#cb20-94" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-95"><a href="#cb20-95" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb20-95"><a href="#cb20-95" aria-hidden="true" tabindex="-1"></a>For a production analysis you would also run CellBender for ambient-RNA removal. We skip that here to keep the pipeline self-contained; it is something to revisit before publishing.</span>
 <span id="cb20-96"><a href="#cb20-96" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-97"><a href="#cb20-97" aria-hidden="true" tabindex="-1"></a><span class="fu">## Merge samples and attach metadata</span></span>
+<span id="cb20-97"><a href="#cb20-97" aria-hidden="true" tabindex="-1"></a>:::</span>
 <span id="cb20-98"><a href="#cb20-98" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-99"><a href="#cb20-99" aria-hidden="true" tabindex="-1"></a>Before any normalization, we merge the four objects into one and stamp each nucleus with the metadata that will travel with it for the rest of the analysis: sample, fish, and treatment.</span>
+<span id="cb20-99"><a href="#cb20-99" aria-hidden="true" tabindex="-1"></a><span class="fu">## Merge samples and attach metadata</span></span>
 <span id="cb20-100"><a href="#cb20-100" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-101"><a href="#cb20-101" aria-hidden="true" tabindex="-1"></a><span class="in">```{r merge-and-annotate, message=FALSE, warning=FALSE}</span></span>
-<span id="cb20-102"><a href="#cb20-102" aria-hidden="true" tabindex="-1"></a><span class="co"># Merge into one object; add.cell.id prefixes each barcode with its sample</span></span>
-<span id="cb20-103"><a href="#cb20-103" aria-hidden="true" tabindex="-1"></a>merged_seurat <span class="ot">&lt;-</span> <span class="fu">merge</span>(</span>
-<span id="cb20-104"><a href="#cb20-104" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> list_seurat[[<span class="dv">1</span>]],</span>
-<span id="cb20-105"><a href="#cb20-105" aria-hidden="true" tabindex="-1"></a>  <span class="at">y =</span> list_seurat[<span class="dv">2</span><span class="sc">:</span><span class="fu">length</span>(list_seurat)],</span>
-<span id="cb20-106"><a href="#cb20-106" aria-hidden="true" tabindex="-1"></a>  <span class="at">add.cell.id =</span> <span class="fu">names</span>(list_seurat)</span>
-<span id="cb20-107"><a href="#cb20-107" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb20-108"><a href="#cb20-108" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-109"><a href="#cb20-109" aria-hidden="true" tabindex="-1"></a><span class="co"># Seurat v5 layers must be joined before downstream analysis</span></span>
-<span id="cb20-110"><a href="#cb20-110" aria-hidden="true" tabindex="-1"></a>merged_seurat <span class="ot">&lt;-</span> <span class="fu">JoinLayers</span>(merged_seurat)</span>
-<span id="cb20-111"><a href="#cb20-111" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-112"><a href="#cb20-112" aria-hidden="true" tabindex="-1"></a><span class="co"># sample: strip the tissue prefix from orig.ident</span></span>
-<span id="cb20-113"><a href="#cb20-113" aria-hidden="true" tabindex="-1"></a>merged_seurat<span class="sc">$</span>sample <span class="ot">&lt;-</span> <span class="fu">sub</span>(<span class="st">"EO_"</span>, <span class="st">""</span>, merged_seurat<span class="sc">$</span>orig.ident)</span>
-<span id="cb20-114"><a href="#cb20-114" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-115"><a href="#cb20-115" aria-hidden="true" tabindex="-1"></a><span class="co"># fish: same as sample — each is a different individual</span></span>
-<span id="cb20-116"><a href="#cb20-116" aria-hidden="true" tabindex="-1"></a>merged_seurat<span class="sc">$</span>fish <span class="ot">&lt;-</span> merged_seurat<span class="sc">$</span>sample</span>
-<span id="cb20-117"><a href="#cb20-117" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-118"><a href="#cb20-118" aria-hidden="true" tabindex="-1"></a><span class="co"># treatment: assigned by fish ID, NOT by the INJ suffix</span></span>
-<span id="cb20-119"><a href="#cb20-119" aria-hidden="true" tabindex="-1"></a><span class="co"># 11-KT treated: BB48, BB49INJ</span></span>
-<span id="cb20-120"><a href="#cb20-120" aria-hidden="true" tabindex="-1"></a><span class="co"># Vehicle:       BB50, BB50INJ</span></span>
-<span id="cb20-121"><a href="#cb20-121" aria-hidden="true" tabindex="-1"></a>treatment_map <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
-<span id="cb20-122"><a href="#cb20-122" aria-hidden="true" tabindex="-1"></a>  <span class="at">BB48    =</span> <span class="st">"11kt"</span>,</span>
-<span id="cb20-123"><a href="#cb20-123" aria-hidden="true" tabindex="-1"></a>  <span class="at">BB49INJ =</span> <span class="st">"11kt"</span>,</span>
-<span id="cb20-124"><a href="#cb20-124" aria-hidden="true" tabindex="-1"></a>  <span class="at">BB50    =</span> <span class="st">"vehicle"</span>,</span>
-<span id="cb20-125"><a href="#cb20-125" aria-hidden="true" tabindex="-1"></a>  <span class="at">BB50INJ =</span> <span class="st">"vehicle"</span></span>
-<span id="cb20-126"><a href="#cb20-126" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb20-127"><a href="#cb20-127" aria-hidden="true" tabindex="-1"></a>merged_seurat<span class="sc">$</span>treatment <span class="ot">&lt;-</span> <span class="fu">unname</span>(treatment_map[merged_seurat<span class="sc">$</span>sample])</span>
-<span id="cb20-128"><a href="#cb20-128" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-129"><a href="#cb20-129" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(merged_seurat<span class="sc">@</span>meta.data)</span>
-<span id="cb20-130"><a href="#cb20-130" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb20-131"><a href="#cb20-131" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-132"><a href="#cb20-132" aria-hidden="true" tabindex="-1"></a>::: {.callout-warning title="The INJ suffix is a library label, not a treatment indicator"}</span>
+<span id="cb20-101"><a href="#cb20-101" aria-hidden="true" tabindex="-1"></a>Before any normalization, we merge the four objects into one and stamp each nucleus with the metadata that will travel with it for the rest of the analysis: sample, fish, and treatment.</span>
+<span id="cb20-102"><a href="#cb20-102" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-103"><a href="#cb20-103" aria-hidden="true" tabindex="-1"></a><span class="in">```{r merge-and-annotate, message=FALSE, warning=FALSE}</span></span>
+<span id="cb20-104"><a href="#cb20-104" aria-hidden="true" tabindex="-1"></a><span class="co"># Merge into one object; add.cell.id prefixes each barcode with its sample</span></span>
+<span id="cb20-105"><a href="#cb20-105" aria-hidden="true" tabindex="-1"></a>merged_seurat <span class="ot">&lt;-</span> <span class="fu">merge</span>(</span>
+<span id="cb20-106"><a href="#cb20-106" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> list_seurat[[<span class="dv">1</span>]],</span>
+<span id="cb20-107"><a href="#cb20-107" aria-hidden="true" tabindex="-1"></a>  <span class="at">y =</span> list_seurat[<span class="dv">2</span><span class="sc">:</span><span class="fu">length</span>(list_seurat)],</span>
+<span id="cb20-108"><a href="#cb20-108" aria-hidden="true" tabindex="-1"></a>  <span class="at">add.cell.id =</span> <span class="fu">names</span>(list_seurat)</span>
+<span id="cb20-109"><a href="#cb20-109" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb20-110"><a href="#cb20-110" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-111"><a href="#cb20-111" aria-hidden="true" tabindex="-1"></a><span class="co"># Seurat v5 layers must be joined before downstream analysis</span></span>
+<span id="cb20-112"><a href="#cb20-112" aria-hidden="true" tabindex="-1"></a>merged_seurat <span class="ot">&lt;-</span> <span class="fu">JoinLayers</span>(merged_seurat)</span>
+<span id="cb20-113"><a href="#cb20-113" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-114"><a href="#cb20-114" aria-hidden="true" tabindex="-1"></a><span class="co"># sample: strip the tissue prefix from orig.ident</span></span>
+<span id="cb20-115"><a href="#cb20-115" aria-hidden="true" tabindex="-1"></a>merged_seurat<span class="sc">$</span>sample <span class="ot">&lt;-</span> <span class="fu">sub</span>(<span class="st">"EO_"</span>, <span class="st">""</span>, merged_seurat<span class="sc">$</span>orig.ident)</span>
+<span id="cb20-116"><a href="#cb20-116" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-117"><a href="#cb20-117" aria-hidden="true" tabindex="-1"></a><span class="co"># fish: same as sample — each is a different individual</span></span>
+<span id="cb20-118"><a href="#cb20-118" aria-hidden="true" tabindex="-1"></a>merged_seurat<span class="sc">$</span>fish <span class="ot">&lt;-</span> merged_seurat<span class="sc">$</span>sample</span>
+<span id="cb20-119"><a href="#cb20-119" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-120"><a href="#cb20-120" aria-hidden="true" tabindex="-1"></a><span class="co"># treatment: assigned by fish ID, NOT by the INJ suffix</span></span>
+<span id="cb20-121"><a href="#cb20-121" aria-hidden="true" tabindex="-1"></a><span class="co"># 11-KT treated: BB48, BB49INJ</span></span>
+<span id="cb20-122"><a href="#cb20-122" aria-hidden="true" tabindex="-1"></a><span class="co"># Vehicle:       BB50, BB50INJ</span></span>
+<span id="cb20-123"><a href="#cb20-123" aria-hidden="true" tabindex="-1"></a>treatment_map <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb20-124"><a href="#cb20-124" aria-hidden="true" tabindex="-1"></a>  <span class="at">BB48    =</span> <span class="st">"11kt"</span>,</span>
+<span id="cb20-125"><a href="#cb20-125" aria-hidden="true" tabindex="-1"></a>  <span class="at">BB49INJ =</span> <span class="st">"11kt"</span>,</span>
+<span id="cb20-126"><a href="#cb20-126" aria-hidden="true" tabindex="-1"></a>  <span class="at">BB50    =</span> <span class="st">"vehicle"</span>,</span>
+<span id="cb20-127"><a href="#cb20-127" aria-hidden="true" tabindex="-1"></a>  <span class="at">BB50INJ =</span> <span class="st">"vehicle"</span></span>
+<span id="cb20-128"><a href="#cb20-128" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb20-129"><a href="#cb20-129" aria-hidden="true" tabindex="-1"></a>merged_seurat<span class="sc">$</span>treatment <span class="ot">&lt;-</span> <span class="fu">unname</span>(treatment_map[merged_seurat<span class="sc">$</span>sample])</span>
+<span id="cb20-130"><a href="#cb20-130" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-131"><a href="#cb20-131" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(merged_seurat<span class="sc">@</span>meta.data)</span>
+<span id="cb20-132"><a href="#cb20-132" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb20-133"><a href="#cb20-133" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-134"><a href="#cb20-134" aria-hidden="true" tabindex="-1"></a>Two samples are named **BB49INJ** and **BB50INJ**. The "INJ" suffix records a library-preparation detail — it does **not** indicate that those fish received a vehicle injection. Treatment is assigned by fish identity:</span>
+<span id="cb20-134"><a href="#cb20-134" aria-hidden="true" tabindex="-1"></a>::: {.callout-warning title="The INJ suffix is a library label, not a treatment indicator"}</span>
 <span id="cb20-135"><a href="#cb20-135" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-136"><a href="#cb20-136" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Fish    <span class="pp">|</span> Treatment                   <span class="pp">|</span></span>
-<span id="cb20-137"><a href="#cb20-137" aria-hidden="true" tabindex="-1"></a><span class="pp">|---------|-----------------------------|</span></span>
-<span id="cb20-138"><a href="#cb20-138" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> BB48    <span class="pp">|</span> 11-ketotestosterone (11-KT) <span class="pp">|</span></span>
-<span id="cb20-139"><a href="#cb20-139" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> BB49INJ <span class="pp">|</span> 11-ketotestosterone (11-KT) <span class="pp">|</span></span>
-<span id="cb20-140"><a href="#cb20-140" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> BB50    <span class="pp">|</span> Vehicle (cocoa butter)      <span class="pp">|</span></span>
-<span id="cb20-141"><a href="#cb20-141" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> BB50INJ <span class="pp">|</span> Vehicle (cocoa butter)      <span class="pp">|</span></span>
-<span id="cb20-142"><a href="#cb20-142" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-143"><a href="#cb20-143" aria-hidden="true" tabindex="-1"></a>Using the INJ string to infer treatment would flip the condition label for BB49INJ, producing exactly-wrong results downstream. Always check the experimental metadata, never the sample name.</span>
+<span id="cb20-136"><a href="#cb20-136" aria-hidden="true" tabindex="-1"></a>Two samples are named **BB49INJ** and **BB50INJ**. The "INJ" suffix records a library-preparation detail — it does **not** indicate that those fish received a vehicle injection. Treatment is assigned by fish identity:</span>
+<span id="cb20-137"><a href="#cb20-137" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-138"><a href="#cb20-138" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Fish    <span class="pp">|</span> Treatment                   <span class="pp">|</span></span>
+<span id="cb20-139"><a href="#cb20-139" aria-hidden="true" tabindex="-1"></a><span class="pp">|---------|-----------------------------|</span></span>
+<span id="cb20-140"><a href="#cb20-140" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> BB48    <span class="pp">|</span> 11-ketotestosterone (11-KT) <span class="pp">|</span></span>
+<span id="cb20-141"><a href="#cb20-141" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> BB49INJ <span class="pp">|</span> 11-ketotestosterone (11-KT) <span class="pp">|</span></span>
+<span id="cb20-142"><a href="#cb20-142" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> BB50    <span class="pp">|</span> Vehicle (cocoa butter)      <span class="pp">|</span></span>
+<span id="cb20-143"><a href="#cb20-143" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> BB50INJ <span class="pp">|</span> Vehicle (cocoa butter)      <span class="pp">|</span></span>
 <span id="cb20-144"><a href="#cb20-144" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-145"><a href="#cb20-145" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb20-145"><a href="#cb20-145" aria-hidden="true" tabindex="-1"></a>Using the INJ string to infer treatment would flip the condition label for BB49INJ, producing exactly-wrong results downstream. Always check the experimental metadata, never the sample name.</span>
 <span id="cb20-146"><a href="#cb20-146" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-147"><a href="#cb20-147" aria-hidden="true" tabindex="-1"></a><span class="fu">## Quick visual QC</span></span>
+<span id="cb20-147"><a href="#cb20-147" aria-hidden="true" tabindex="-1"></a>:::</span>
 <span id="cb20-148"><a href="#cb20-148" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-149"><a href="#cb20-149" aria-hidden="true" tabindex="-1"></a>The QC video covered Cell Ranger metrics in depth. Here we just confirm the per-sample UMI and gene distributions look like what we'd expect — no extra filtering. If one sample looked categorically different from the others (a la Pool 4) we'd stop and reconsider; the EO samples will look reasonable.</span>
+<span id="cb20-149"><a href="#cb20-149" aria-hidden="true" tabindex="-1"></a><span class="fu">## Quick visual QC</span></span>
 <span id="cb20-150"><a href="#cb20-150" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-151"><a href="#cb20-151" aria-hidden="true" tabindex="-1"></a><span class="in">```{r qc-violin, fig.width=10, fig.height=5, message=FALSE, warning=FALSE, fig.alt="Violin plots of UMI counts and gene counts per sample.", fig.cap="Distribution of UMI counts (left) and detected genes (right) for each of the four EO samples. Each violin is one sample; points are individual nuclei."}</span></span>
-<span id="cb20-152"><a href="#cb20-152" aria-hidden="true" tabindex="-1"></a>p_count <span class="ot">&lt;-</span> <span class="fu">VlnPlot</span>(merged_seurat,</span>
-<span id="cb20-153"><a href="#cb20-153" aria-hidden="true" tabindex="-1"></a>  <span class="at">features =</span> <span class="st">"nCount_RNA"</span>,</span>
-<span id="cb20-154"><a href="#cb20-154" aria-hidden="true" tabindex="-1"></a>  <span class="at">group.by =</span> <span class="st">"orig.ident"</span>,</span>
-<span id="cb20-155"><a href="#cb20-155" aria-hidden="true" tabindex="-1"></a>  <span class="at">pt.size =</span> <span class="dv">0</span>,</span>
-<span id="cb20-156"><a href="#cb20-156" aria-hidden="true" tabindex="-1"></a>  <span class="at">cols =</span> <span class="fu">c</span>(<span class="st">"#E69F00"</span>, <span class="st">"#56B4E9"</span>, <span class="st">"#009E73"</span>, <span class="st">"#F0E442"</span>)</span>
-<span id="cb20-157"><a href="#cb20-157" aria-hidden="true" tabindex="-1"></a>) <span class="sc">+</span></span>
-<span id="cb20-158"><a href="#cb20-158" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"none"</span>) <span class="sc">+</span></span>
-<span id="cb20-159"><a href="#cb20-159" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"UMI counts per nucleus"</span>)</span>
-<span id="cb20-160"><a href="#cb20-160" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-161"><a href="#cb20-161" aria-hidden="true" tabindex="-1"></a>p_feat <span class="ot">&lt;-</span> <span class="fu">VlnPlot</span>(merged_seurat,</span>
-<span id="cb20-162"><a href="#cb20-162" aria-hidden="true" tabindex="-1"></a>  <span class="at">features =</span> <span class="st">"nFeature_RNA"</span>,</span>
-<span id="cb20-163"><a href="#cb20-163" aria-hidden="true" tabindex="-1"></a>  <span class="at">group.by =</span> <span class="st">"orig.ident"</span>,</span>
-<span id="cb20-164"><a href="#cb20-164" aria-hidden="true" tabindex="-1"></a>  <span class="at">pt.size =</span> <span class="dv">0</span>,</span>
-<span id="cb20-165"><a href="#cb20-165" aria-hidden="true" tabindex="-1"></a>  <span class="at">cols =</span> <span class="fu">c</span>(<span class="st">"#E69F00"</span>, <span class="st">"#56B4E9"</span>, <span class="st">"#009E73"</span>, <span class="st">"#F0E442"</span>)</span>
-<span id="cb20-166"><a href="#cb20-166" aria-hidden="true" tabindex="-1"></a>) <span class="sc">+</span></span>
-<span id="cb20-167"><a href="#cb20-167" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"none"</span>) <span class="sc">+</span></span>
-<span id="cb20-168"><a href="#cb20-168" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Genes detected per nucleus"</span>)</span>
-<span id="cb20-169"><a href="#cb20-169" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-170"><a href="#cb20-170" aria-hidden="true" tabindex="-1"></a>p_count <span class="sc">|</span> p_feat</span>
-<span id="cb20-171"><a href="#cb20-171" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb20-172"><a href="#cb20-172" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-173"><a href="#cb20-173" aria-hidden="true" tabindex="-1"></a>::: {.callout-note title="Mitochondrial-percent QC is skipped for this genome"}</span>
+<span id="cb20-151"><a href="#cb20-151" aria-hidden="true" tabindex="-1"></a>The QC video covered Cell Ranger metrics in depth. Here we just confirm the per-sample UMI and gene distributions look like what we'd expect — no extra filtering. If one sample looked categorically different from the others (a la Pool 4) we'd stop and reconsider; the EO samples will look reasonable.</span>
+<span id="cb20-152"><a href="#cb20-152" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-153"><a href="#cb20-153" aria-hidden="true" tabindex="-1"></a><span class="in">```{r qc-violin, fig.width=10, fig.height=5, message=FALSE, warning=FALSE, fig.alt="Violin plots of UMI counts and gene counts per sample.", fig.cap="Distribution of UMI counts (left) and detected genes (right) for each of the four EO samples. Each violin is one sample; points are individual nuclei."}</span></span>
+<span id="cb20-154"><a href="#cb20-154" aria-hidden="true" tabindex="-1"></a>p_count <span class="ot">&lt;-</span> <span class="fu">VlnPlot</span>(merged_seurat,</span>
+<span id="cb20-155"><a href="#cb20-155" aria-hidden="true" tabindex="-1"></a>  <span class="at">features =</span> <span class="st">"nCount_RNA"</span>,</span>
+<span id="cb20-156"><a href="#cb20-156" aria-hidden="true" tabindex="-1"></a>  <span class="at">group.by =</span> <span class="st">"orig.ident"</span>,</span>
+<span id="cb20-157"><a href="#cb20-157" aria-hidden="true" tabindex="-1"></a>  <span class="at">pt.size =</span> <span class="dv">0</span>,</span>
+<span id="cb20-158"><a href="#cb20-158" aria-hidden="true" tabindex="-1"></a>  <span class="at">cols =</span> <span class="fu">c</span>(<span class="st">"#E69F00"</span>, <span class="st">"#56B4E9"</span>, <span class="st">"#009E73"</span>, <span class="st">"#F0E442"</span>)</span>
+<span id="cb20-159"><a href="#cb20-159" aria-hidden="true" tabindex="-1"></a>) <span class="sc">+</span></span>
+<span id="cb20-160"><a href="#cb20-160" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"none"</span>) <span class="sc">+</span></span>
+<span id="cb20-161"><a href="#cb20-161" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"UMI counts per nucleus"</span>)</span>
+<span id="cb20-162"><a href="#cb20-162" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-163"><a href="#cb20-163" aria-hidden="true" tabindex="-1"></a>p_feat <span class="ot">&lt;-</span> <span class="fu">VlnPlot</span>(merged_seurat,</span>
+<span id="cb20-164"><a href="#cb20-164" aria-hidden="true" tabindex="-1"></a>  <span class="at">features =</span> <span class="st">"nFeature_RNA"</span>,</span>
+<span id="cb20-165"><a href="#cb20-165" aria-hidden="true" tabindex="-1"></a>  <span class="at">group.by =</span> <span class="st">"orig.ident"</span>,</span>
+<span id="cb20-166"><a href="#cb20-166" aria-hidden="true" tabindex="-1"></a>  <span class="at">pt.size =</span> <span class="dv">0</span>,</span>
+<span id="cb20-167"><a href="#cb20-167" aria-hidden="true" tabindex="-1"></a>  <span class="at">cols =</span> <span class="fu">c</span>(<span class="st">"#E69F00"</span>, <span class="st">"#56B4E9"</span>, <span class="st">"#009E73"</span>, <span class="st">"#F0E442"</span>)</span>
+<span id="cb20-168"><a href="#cb20-168" aria-hidden="true" tabindex="-1"></a>) <span class="sc">+</span></span>
+<span id="cb20-169"><a href="#cb20-169" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"none"</span>) <span class="sc">+</span></span>
+<span id="cb20-170"><a href="#cb20-170" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Genes detected per nucleus"</span>)</span>
+<span id="cb20-171"><a href="#cb20-171" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-172"><a href="#cb20-172" aria-hidden="true" tabindex="-1"></a>p_count <span class="sc">|</span> p_feat</span>
+<span id="cb20-173"><a href="#cb20-173" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb20-174"><a href="#cb20-174" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-175"><a href="#cb20-175" aria-hidden="true" tabindex="-1"></a>In mouse and human data, the percentage of reads from mitochondrial genes (<span class="in">`percent.mt`</span>) flags damaged or lysed cells. Calling <span class="in">`PercentageFeatureSet(merged_seurat, pattern = "^mt-")`</span> here returns approximately zero for every cell — not because the cells are healthy, but because mitochondrial genes in *B. brachyistius* do not use the <span class="in">`^mt-`</span> prefix. Before applying a mitochondrial filter you would need to identify the correct mitochondrial gene names from <span class="in">`features.tsv.gz`</span>. For this workshop we skip that step.</span>
+<span id="cb20-175"><a href="#cb20-175" aria-hidden="true" tabindex="-1"></a>::: {.callout-note title="Mitochondrial-percent QC is skipped for this genome"}</span>
 <span id="cb20-176"><a href="#cb20-176" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-177"><a href="#cb20-177" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb20-177"><a href="#cb20-177" aria-hidden="true" tabindex="-1"></a>In mouse and human data, the percentage of reads from mitochondrial genes (<span class="in">`percent.mt`</span>) flags damaged or lysed cells. Calling <span class="in">`PercentageFeatureSet(merged_seurat, pattern = "^mt-")`</span> here returns approximately zero for every cell — not because the cells are healthy, but because mitochondrial genes in *B. brachyistius* do not use the <span class="in">`^mt-`</span> prefix. Before applying a mitochondrial filter you would need to identify the correct mitochondrial gene names from <span class="in">`features.tsv.gz`</span>. For this workshop we skip that step.</span>
 <span id="cb20-178"><a href="#cb20-178" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-179"><a href="#cb20-179" aria-hidden="true" tabindex="-1"></a><span class="fu">## Normalization with SCTransform</span></span>
+<span id="cb20-179"><a href="#cb20-179" aria-hidden="true" tabindex="-1"></a>:::</span>
 <span id="cb20-180"><a href="#cb20-180" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-181"><a href="#cb20-181" aria-hidden="true" tabindex="-1"></a>Raw UMI counts vary across nuclei for two reasons: real biology (some cell types transcribe more RNA) and technical noise (nuclei were captured and sequenced at different depths). Normalization removes the technical component so downstream comparisons reflect biology.</span>
+<span id="cb20-181"><a href="#cb20-181" aria-hidden="true" tabindex="-1"></a><span class="fu">## Normalization with SCTransform</span></span>
 <span id="cb20-182"><a href="#cb20-182" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-183"><a href="#cb20-183" aria-hidden="true" tabindex="-1"></a>We use **SCTransform**, which fits a regularized negative binomial regression per gene. The residuals from those fits are variance-stabilized and depth-corrected; they replace raw counts as the working expression matrix (in a new <span class="in">`SCT`</span> assay).</span>
+<span id="cb20-183"><a href="#cb20-183" aria-hidden="true" tabindex="-1"></a>Raw UMI counts vary across nuclei for two reasons: real biology (some cell types transcribe more RNA) and technical noise (nuclei were captured and sequenced at different depths). Normalization removes the technical component so downstream comparisons reflect biology.</span>
 <span id="cb20-184"><a href="#cb20-184" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-185"><a href="#cb20-185" aria-hidden="true" tabindex="-1"></a><span class="in">```{r sctransform, message=FALSE, warning=FALSE}</span></span>
-<span id="cb20-186"><a href="#cb20-186" aria-hidden="true" tabindex="-1"></a>merged_seurat <span class="ot">&lt;-</span> <span class="fu">SCTransform</span>(merged_seurat, <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb20-187"><a href="#cb20-187" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb20-188"><a href="#cb20-188" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-189"><a href="#cb20-189" aria-hidden="true" tabindex="-1"></a>::: {.callout-important title="Challenge 1: Inspect the SCT assay (5 min)"}</span>
+<span id="cb20-185"><a href="#cb20-185" aria-hidden="true" tabindex="-1"></a>We use **SCTransform**, which fits a regularized negative binomial regression per gene. The residuals from those fits are variance-stabilized and depth-corrected; they replace raw counts as the working expression matrix (in a new <span class="in">`SCT`</span> assay).</span>
+<span id="cb20-186"><a href="#cb20-186" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-187"><a href="#cb20-187" aria-hidden="true" tabindex="-1"></a>::: {.callout-note title="Heads up — longest chunk in the lesson"}</span>
+<span id="cb20-188"><a href="#cb20-188" aria-hidden="true" tabindex="-1"></a>SCTransform on four samples takes roughly **3–8 minutes**. The chunk runs with <span class="in">`verbose = FALSE`</span>, so the Console will look quiet — that's expected. Watch the R session indicator (or check <span class="in">`top`</span> in a Terminal) to confirm it's still working before assuming the kernel hung.</span>
+<span id="cb20-189"><a href="#cb20-189" aria-hidden="true" tabindex="-1"></a>:::</span>
 <span id="cb20-190"><a href="#cb20-190" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-191"><a href="#cb20-191" aria-hidden="true" tabindex="-1"></a>After SCTransform, the Seurat object has two assays: <span class="in">`RNA`</span> (raw counts) and <span class="in">`SCT`</span> (normalized residuals).</span>
-<span id="cb20-192"><a href="#cb20-192" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-193"><a href="#cb20-193" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>How many variable features did SCTransform select? Hint: <span class="in">`length(VariableFeatures(merged_seurat))`</span>.</span>
-<span id="cb20-194"><a href="#cb20-194" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Compare a few values from <span class="in">`merged_seurat[["RNA"]]$counts[1:5, 1:3]`</span> and <span class="in">`merged_seurat[["SCT"]]$scale.data[1:5, 1:3]`</span>. What's different about the SCT values?</span>
-<span id="cb20-195"><a href="#cb20-195" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-196"><a href="#cb20-196" aria-hidden="true" tabindex="-1"></a>:::: {.callout-tip title="Solution" collapse="true"}</span>
-<span id="cb20-197"><a href="#cb20-197" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-198"><a href="#cb20-198" aria-hidden="true" tabindex="-1"></a><span class="in">```r</span></span>
-<span id="cb20-199"><a href="#cb20-199" aria-hidden="true" tabindex="-1"></a><span class="fu">length</span>(<span class="fu">VariableFeatures</span>(merged_seurat))</span>
-<span id="cb20-200"><a href="#cb20-200" aria-hidden="true" tabindex="-1"></a><span class="co"># SCTransform selects ~3,000 variable features by default</span></span>
+<span id="cb20-191"><a href="#cb20-191" aria-hidden="true" tabindex="-1"></a><span class="in">```{r sctransform, message=FALSE, warning=FALSE}</span></span>
+<span id="cb20-192"><a href="#cb20-192" aria-hidden="true" tabindex="-1"></a>merged_seurat <span class="ot">&lt;-</span> <span class="fu">SCTransform</span>(merged_seurat, <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb20-193"><a href="#cb20-193" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb20-194"><a href="#cb20-194" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-195"><a href="#cb20-195" aria-hidden="true" tabindex="-1"></a>::: {.callout-important title="Challenge 1: Inspect the SCT assay (5 min)"}</span>
+<span id="cb20-196"><a href="#cb20-196" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-197"><a href="#cb20-197" aria-hidden="true" tabindex="-1"></a>After SCTransform, the Seurat object has two assays: <span class="in">`RNA`</span> (raw counts) and <span class="in">`SCT`</span> (normalized residuals).</span>
+<span id="cb20-198"><a href="#cb20-198" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-199"><a href="#cb20-199" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>How many variable features did SCTransform select? Hint: <span class="in">`length(VariableFeatures(merged_seurat))`</span>.</span>
+<span id="cb20-200"><a href="#cb20-200" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Compare a few values from <span class="in">`merged_seurat[["RNA"]]$counts[1:5, 1:3]`</span> and <span class="in">`merged_seurat[["SCT"]]$scale.data[1:5, 1:3]`</span>. What's different about the SCT values?</span>
 <span id="cb20-201"><a href="#cb20-201" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-202"><a href="#cb20-202" aria-hidden="true" tabindex="-1"></a>merged_seurat[[<span class="st">"RNA"</span>]]<span class="sc">$</span>counts[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>]      <span class="co"># integer UMI counts</span></span>
-<span id="cb20-203"><a href="#cb20-203" aria-hidden="true" tabindex="-1"></a>merged_seurat[[<span class="st">"SCT"</span>]]<span class="sc">$</span>scale.data[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>]   <span class="co"># Pearson residuals</span></span>
-<span id="cb20-204"><a href="#cb20-204" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb20-205"><a href="#cb20-205" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-206"><a href="#cb20-206" aria-hidden="true" tabindex="-1"></a>The SCT scaled values are no longer integers — they are Pearson residuals centered near zero. A gene expressed higher than expected for the nucleus's depth gets a positive residual; lower-than-expected gives negative. These residuals are what PCA operates on.</span>
+<span id="cb20-202"><a href="#cb20-202" aria-hidden="true" tabindex="-1"></a>:::: {.callout-tip title="Solution" collapse="true"}</span>
+<span id="cb20-203"><a href="#cb20-203" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-204"><a href="#cb20-204" aria-hidden="true" tabindex="-1"></a><span class="in">```r</span></span>
+<span id="cb20-205"><a href="#cb20-205" aria-hidden="true" tabindex="-1"></a><span class="fu">length</span>(<span class="fu">VariableFeatures</span>(merged_seurat))</span>
+<span id="cb20-206"><a href="#cb20-206" aria-hidden="true" tabindex="-1"></a><span class="co"># SCTransform selects ~3,000 variable features by default</span></span>
 <span id="cb20-207"><a href="#cb20-207" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-208"><a href="#cb20-208" aria-hidden="true" tabindex="-1"></a>::::</span>
-<span id="cb20-209"><a href="#cb20-209" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-210"><a href="#cb20-210" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb20-208"><a href="#cb20-208" aria-hidden="true" tabindex="-1"></a>merged_seurat[[<span class="st">"RNA"</span>]]<span class="sc">$</span>counts[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>]      <span class="co"># integer UMI counts</span></span>
+<span id="cb20-209"><a href="#cb20-209" aria-hidden="true" tabindex="-1"></a>merged_seurat[[<span class="st">"SCT"</span>]]<span class="sc">$</span>scale.data[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>]   <span class="co"># Pearson residuals</span></span>
+<span id="cb20-210"><a href="#cb20-210" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb20-211"><a href="#cb20-211" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-212"><a href="#cb20-212" aria-hidden="true" tabindex="-1"></a><span class="fu">## Principal component analysis</span></span>
+<span id="cb20-212"><a href="#cb20-212" aria-hidden="true" tabindex="-1"></a>The SCT scaled values are no longer integers — they are Pearson residuals centered near zero. A gene expressed higher than expected for the nucleus's depth gets a positive residual; lower-than-expected gives negative. These residuals are what PCA operates on.</span>
 <span id="cb20-213"><a href="#cb20-213" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-214"><a href="#cb20-214" aria-hidden="true" tabindex="-1"></a>PCA compresses ~3,000 variable features into a small set of **principal components** — each a weighted combination of genes that captures one axis of variation in the data.</span>
+<span id="cb20-214"><a href="#cb20-214" aria-hidden="true" tabindex="-1"></a>::::</span>
 <span id="cb20-215"><a href="#cb20-215" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-216"><a href="#cb20-216" aria-hidden="true" tabindex="-1"></a><span class="in">```{r run-pca, message=FALSE, warning=FALSE}</span></span>
-<span id="cb20-217"><a href="#cb20-217" aria-hidden="true" tabindex="-1"></a>merged_seurat <span class="ot">&lt;-</span> <span class="fu">RunPCA</span>(merged_seurat, <span class="at">verbose =</span> <span class="cn">FALSE</span>, <span class="at">assay =</span> <span class="st">"SCT"</span>)</span>
-<span id="cb20-218"><a href="#cb20-218" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb20-216"><a href="#cb20-216" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb20-217"><a href="#cb20-217" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-218"><a href="#cb20-218" aria-hidden="true" tabindex="-1"></a><span class="fu">## Principal component analysis</span></span>
 <span id="cb20-219"><a href="#cb20-219" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-220"><a href="#cb20-220" aria-hidden="true" tabindex="-1"></a>The elbow plot ranks PCs by variance explained. We pick enough PCs to be safely past the elbow.</span>
+<span id="cb20-220"><a href="#cb20-220" aria-hidden="true" tabindex="-1"></a>PCA compresses ~3,000 variable features into a small set of **principal components** — each a weighted combination of genes that captures one axis of variation in the data.</span>
 <span id="cb20-221"><a href="#cb20-221" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-222"><a href="#cb20-222" aria-hidden="true" tabindex="-1"></a><span class="in">```{r elbow-plot, message=FALSE, warning=FALSE, fig.alt="Elbow plot showing variance explained by each principal component.", fig.cap="Elbow plot for the EO dataset. The curve flattens around PC 15–20; using 20 PCs comfortably covers the informative range."}</span></span>
-<span id="cb20-223"><a href="#cb20-223" aria-hidden="true" tabindex="-1"></a><span class="fu">ElbowPlot</span>(merged_seurat, <span class="at">ndims =</span> <span class="dv">30</span>)</span>
+<span id="cb20-222"><a href="#cb20-222" aria-hidden="true" tabindex="-1"></a><span class="in">```{r run-pca, message=FALSE, warning=FALSE}</span></span>
+<span id="cb20-223"><a href="#cb20-223" aria-hidden="true" tabindex="-1"></a>merged_seurat <span class="ot">&lt;-</span> <span class="fu">RunPCA</span>(merged_seurat, <span class="at">verbose =</span> <span class="cn">FALSE</span>, <span class="at">assay =</span> <span class="st">"SCT"</span>)</span>
 <span id="cb20-224"><a href="#cb20-224" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb20-225"><a href="#cb20-225" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-226"><a href="#cb20-226" aria-hidden="true" tabindex="-1"></a>::: {.callout-note title="Reading the elbow plot"}</span>
+<span id="cb20-226"><a href="#cb20-226" aria-hidden="true" tabindex="-1"></a>The elbow plot ranks PCs by variance explained. We pick enough PCs to be safely past the elbow.</span>
 <span id="cb20-227"><a href="#cb20-227" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-228"><a href="#cb20-228" aria-hidden="true" tabindex="-1"></a>There is no single correct cutoff. Common practice:</span>
-<span id="cb20-229"><a href="#cb20-229" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-230"><a href="#cb20-230" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Use enough PCs that the elbow is comfortably included (15–30 for most datasets).</span>
-<span id="cb20-231"><a href="#cb20-231" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Err on the side of more — including a few extra noisy PCs rarely hurts, but dropping informative ones can merge biologically distinct clusters.</span>
-<span id="cb20-232"><a href="#cb20-232" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>We use **20 PCs** throughout this episode.</span>
+<span id="cb20-228"><a href="#cb20-228" aria-hidden="true" tabindex="-1"></a><span class="in">```{r elbow-plot, message=FALSE, warning=FALSE, fig.alt="Elbow plot showing variance explained by each principal component.", fig.cap="Elbow plot for the EO dataset. The variance-explained curve flattens once the elbow is past."}</span></span>
+<span id="cb20-229"><a href="#cb20-229" aria-hidden="true" tabindex="-1"></a><span class="fu">ElbowPlot</span>(merged_seurat, <span class="at">ndims =</span> <span class="dv">30</span>)</span>
+<span id="cb20-230"><a href="#cb20-230" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb20-231"><a href="#cb20-231" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-232"><a href="#cb20-232" aria-hidden="true" tabindex="-1"></a>::: {.callout-note title="Reading the elbow plot"}</span>
 <span id="cb20-233"><a href="#cb20-233" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-234"><a href="#cb20-234" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb20-234"><a href="#cb20-234" aria-hidden="true" tabindex="-1"></a>There is no single correct cutoff. Common practice:</span>
 <span id="cb20-235"><a href="#cb20-235" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-236"><a href="#cb20-236" aria-hidden="true" tabindex="-1"></a>We also store an un-integrated UMAP at this point so we can compare it to the Harmony-corrected version a few chunks down. This is purely for the before/after visual check.</span>
-<span id="cb20-237"><a href="#cb20-237" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-238"><a href="#cb20-238" aria-hidden="true" tabindex="-1"></a><span class="in">```{r run-umap-pca, message=FALSE, warning=FALSE}</span></span>
-<span id="cb20-239"><a href="#cb20-239" aria-hidden="true" tabindex="-1"></a>merged_seurat <span class="ot">&lt;-</span> <span class="fu">RunUMAP</span>(</span>
-<span id="cb20-240"><a href="#cb20-240" aria-hidden="true" tabindex="-1"></a>  merged_seurat,</span>
-<span id="cb20-241"><a href="#cb20-241" aria-hidden="true" tabindex="-1"></a>  <span class="at">dims           =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">20</span>,</span>
-<span id="cb20-242"><a href="#cb20-242" aria-hidden="true" tabindex="-1"></a>  <span class="at">reduction      =</span> <span class="st">"pca"</span>,</span>
-<span id="cb20-243"><a href="#cb20-243" aria-hidden="true" tabindex="-1"></a>  <span class="at">reduction.name =</span> <span class="st">"umap.pca"</span>,</span>
-<span id="cb20-244"><a href="#cb20-244" aria-hidden="true" tabindex="-1"></a>  <span class="at">verbose        =</span> <span class="cn">FALSE</span></span>
-<span id="cb20-245"><a href="#cb20-245" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb20-246"><a href="#cb20-246" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb20-247"><a href="#cb20-247" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-248"><a href="#cb20-248" aria-hidden="true" tabindex="-1"></a>This is a natural place to **save a checkpoint**. The next steps (Harmony, clustering, UMAP on Harmony) all run quickly, but SCTransform took a few minutes. If you make a mistake later in the episode, restart by loading the checkpoint instead of rerunning SCT.</span>
-<span id="cb20-249"><a href="#cb20-249" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-250"><a href="#cb20-250" aria-hidden="true" tabindex="-1"></a><span class="in">```{r save-checkpoint-01, message=FALSE, warning=FALSE, eval=FALSE}</span></span>
-<span id="cb20-251"><a href="#cb20-251" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(merged_seurat,</span>
-<span id="cb20-252"><a href="#cb20-252" aria-hidden="true" tabindex="-1"></a>  <span class="at">file =</span> <span class="st">"data/checkpoints/01_merged_sct.rds"</span>)</span>
-<span id="cb20-253"><a href="#cb20-253" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb20-254"><a href="#cb20-254" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-255"><a href="#cb20-255" aria-hidden="true" tabindex="-1"></a><span class="fu">## Harmony integration</span></span>
+<span id="cb20-236"><a href="#cb20-236" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Use enough PCs that the elbow is comfortably included (15–30 for most datasets).</span>
+<span id="cb20-237"><a href="#cb20-237" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Err on the side of more — including a few extra noisy PCs rarely hurts, but dropping informative ones can merge biologically distinct clusters.</span>
+<span id="cb20-238"><a href="#cb20-238" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-239"><a href="#cb20-239" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb20-240"><a href="#cb20-240" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-241"><a href="#cb20-241" aria-hidden="true" tabindex="-1"></a>:::: {.callout-tip title="Workshop choice (predict first!)" collapse="true"}</span>
+<span id="cb20-242"><a href="#cb20-242" aria-hidden="true" tabindex="-1"></a>We use **20 PCs** throughout this episode — comfortably past the elbow and well within the "more is safer than fewer" zone.</span>
+<span id="cb20-243"><a href="#cb20-243" aria-hidden="true" tabindex="-1"></a>::::</span>
+<span id="cb20-244"><a href="#cb20-244" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-245"><a href="#cb20-245" aria-hidden="true" tabindex="-1"></a>We also store an un-integrated UMAP at this point so we can compare it to the Harmony-corrected version a few chunks down. This is purely for the before/after visual check.</span>
+<span id="cb20-246"><a href="#cb20-246" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-247"><a href="#cb20-247" aria-hidden="true" tabindex="-1"></a><span class="in">```{r run-umap-pca, message=FALSE, warning=FALSE}</span></span>
+<span id="cb20-248"><a href="#cb20-248" aria-hidden="true" tabindex="-1"></a>merged_seurat <span class="ot">&lt;-</span> <span class="fu">RunUMAP</span>(</span>
+<span id="cb20-249"><a href="#cb20-249" aria-hidden="true" tabindex="-1"></a>  merged_seurat,</span>
+<span id="cb20-250"><a href="#cb20-250" aria-hidden="true" tabindex="-1"></a>  <span class="at">dims           =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">20</span>,</span>
+<span id="cb20-251"><a href="#cb20-251" aria-hidden="true" tabindex="-1"></a>  <span class="at">reduction      =</span> <span class="st">"pca"</span>,</span>
+<span id="cb20-252"><a href="#cb20-252" aria-hidden="true" tabindex="-1"></a>  <span class="at">reduction.name =</span> <span class="st">"umap.pca"</span>,</span>
+<span id="cb20-253"><a href="#cb20-253" aria-hidden="true" tabindex="-1"></a>  <span class="at">verbose        =</span> <span class="cn">FALSE</span></span>
+<span id="cb20-254"><a href="#cb20-254" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb20-255"><a href="#cb20-255" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb20-256"><a href="#cb20-256" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-257"><a href="#cb20-257" aria-hidden="true" tabindex="-1"></a>Each of the four EO samples was captured in its own GEM well, creating potential for **GEM-well batch effects**: small technical differences in ambient RNA, capture efficiency, and lysis conditions. Harmony adjusts the PCA embedding iteratively so that cells align by cell type rather than by capture well.</span>
+<span id="cb20-257"><a href="#cb20-257" aria-hidden="true" tabindex="-1"></a>This is a natural place to **save a checkpoint**. The next steps (Harmony, clustering, UMAP on Harmony) all run quickly, but SCTransform took a few minutes. If you make a mistake later in the episode, restart by loading the checkpoint instead of rerunning SCT.</span>
 <span id="cb20-258"><a href="#cb20-258" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-259"><a href="#cb20-259" aria-hidden="true" tabindex="-1"></a>Importantly, Harmony corrects for *GEM-well identity*, not for *treatment*. Both 11-KT and vehicle fish span both GEM wells, so Harmony cannot and does not remove the treatment signal — only the technical inter-well differences.</span>
-<span id="cb20-260"><a href="#cb20-260" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-261"><a href="#cb20-261" aria-hidden="true" tabindex="-1"></a><span class="in">```{r harmony-integration, message=FALSE, warning=FALSE}</span></span>
-<span id="cb20-262"><a href="#cb20-262" aria-hidden="true" tabindex="-1"></a>merged_seurat <span class="ot">&lt;-</span> <span class="fu">RunHarmony</span>(</span>
-<span id="cb20-263"><a href="#cb20-263" aria-hidden="true" tabindex="-1"></a>  merged_seurat,</span>
-<span id="cb20-264"><a href="#cb20-264" aria-hidden="true" tabindex="-1"></a>  <span class="at">group.by.vars  =</span> <span class="st">"orig.ident"</span>,</span>
-<span id="cb20-265"><a href="#cb20-265" aria-hidden="true" tabindex="-1"></a>  <span class="at">reduction      =</span> <span class="st">"pca"</span>,</span>
-<span id="cb20-266"><a href="#cb20-266" aria-hidden="true" tabindex="-1"></a>  <span class="at">reduction.save =</span> <span class="st">"harmony"</span>,</span>
-<span id="cb20-267"><a href="#cb20-267" aria-hidden="true" tabindex="-1"></a>  <span class="at">verbose        =</span> <span class="cn">FALSE</span></span>
-<span id="cb20-268"><a href="#cb20-268" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb20-269"><a href="#cb20-269" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb20-270"><a href="#cb20-270" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-271"><a href="#cb20-271" aria-hidden="true" tabindex="-1"></a>::: {.callout-warning title="Harmony is a sanity check, not a cure"}</span>
-<span id="cb20-272"><a href="#cb20-272" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-273"><a href="#cb20-273" aria-hidden="true" tabindex="-1"></a>For this dataset, all four samples were processed with the same reagent kit and sequencing run. Technical batch is expected to be small. If the PCA UMAP and the Harmony UMAP look nearly identical, **that is a good result**: it means technical batch was minimal.</span>
-<span id="cb20-274"><a href="#cb20-274" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-275"><a href="#cb20-275" aria-hidden="true" tabindex="-1"></a>A critical constraint: integrated/corrected values are **for clustering and visualization only**. All differential expression tomorrow uses the original raw RNA counts. Passing Harmony embeddings to DESeq2 would violate the count model and give incorrect results.</span>
-<span id="cb20-276"><a href="#cb20-276" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-277"><a href="#cb20-277" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb20-278"><a href="#cb20-278" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-279"><a href="#cb20-279" aria-hidden="true" tabindex="-1"></a><span class="fu">## Cluster on the Harmony embedding</span></span>
-<span id="cb20-280"><a href="#cb20-280" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-281"><a href="#cb20-281" aria-hidden="true" tabindex="-1"></a>Seurat clusters cells in two steps:</span>
-<span id="cb20-282"><a href="#cb20-282" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-283"><a href="#cb20-283" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span><span class="in">`FindNeighbors`</span> builds a *k*-nearest-neighbor graph in the chosen reduction (here, Harmony).</span>
-<span id="cb20-284"><a href="#cb20-284" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span><span class="in">`FindClusters`</span> runs the Louvain algorithm on that graph to find communities — the clusters.</span>
+<span id="cb20-259"><a href="#cb20-259" aria-hidden="true" tabindex="-1"></a><span class="in">```{r save-checkpoint-01, message=FALSE, warning=FALSE, eval=FALSE}</span></span>
+<span id="cb20-260"><a href="#cb20-260" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(merged_seurat,</span>
+<span id="cb20-261"><a href="#cb20-261" aria-hidden="true" tabindex="-1"></a>  <span class="at">file =</span> <span class="st">"data/checkpoints/01_merged_sct.rds"</span>)</span>
+<span id="cb20-262"><a href="#cb20-262" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb20-263"><a href="#cb20-263" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-264"><a href="#cb20-264" aria-hidden="true" tabindex="-1"></a><span class="fu">## Harmony integration</span></span>
+<span id="cb20-265"><a href="#cb20-265" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-266"><a href="#cb20-266" aria-hidden="true" tabindex="-1"></a>Each of the four EO samples was captured in its own GEM well, creating potential for **GEM-well batch effects**: small technical differences in ambient RNA, capture efficiency, and lysis conditions. Harmony adjusts the PCA embedding iteratively so that cells align by cell type rather than by capture well.</span>
+<span id="cb20-267"><a href="#cb20-267" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-268"><a href="#cb20-268" aria-hidden="true" tabindex="-1"></a>Importantly, Harmony corrects for *GEM-well identity*, not for *treatment*. Both 11-KT and vehicle fish span both GEM wells, so Harmony cannot and does not remove the treatment signal — only the technical inter-well differences.</span>
+<span id="cb20-269"><a href="#cb20-269" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-270"><a href="#cb20-270" aria-hidden="true" tabindex="-1"></a><span class="in">```{r harmony-integration, message=FALSE, warning=FALSE}</span></span>
+<span id="cb20-271"><a href="#cb20-271" aria-hidden="true" tabindex="-1"></a>merged_seurat <span class="ot">&lt;-</span> <span class="fu">RunHarmony</span>(</span>
+<span id="cb20-272"><a href="#cb20-272" aria-hidden="true" tabindex="-1"></a>  merged_seurat,</span>
+<span id="cb20-273"><a href="#cb20-273" aria-hidden="true" tabindex="-1"></a>  <span class="at">group.by.vars  =</span> <span class="st">"orig.ident"</span>,</span>
+<span id="cb20-274"><a href="#cb20-274" aria-hidden="true" tabindex="-1"></a>  <span class="at">reduction      =</span> <span class="st">"pca"</span>,</span>
+<span id="cb20-275"><a href="#cb20-275" aria-hidden="true" tabindex="-1"></a>  <span class="at">reduction.save =</span> <span class="st">"harmony"</span>,</span>
+<span id="cb20-276"><a href="#cb20-276" aria-hidden="true" tabindex="-1"></a>  <span class="at">verbose        =</span> <span class="cn">FALSE</span></span>
+<span id="cb20-277"><a href="#cb20-277" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb20-278"><a href="#cb20-278" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb20-279"><a href="#cb20-279" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-280"><a href="#cb20-280" aria-hidden="true" tabindex="-1"></a>::: {.callout-warning title="Harmony is a sanity check, not a cure"}</span>
+<span id="cb20-281"><a href="#cb20-281" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-282"><a href="#cb20-282" aria-hidden="true" tabindex="-1"></a>For this dataset, all four samples were processed with the same reagent kit and sequencing run. Technical batch is expected to be small. If the PCA UMAP and the Harmony UMAP look nearly identical, **that is a good result**: it means technical batch was minimal.</span>
+<span id="cb20-283"><a href="#cb20-283" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-284"><a href="#cb20-284" aria-hidden="true" tabindex="-1"></a>A critical constraint: integrated/corrected values are **for clustering and visualization only**. All differential expression tomorrow uses the original raw RNA counts. Passing Harmony embeddings to DESeq2 would violate the count model and give incorrect results.</span>
 <span id="cb20-285"><a href="#cb20-285" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-286"><a href="#cb20-286" aria-hidden="true" tabindex="-1"></a>The <span class="in">`resolution`</span> parameter controls how finely the graph is partitioned. We start at <span class="in">`resolution = 0.8`</span> and revisit the choice in a challenge.</span>
+<span id="cb20-286"><a href="#cb20-286" aria-hidden="true" tabindex="-1"></a>:::</span>
 <span id="cb20-287"><a href="#cb20-287" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-288"><a href="#cb20-288" aria-hidden="true" tabindex="-1"></a><span class="in">```{r harmony-cluster, message=FALSE, warning=FALSE}</span></span>
-<span id="cb20-289"><a href="#cb20-289" aria-hidden="true" tabindex="-1"></a>merged_seurat <span class="ot">&lt;-</span> <span class="fu">FindNeighbors</span>(merged_seurat,</span>
-<span id="cb20-290"><a href="#cb20-290" aria-hidden="true" tabindex="-1"></a>  <span class="at">dims      =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">20</span>,</span>
-<span id="cb20-291"><a href="#cb20-291" aria-hidden="true" tabindex="-1"></a>  <span class="at">reduction =</span> <span class="st">"harmony"</span>,</span>
-<span id="cb20-292"><a href="#cb20-292" aria-hidden="true" tabindex="-1"></a>  <span class="at">verbose   =</span> <span class="cn">FALSE</span></span>
-<span id="cb20-293"><a href="#cb20-293" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb20-294"><a href="#cb20-294" aria-hidden="true" tabindex="-1"></a>merged_seurat <span class="ot">&lt;-</span> <span class="fu">FindClusters</span>(merged_seurat,</span>
-<span id="cb20-295"><a href="#cb20-295" aria-hidden="true" tabindex="-1"></a>  <span class="at">resolution =</span> <span class="fl">0.8</span>,</span>
-<span id="cb20-296"><a href="#cb20-296" aria-hidden="true" tabindex="-1"></a>  <span class="at">verbose    =</span> <span class="cn">FALSE</span></span>
-<span id="cb20-297"><a href="#cb20-297" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb20-298"><a href="#cb20-298" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-299"><a href="#cb20-299" aria-hidden="true" tabindex="-1"></a><span class="co"># UMAP on the harmony reduction — stored under a named reduction for comparison</span></span>
-<span id="cb20-300"><a href="#cb20-300" aria-hidden="true" tabindex="-1"></a>merged_seurat <span class="ot">&lt;-</span> <span class="fu">RunUMAP</span>(</span>
-<span id="cb20-301"><a href="#cb20-301" aria-hidden="true" tabindex="-1"></a>  merged_seurat,</span>
-<span id="cb20-302"><a href="#cb20-302" aria-hidden="true" tabindex="-1"></a>  <span class="at">dims           =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">20</span>,</span>
-<span id="cb20-303"><a href="#cb20-303" aria-hidden="true" tabindex="-1"></a>  <span class="at">reduction      =</span> <span class="st">"harmony"</span>,</span>
-<span id="cb20-304"><a href="#cb20-304" aria-hidden="true" tabindex="-1"></a>  <span class="at">reduction.name =</span> <span class="st">"umap.harmony"</span>,</span>
-<span id="cb20-305"><a href="#cb20-305" aria-hidden="true" tabindex="-1"></a>  <span class="at">verbose        =</span> <span class="cn">FALSE</span></span>
+<span id="cb20-288"><a href="#cb20-288" aria-hidden="true" tabindex="-1"></a><span class="fu">## Cluster on the Harmony embedding</span></span>
+<span id="cb20-289"><a href="#cb20-289" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-290"><a href="#cb20-290" aria-hidden="true" tabindex="-1"></a>Seurat clusters cells in two steps:</span>
+<span id="cb20-291"><a href="#cb20-291" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-292"><a href="#cb20-292" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span><span class="in">`FindNeighbors`</span> builds a *k*-nearest-neighbor graph in the chosen reduction (here, Harmony).</span>
+<span id="cb20-293"><a href="#cb20-293" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span><span class="in">`FindClusters`</span> runs the Louvain algorithm on that graph to find communities — the clusters.</span>
+<span id="cb20-294"><a href="#cb20-294" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-295"><a href="#cb20-295" aria-hidden="true" tabindex="-1"></a>The <span class="in">`resolution`</span> parameter controls how finely the graph is partitioned. We start at <span class="in">`resolution = 0.8`</span> and revisit the choice in a challenge.</span>
+<span id="cb20-296"><a href="#cb20-296" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-297"><a href="#cb20-297" aria-hidden="true" tabindex="-1"></a><span class="in">```{r harmony-cluster, message=FALSE, warning=FALSE}</span></span>
+<span id="cb20-298"><a href="#cb20-298" aria-hidden="true" tabindex="-1"></a>merged_seurat <span class="ot">&lt;-</span> <span class="fu">FindNeighbors</span>(merged_seurat,</span>
+<span id="cb20-299"><a href="#cb20-299" aria-hidden="true" tabindex="-1"></a>  <span class="at">dims      =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">20</span>,</span>
+<span id="cb20-300"><a href="#cb20-300" aria-hidden="true" tabindex="-1"></a>  <span class="at">reduction =</span> <span class="st">"harmony"</span>,</span>
+<span id="cb20-301"><a href="#cb20-301" aria-hidden="true" tabindex="-1"></a>  <span class="at">verbose   =</span> <span class="cn">FALSE</span></span>
+<span id="cb20-302"><a href="#cb20-302" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb20-303"><a href="#cb20-303" aria-hidden="true" tabindex="-1"></a>merged_seurat <span class="ot">&lt;-</span> <span class="fu">FindClusters</span>(merged_seurat,</span>
+<span id="cb20-304"><a href="#cb20-304" aria-hidden="true" tabindex="-1"></a>  <span class="at">resolution =</span> <span class="fl">0.8</span>,</span>
+<span id="cb20-305"><a href="#cb20-305" aria-hidden="true" tabindex="-1"></a>  <span class="at">verbose    =</span> <span class="cn">FALSE</span></span>
 <span id="cb20-306"><a href="#cb20-306" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb20-307"><a href="#cb20-307" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb20-308"><a href="#cb20-308" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-309"><a href="#cb20-309" aria-hidden="true" tabindex="-1"></a><span class="fu">## Before and after: the integration check</span></span>
-<span id="cb20-310"><a href="#cb20-310" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-311"><a href="#cb20-311" aria-hidden="true" tabindex="-1"></a>This is the diagnostic that tells you whether Harmony helped, hurt, or made no difference. We plot PCA-UMAP and Harmony-UMAP side by side, each colored once by sample and once by treatment.</span>
-<span id="cb20-312"><a href="#cb20-312" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-313"><a href="#cb20-313" aria-hidden="true" tabindex="-1"></a><span class="in">```{r harmony-umap-comparison, fig.width=14, fig.height=8, message=FALSE, warning=FALSE, fig.alt="A 2-by-2 grid of UMAP plots: PCA and Harmony embeddings, each colored by sample and by treatment.", fig.cap="Un-integrated (PCA) and Harmony-integrated UMAPs, colored by sample (left) and treatment (right). After Harmony correction, sample-specific islands should dissolve while treatment-level separation is preserved. For this low-batch dataset, the two embeddings are often similar — a sign of good sample quality."}</span></span>
-<span id="cb20-314"><a href="#cb20-314" aria-hidden="true" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> <span class="fu">DimPlot</span>(merged_seurat,</span>
-<span id="cb20-315"><a href="#cb20-315" aria-hidden="true" tabindex="-1"></a>  <span class="at">reduction =</span> <span class="st">"umap.pca"</span>,</span>
-<span id="cb20-316"><a href="#cb20-316" aria-hidden="true" tabindex="-1"></a>  <span class="at">group.by  =</span> <span class="st">"orig.ident"</span>,</span>
-<span id="cb20-317"><a href="#cb20-317" aria-hidden="true" tabindex="-1"></a>  <span class="at">alpha     =</span> <span class="fl">0.4</span></span>
-<span id="cb20-318"><a href="#cb20-318" aria-hidden="true" tabindex="-1"></a>) <span class="sc">+</span> <span class="fu">ggtitle</span>(<span class="st">"PCA — by sample"</span>) <span class="sc">+</span> <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"right"</span>)</span>
+<span id="cb20-307"><a href="#cb20-307" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-308"><a href="#cb20-308" aria-hidden="true" tabindex="-1"></a><span class="co"># UMAP on the harmony reduction — stored under a named reduction for comparison</span></span>
+<span id="cb20-309"><a href="#cb20-309" aria-hidden="true" tabindex="-1"></a>merged_seurat <span class="ot">&lt;-</span> <span class="fu">RunUMAP</span>(</span>
+<span id="cb20-310"><a href="#cb20-310" aria-hidden="true" tabindex="-1"></a>  merged_seurat,</span>
+<span id="cb20-311"><a href="#cb20-311" aria-hidden="true" tabindex="-1"></a>  <span class="at">dims           =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">20</span>,</span>
+<span id="cb20-312"><a href="#cb20-312" aria-hidden="true" tabindex="-1"></a>  <span class="at">reduction      =</span> <span class="st">"harmony"</span>,</span>
+<span id="cb20-313"><a href="#cb20-313" aria-hidden="true" tabindex="-1"></a>  <span class="at">reduction.name =</span> <span class="st">"umap.harmony"</span>,</span>
+<span id="cb20-314"><a href="#cb20-314" aria-hidden="true" tabindex="-1"></a>  <span class="at">verbose        =</span> <span class="cn">FALSE</span></span>
+<span id="cb20-315"><a href="#cb20-315" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb20-316"><a href="#cb20-316" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb20-317"><a href="#cb20-317" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-318"><a href="#cb20-318" aria-hidden="true" tabindex="-1"></a><span class="fu">## Before and after: the integration check</span></span>
 <span id="cb20-319"><a href="#cb20-319" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-320"><a href="#cb20-320" aria-hidden="true" tabindex="-1"></a>p2 <span class="ot">&lt;-</span> <span class="fu">DimPlot</span>(merged_seurat,</span>
-<span id="cb20-321"><a href="#cb20-321" aria-hidden="true" tabindex="-1"></a>  <span class="at">reduction =</span> <span class="st">"umap.pca"</span>,</span>
-<span id="cb20-322"><a href="#cb20-322" aria-hidden="true" tabindex="-1"></a>  <span class="at">group.by  =</span> <span class="st">"treatment"</span>,</span>
-<span id="cb20-323"><a href="#cb20-323" aria-hidden="true" tabindex="-1"></a>  <span class="at">alpha     =</span> <span class="fl">0.4</span>,</span>
-<span id="cb20-324"><a href="#cb20-324" aria-hidden="true" tabindex="-1"></a>  <span class="at">cols      =</span> <span class="fu">c</span>(<span class="st">"11kt"</span> <span class="ot">=</span> <span class="st">"#D55E00"</span>, <span class="st">"vehicle"</span> <span class="ot">=</span> <span class="st">"#0072B2"</span>)</span>
-<span id="cb20-325"><a href="#cb20-325" aria-hidden="true" tabindex="-1"></a>) <span class="sc">+</span> <span class="fu">ggtitle</span>(<span class="st">"PCA — by treatment"</span>)</span>
-<span id="cb20-326"><a href="#cb20-326" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-327"><a href="#cb20-327" aria-hidden="true" tabindex="-1"></a>p3 <span class="ot">&lt;-</span> <span class="fu">DimPlot</span>(merged_seurat,</span>
-<span id="cb20-328"><a href="#cb20-328" aria-hidden="true" tabindex="-1"></a>  <span class="at">reduction =</span> <span class="st">"umap.harmony"</span>,</span>
-<span id="cb20-329"><a href="#cb20-329" aria-hidden="true" tabindex="-1"></a>  <span class="at">group.by  =</span> <span class="st">"orig.ident"</span>,</span>
-<span id="cb20-330"><a href="#cb20-330" aria-hidden="true" tabindex="-1"></a>  <span class="at">alpha     =</span> <span class="fl">0.4</span></span>
-<span id="cb20-331"><a href="#cb20-331" aria-hidden="true" tabindex="-1"></a>) <span class="sc">+</span> <span class="fu">ggtitle</span>(<span class="st">"Harmony — by sample"</span>) <span class="sc">+</span> <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"right"</span>)</span>
-<span id="cb20-332"><a href="#cb20-332" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-333"><a href="#cb20-333" aria-hidden="true" tabindex="-1"></a>p4 <span class="ot">&lt;-</span> <span class="fu">DimPlot</span>(merged_seurat,</span>
-<span id="cb20-334"><a href="#cb20-334" aria-hidden="true" tabindex="-1"></a>  <span class="at">reduction =</span> <span class="st">"umap.harmony"</span>,</span>
-<span id="cb20-335"><a href="#cb20-335" aria-hidden="true" tabindex="-1"></a>  <span class="at">group.by  =</span> <span class="st">"treatment"</span>,</span>
-<span id="cb20-336"><a href="#cb20-336" aria-hidden="true" tabindex="-1"></a>  <span class="at">alpha     =</span> <span class="fl">0.4</span>,</span>
-<span id="cb20-337"><a href="#cb20-337" aria-hidden="true" tabindex="-1"></a>  <span class="at">cols      =</span> <span class="fu">c</span>(<span class="st">"11kt"</span> <span class="ot">=</span> <span class="st">"#D55E00"</span>, <span class="st">"vehicle"</span> <span class="ot">=</span> <span class="st">"#0072B2"</span>)</span>
-<span id="cb20-338"><a href="#cb20-338" aria-hidden="true" tabindex="-1"></a>) <span class="sc">+</span> <span class="fu">ggtitle</span>(<span class="st">"Harmony — by treatment"</span>)</span>
-<span id="cb20-339"><a href="#cb20-339" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-340"><a href="#cb20-340" aria-hidden="true" tabindex="-1"></a>(p1 <span class="sc">|</span> p2) <span class="sc">/</span> (p3 <span class="sc">|</span> p4)</span>
-<span id="cb20-341"><a href="#cb20-341" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb20-342"><a href="#cb20-342" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-343"><a href="#cb20-343" aria-hidden="true" tabindex="-1"></a>::: {.callout-note title="What to look for"}</span>
-<span id="cb20-344"><a href="#cb20-344" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-345"><a href="#cb20-345" aria-hidden="true" tabindex="-1"></a>**By sample (left column):** sample-specific islands — compact regions occupied by only one or two samples — indicate GEM-well batch. After Harmony (bottom-left) those islands should dissolve.</span>
-<span id="cb20-346"><a href="#cb20-346" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-347"><a href="#cb20-347" aria-hidden="true" tabindex="-1"></a>**By treatment (right column):** 11-KT and vehicle nuclei **should** partially segregate if hormone treatment changes gene expression — that is the biology you want to see. Harmony corrects for GEM-well, not treatment, so treatment-level separation is expected.</span>
+<span id="cb20-320"><a href="#cb20-320" aria-hidden="true" tabindex="-1"></a>This is the diagnostic that tells you whether Harmony helped, hurt, or made no difference. We plot PCA-UMAP and Harmony-UMAP side by side, each colored once by sample and once by treatment.</span>
+<span id="cb20-321"><a href="#cb20-321" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-322"><a href="#cb20-322" aria-hidden="true" tabindex="-1"></a><span class="in">```{r harmony-umap-comparison, fig.width=14, fig.height=8, message=FALSE, warning=FALSE, fig.alt="A 2-by-2 grid of UMAP plots: PCA and Harmony embeddings, each colored by sample and by treatment.", fig.cap="Un-integrated (PCA) and Harmony-integrated UMAPs, colored by sample (left) and treatment (right). After Harmony correction, sample-specific islands should dissolve while treatment-level separation is preserved. For this low-batch dataset, the two embeddings are often similar — a sign of good sample quality."}</span></span>
+<span id="cb20-323"><a href="#cb20-323" aria-hidden="true" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> <span class="fu">DimPlot</span>(merged_seurat,</span>
+<span id="cb20-324"><a href="#cb20-324" aria-hidden="true" tabindex="-1"></a>  <span class="at">reduction =</span> <span class="st">"umap.pca"</span>,</span>
+<span id="cb20-325"><a href="#cb20-325" aria-hidden="true" tabindex="-1"></a>  <span class="at">group.by  =</span> <span class="st">"orig.ident"</span>,</span>
+<span id="cb20-326"><a href="#cb20-326" aria-hidden="true" tabindex="-1"></a>  <span class="at">alpha     =</span> <span class="fl">0.4</span></span>
+<span id="cb20-327"><a href="#cb20-327" aria-hidden="true" tabindex="-1"></a>) <span class="sc">+</span> <span class="fu">ggtitle</span>(<span class="st">"PCA — by sample"</span>) <span class="sc">+</span> <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"right"</span>)</span>
+<span id="cb20-328"><a href="#cb20-328" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-329"><a href="#cb20-329" aria-hidden="true" tabindex="-1"></a>p2 <span class="ot">&lt;-</span> <span class="fu">DimPlot</span>(merged_seurat,</span>
+<span id="cb20-330"><a href="#cb20-330" aria-hidden="true" tabindex="-1"></a>  <span class="at">reduction =</span> <span class="st">"umap.pca"</span>,</span>
+<span id="cb20-331"><a href="#cb20-331" aria-hidden="true" tabindex="-1"></a>  <span class="at">group.by  =</span> <span class="st">"treatment"</span>,</span>
+<span id="cb20-332"><a href="#cb20-332" aria-hidden="true" tabindex="-1"></a>  <span class="at">alpha     =</span> <span class="fl">0.4</span>,</span>
+<span id="cb20-333"><a href="#cb20-333" aria-hidden="true" tabindex="-1"></a>  <span class="at">cols      =</span> <span class="fu">c</span>(<span class="st">"11kt"</span> <span class="ot">=</span> <span class="st">"#D55E00"</span>, <span class="st">"vehicle"</span> <span class="ot">=</span> <span class="st">"#0072B2"</span>)</span>
+<span id="cb20-334"><a href="#cb20-334" aria-hidden="true" tabindex="-1"></a>) <span class="sc">+</span> <span class="fu">ggtitle</span>(<span class="st">"PCA — by treatment"</span>)</span>
+<span id="cb20-335"><a href="#cb20-335" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-336"><a href="#cb20-336" aria-hidden="true" tabindex="-1"></a>p3 <span class="ot">&lt;-</span> <span class="fu">DimPlot</span>(merged_seurat,</span>
+<span id="cb20-337"><a href="#cb20-337" aria-hidden="true" tabindex="-1"></a>  <span class="at">reduction =</span> <span class="st">"umap.harmony"</span>,</span>
+<span id="cb20-338"><a href="#cb20-338" aria-hidden="true" tabindex="-1"></a>  <span class="at">group.by  =</span> <span class="st">"orig.ident"</span>,</span>
+<span id="cb20-339"><a href="#cb20-339" aria-hidden="true" tabindex="-1"></a>  <span class="at">alpha     =</span> <span class="fl">0.4</span></span>
+<span id="cb20-340"><a href="#cb20-340" aria-hidden="true" tabindex="-1"></a>) <span class="sc">+</span> <span class="fu">ggtitle</span>(<span class="st">"Harmony — by sample"</span>) <span class="sc">+</span> <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"right"</span>)</span>
+<span id="cb20-341"><a href="#cb20-341" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-342"><a href="#cb20-342" aria-hidden="true" tabindex="-1"></a>p4 <span class="ot">&lt;-</span> <span class="fu">DimPlot</span>(merged_seurat,</span>
+<span id="cb20-343"><a href="#cb20-343" aria-hidden="true" tabindex="-1"></a>  <span class="at">reduction =</span> <span class="st">"umap.harmony"</span>,</span>
+<span id="cb20-344"><a href="#cb20-344" aria-hidden="true" tabindex="-1"></a>  <span class="at">group.by  =</span> <span class="st">"treatment"</span>,</span>
+<span id="cb20-345"><a href="#cb20-345" aria-hidden="true" tabindex="-1"></a>  <span class="at">alpha     =</span> <span class="fl">0.4</span>,</span>
+<span id="cb20-346"><a href="#cb20-346" aria-hidden="true" tabindex="-1"></a>  <span class="at">cols      =</span> <span class="fu">c</span>(<span class="st">"11kt"</span> <span class="ot">=</span> <span class="st">"#D55E00"</span>, <span class="st">"vehicle"</span> <span class="ot">=</span> <span class="st">"#0072B2"</span>)</span>
+<span id="cb20-347"><a href="#cb20-347" aria-hidden="true" tabindex="-1"></a>) <span class="sc">+</span> <span class="fu">ggtitle</span>(<span class="st">"Harmony — by treatment"</span>)</span>
 <span id="cb20-348"><a href="#cb20-348" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-349"><a href="#cb20-349" aria-hidden="true" tabindex="-1"></a>If the two rows look nearly identical, that confirms minimal technical batch. Harmony provided assurance, not a dramatic visual change.</span>
-<span id="cb20-350"><a href="#cb20-350" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-351"><a href="#cb20-351" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb20-352"><a href="#cb20-352" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-353"><a href="#cb20-353" aria-hidden="true" tabindex="-1"></a><span class="fu">## Visualize clusters by sample and treatment</span></span>
-<span id="cb20-354"><a href="#cb20-354" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-355"><a href="#cb20-355" aria-hidden="true" tabindex="-1"></a>The final view: clusters laid out on the Harmony UMAP, with the same plot colored three ways.</span>
-<span id="cb20-356"><a href="#cb20-356" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-357"><a href="#cb20-357" aria-hidden="true" tabindex="-1"></a><span class="in">```{r umap-cluster-views, fig.width=15, fig.height=5, message=FALSE, warning=FALSE, fig.alt="Three UMAP panels showing Harmony-corrected nuclei colored by cluster, sample, and treatment.", fig.cap="Harmony UMAP colored by Seurat cluster (left), sample (middle), and treatment (right). Clusters that contain nuclei from all four samples are likely real cell types; clusters dominated by one sample warrant scrutiny."}</span></span>
-<span id="cb20-358"><a href="#cb20-358" aria-hidden="true" tabindex="-1"></a>p_clu <span class="ot">&lt;-</span> <span class="fu">DimPlot</span>(merged_seurat,</span>
-<span id="cb20-359"><a href="#cb20-359" aria-hidden="true" tabindex="-1"></a>  <span class="at">reduction =</span> <span class="st">"umap.harmony"</span>,</span>
-<span id="cb20-360"><a href="#cb20-360" aria-hidden="true" tabindex="-1"></a>  <span class="at">group.by  =</span> <span class="st">"seurat_clusters"</span>,</span>
-<span id="cb20-361"><a href="#cb20-361" aria-hidden="true" tabindex="-1"></a>  <span class="at">label     =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb20-362"><a href="#cb20-362" aria-hidden="true" tabindex="-1"></a>  <span class="at">repel     =</span> <span class="cn">TRUE</span></span>
-<span id="cb20-363"><a href="#cb20-363" aria-hidden="true" tabindex="-1"></a>) <span class="sc">+</span> <span class="fu">ggtitle</span>(<span class="st">"Cluster"</span>) <span class="sc">+</span> <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"none"</span>)</span>
-<span id="cb20-364"><a href="#cb20-364" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-365"><a href="#cb20-365" aria-hidden="true" tabindex="-1"></a>p_smp <span class="ot">&lt;-</span> <span class="fu">DimPlot</span>(merged_seurat,</span>
-<span id="cb20-366"><a href="#cb20-366" aria-hidden="true" tabindex="-1"></a>  <span class="at">reduction =</span> <span class="st">"umap.harmony"</span>,</span>
-<span id="cb20-367"><a href="#cb20-367" aria-hidden="true" tabindex="-1"></a>  <span class="at">group.by  =</span> <span class="st">"orig.ident"</span>,</span>
-<span id="cb20-368"><a href="#cb20-368" aria-hidden="true" tabindex="-1"></a>  <span class="at">alpha     =</span> <span class="fl">0.4</span></span>
-<span id="cb20-369"><a href="#cb20-369" aria-hidden="true" tabindex="-1"></a>) <span class="sc">+</span> <span class="fu">ggtitle</span>(<span class="st">"Sample"</span>)</span>
-<span id="cb20-370"><a href="#cb20-370" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-371"><a href="#cb20-371" aria-hidden="true" tabindex="-1"></a>p_trt <span class="ot">&lt;-</span> <span class="fu">DimPlot</span>(merged_seurat,</span>
-<span id="cb20-372"><a href="#cb20-372" aria-hidden="true" tabindex="-1"></a>  <span class="at">reduction =</span> <span class="st">"umap.harmony"</span>,</span>
-<span id="cb20-373"><a href="#cb20-373" aria-hidden="true" tabindex="-1"></a>  <span class="at">group.by  =</span> <span class="st">"treatment"</span>,</span>
-<span id="cb20-374"><a href="#cb20-374" aria-hidden="true" tabindex="-1"></a>  <span class="at">alpha     =</span> <span class="fl">0.4</span>,</span>
-<span id="cb20-375"><a href="#cb20-375" aria-hidden="true" tabindex="-1"></a>  <span class="at">cols      =</span> <span class="fu">c</span>(<span class="st">"11kt"</span> <span class="ot">=</span> <span class="st">"#D55E00"</span>, <span class="st">"vehicle"</span> <span class="ot">=</span> <span class="st">"#0072B2"</span>)</span>
-<span id="cb20-376"><a href="#cb20-376" aria-hidden="true" tabindex="-1"></a>) <span class="sc">+</span> <span class="fu">ggtitle</span>(<span class="st">"Condition (11-KT vs. vehicle)"</span>)</span>
-<span id="cb20-377"><a href="#cb20-377" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-378"><a href="#cb20-378" aria-hidden="true" tabindex="-1"></a>p_clu <span class="sc">|</span> p_smp <span class="sc">|</span> p_trt</span>
-<span id="cb20-379"><a href="#cb20-379" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb20-380"><a href="#cb20-380" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-381"><a href="#cb20-381" aria-hidden="true" tabindex="-1"></a>::: {.callout-important title="Challenge 2: Resolution sweep (15 min)"}</span>
-<span id="cb20-382"><a href="#cb20-382" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-383"><a href="#cb20-383" aria-hidden="true" tabindex="-1"></a>The <span class="in">`resolution`</span> parameter controls how finely the graph is partitioned. Re-run <span class="in">`FindClusters`</span> at three resolutions and regenerate the UMAP for each.</span>
-<span id="cb20-384"><a href="#cb20-384" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-385"><a href="#cb20-385" aria-hidden="true" tabindex="-1"></a><span class="in">```r</span></span>
-<span id="cb20-386"><a href="#cb20-386" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (res <span class="cf">in</span> <span class="fu">c</span>(<span class="fl">0.3</span>, <span class="fl">0.8</span>, <span class="fl">1.5</span>)) {</span>
-<span id="cb20-387"><a href="#cb20-387" aria-hidden="true" tabindex="-1"></a>  merged_seurat <span class="ot">&lt;-</span> <span class="fu">FindClusters</span>(merged_seurat, <span class="at">resolution =</span> res, <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb20-388"><a href="#cb20-388" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(</span>
-<span id="cb20-389"><a href="#cb20-389" aria-hidden="true" tabindex="-1"></a>    <span class="fu">DimPlot</span>(merged_seurat, <span class="at">reduction =</span> <span class="st">"umap.harmony"</span>,</span>
-<span id="cb20-390"><a href="#cb20-390" aria-hidden="true" tabindex="-1"></a>            <span class="at">group.by =</span> <span class="st">"seurat_clusters"</span>, <span class="at">label =</span> <span class="cn">TRUE</span>) <span class="sc">+</span></span>
-<span id="cb20-391"><a href="#cb20-391" aria-hidden="true" tabindex="-1"></a>      <span class="fu">ggtitle</span>(<span class="fu">paste</span>(<span class="st">"resolution ="</span>, res))</span>
-<span id="cb20-392"><a href="#cb20-392" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb20-393"><a href="#cb20-393" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb20-394"><a href="#cb20-394" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb20-395"><a href="#cb20-395" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-396"><a href="#cb20-396" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>How many clusters does each resolution produce?</span>
-<span id="cb20-397"><a href="#cb20-397" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Do the broader clusters at low resolution correspond to merged versions of the fine-grained clusters at high resolution, or are they arranged differently?</span>
-<span id="cb20-398"><a href="#cb20-398" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Which resolution do you expect to be most biologically interpretable for an EO atlas, where you expect a dominant electrocyte population plus a handful of smaller types (muscle, Schwann, endothelial, neurons)?</span>
-<span id="cb20-399"><a href="#cb20-399" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-400"><a href="#cb20-400" aria-hidden="true" tabindex="-1"></a>After exploring, set resolution back to **0.8** so the rest of the pipeline (and tomorrow's annotation) is reproducible.</span>
-<span id="cb20-401"><a href="#cb20-401" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-402"><a href="#cb20-402" aria-hidden="true" tabindex="-1"></a>:::: {.callout-tip title="Solution" collapse="true"}</span>
-<span id="cb20-403"><a href="#cb20-403" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-404"><a href="#cb20-404" aria-hidden="true" tabindex="-1"></a>Low resolution (0.3) gives ~5–8 broad clusters — useful for separating electrocytes from non-electrocytes. High resolution (1.5) can produce 20+ clusters, splitting electrocytes into sub-types (anterior face, posterior face, stalk) and possibly fragmenting the rare populations.</span>
-<span id="cb20-405"><a href="#cb20-405" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-406"><a href="#cb20-406" aria-hidden="true" tabindex="-1"></a>The "right" resolution depends on the question. For the cell-type atlas tomorrow, ~10–14 clusters typically work — enough to resolve stalk vs. face electrocytes without over-splitting the smaller populations. Resolution 0.8 is a defensible starting point.</span>
-<span id="cb20-407"><a href="#cb20-407" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-408"><a href="#cb20-408" aria-hidden="true" tabindex="-1"></a><span class="in">```r</span></span>
-<span id="cb20-409"><a href="#cb20-409" aria-hidden="true" tabindex="-1"></a>merged_seurat <span class="ot">&lt;-</span> <span class="fu">FindClusters</span>(merged_seurat, <span class="at">resolution =</span> <span class="fl">0.8</span>, <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb20-410"><a href="#cb20-410" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb20-411"><a href="#cb20-411" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-412"><a href="#cb20-412" aria-hidden="true" tabindex="-1"></a>::::</span>
-<span id="cb20-413"><a href="#cb20-413" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-414"><a href="#cb20-414" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb20-415"><a href="#cb20-415" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-416"><a href="#cb20-416" aria-hidden="true" tabindex="-1"></a>::: {.callout-important title="Challenge 3: Are any clusters sample-dominated? (10 min)"}</span>
-<span id="cb20-417"><a href="#cb20-417" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-418"><a href="#cb20-418" aria-hidden="true" tabindex="-1"></a>Use a contingency table to check whether any cluster is more than ~80% from a single sample.</span>
-<span id="cb20-419"><a href="#cb20-419" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-420"><a href="#cb20-420" aria-hidden="true" tabindex="-1"></a><span class="in">```r</span></span>
-<span id="cb20-421"><a href="#cb20-421" aria-hidden="true" tabindex="-1"></a>sample_cluster_table <span class="ot">&lt;-</span> <span class="fu">table</span>(</span>
-<span id="cb20-422"><a href="#cb20-422" aria-hidden="true" tabindex="-1"></a>  merged_seurat<span class="sc">$</span>orig.ident,</span>
-<span id="cb20-423"><a href="#cb20-423" aria-hidden="true" tabindex="-1"></a>  merged_seurat<span class="sc">$</span>seurat_clusters</span>
-<span id="cb20-424"><a href="#cb20-424" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb20-425"><a href="#cb20-425" aria-hidden="true" tabindex="-1"></a><span class="fu">prop.table</span>(sample_cluster_table, <span class="at">margin =</span> <span class="dv">2</span>) <span class="sc">|&gt;</span> <span class="fu">round</span>(<span class="dv">2</span>)</span>
-<span id="cb20-426"><a href="#cb20-426" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb20-427"><a href="#cb20-427" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-428"><a href="#cb20-428" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Are any clusters more than 80% from a single sample?</span>
-<span id="cb20-429"><a href="#cb20-429" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>If yes, where do those clusters sit on the Harmony UMAP — peripheral or central?</span>
-<span id="cb20-430"><a href="#cb20-430" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>List two biological and two technical explanations for why a cluster might be sample-dominated.</span>
-<span id="cb20-431"><a href="#cb20-431" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-432"><a href="#cb20-432" aria-hidden="true" tabindex="-1"></a>:::: {.callout-tip title="Solution" collapse="true"}</span>
-<span id="cb20-433"><a href="#cb20-433" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-434"><a href="#cb20-434" aria-hidden="true" tabindex="-1"></a>For the EO dataset most clusters should be reasonably balanced because the dominant cell type (electrocytes) is captured from all four fish. A sample-dominated cluster could indicate:</span>
-<span id="cb20-435"><a href="#cb20-435" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-436"><a href="#cb20-436" aria-hidden="true" tabindex="-1"></a>**Biological:**</span>
-<span id="cb20-437"><a href="#cb20-437" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>A rare cell type that only happened to be captured in one fish (sampling).</span>
-<span id="cb20-438"><a href="#cb20-438" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>A real biological state enriched in one treatment group (not an artifact).</span>
-<span id="cb20-439"><a href="#cb20-439" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-440"><a href="#cb20-440" aria-hidden="true" tabindex="-1"></a>**Technical:**</span>
-<span id="cb20-441"><a href="#cb20-441" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>An ambient RNA or doublet population specific to one capture.</span>
-<span id="cb20-442"><a href="#cb20-442" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Residual GEM-well batch that Harmony did not fully correct.</span>
-<span id="cb20-443"><a href="#cb20-443" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-444"><a href="#cb20-444" aria-hidden="true" tabindex="-1"></a>The way to distinguish: tomorrow we look at marker gene expression. Real cell types have coherent markers; technical artifacts usually do not.</span>
-<span id="cb20-445"><a href="#cb20-445" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-446"><a href="#cb20-446" aria-hidden="true" tabindex="-1"></a>::::</span>
-<span id="cb20-447"><a href="#cb20-447" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-448"><a href="#cb20-448" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb20-449"><a href="#cb20-449" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-450"><a href="#cb20-450" aria-hidden="true" tabindex="-1"></a><span class="fu">## Save the checkpoint for Saturday</span></span>
-<span id="cb20-451"><a href="#cb20-451" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-452"><a href="#cb20-452" aria-hidden="true" tabindex="-1"></a>Save the preprocessed Seurat object so Saturday's annotation episode can start from a known-good state — and so anyone who falls behind can catch up by loading the checkpoint instead of re-running SCT and Harmony.</span>
-<span id="cb20-453"><a href="#cb20-453" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-454"><a href="#cb20-454" aria-hidden="true" tabindex="-1"></a><span class="in">```{r save-checkpoint-02, message=FALSE, warning=FALSE, eval=FALSE}</span></span>
-<span id="cb20-455"><a href="#cb20-455" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(merged_seurat,</span>
-<span id="cb20-456"><a href="#cb20-456" aria-hidden="true" tabindex="-1"></a>  <span class="at">file =</span> <span class="st">"data/checkpoints/02_harmony_clustered.rds"</span>)</span>
-<span id="cb20-457"><a href="#cb20-457" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb20-349"><a href="#cb20-349" aria-hidden="true" tabindex="-1"></a>(p1 <span class="sc">|</span> p2) <span class="sc">/</span> (p3 <span class="sc">|</span> p4)</span>
+<span id="cb20-350"><a href="#cb20-350" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb20-351"><a href="#cb20-351" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-352"><a href="#cb20-352" aria-hidden="true" tabindex="-1"></a>::: {.callout-note title="What to look for"}</span>
+<span id="cb20-353"><a href="#cb20-353" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-354"><a href="#cb20-354" aria-hidden="true" tabindex="-1"></a>**By sample (left column):** sample-specific islands — compact regions occupied by only one or two samples — indicate GEM-well batch. After Harmony (bottom-left) those islands should dissolve.</span>
+<span id="cb20-355"><a href="#cb20-355" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-356"><a href="#cb20-356" aria-hidden="true" tabindex="-1"></a>**By treatment (right column):** 11-KT and vehicle nuclei **should** partially segregate if hormone treatment changes gene expression — that is the biology you want to see. Harmony corrects for GEM-well, not treatment, so treatment-level separation is expected.</span>
+<span id="cb20-357"><a href="#cb20-357" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-358"><a href="#cb20-358" aria-hidden="true" tabindex="-1"></a>If the two rows look nearly identical, that confirms minimal technical batch. Harmony provided assurance, not a dramatic visual change.</span>
+<span id="cb20-359"><a href="#cb20-359" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-360"><a href="#cb20-360" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb20-361"><a href="#cb20-361" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-362"><a href="#cb20-362" aria-hidden="true" tabindex="-1"></a><span class="fu">## Visualize clusters by sample and treatment</span></span>
+<span id="cb20-363"><a href="#cb20-363" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-364"><a href="#cb20-364" aria-hidden="true" tabindex="-1"></a>The final view: clusters laid out on the Harmony UMAP, with the same plot colored three ways.</span>
+<span id="cb20-365"><a href="#cb20-365" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-366"><a href="#cb20-366" aria-hidden="true" tabindex="-1"></a><span class="in">```{r umap-cluster-views, fig.width=15, fig.height=5, message=FALSE, warning=FALSE, fig.alt="Three UMAP panels showing Harmony-corrected nuclei colored by cluster, sample, and treatment.", fig.cap="Harmony UMAP colored by Seurat cluster (left), sample (middle), and treatment (right). Clusters that contain nuclei from all four samples are likely real cell types; clusters dominated by one sample warrant scrutiny."}</span></span>
+<span id="cb20-367"><a href="#cb20-367" aria-hidden="true" tabindex="-1"></a>p_clu <span class="ot">&lt;-</span> <span class="fu">DimPlot</span>(merged_seurat,</span>
+<span id="cb20-368"><a href="#cb20-368" aria-hidden="true" tabindex="-1"></a>  <span class="at">reduction =</span> <span class="st">"umap.harmony"</span>,</span>
+<span id="cb20-369"><a href="#cb20-369" aria-hidden="true" tabindex="-1"></a>  <span class="at">group.by  =</span> <span class="st">"seurat_clusters"</span>,</span>
+<span id="cb20-370"><a href="#cb20-370" aria-hidden="true" tabindex="-1"></a>  <span class="at">label     =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb20-371"><a href="#cb20-371" aria-hidden="true" tabindex="-1"></a>  <span class="at">repel     =</span> <span class="cn">TRUE</span></span>
+<span id="cb20-372"><a href="#cb20-372" aria-hidden="true" tabindex="-1"></a>) <span class="sc">+</span> <span class="fu">ggtitle</span>(<span class="st">"Cluster"</span>) <span class="sc">+</span> <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"none"</span>)</span>
+<span id="cb20-373"><a href="#cb20-373" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-374"><a href="#cb20-374" aria-hidden="true" tabindex="-1"></a>p_smp <span class="ot">&lt;-</span> <span class="fu">DimPlot</span>(merged_seurat,</span>
+<span id="cb20-375"><a href="#cb20-375" aria-hidden="true" tabindex="-1"></a>  <span class="at">reduction =</span> <span class="st">"umap.harmony"</span>,</span>
+<span id="cb20-376"><a href="#cb20-376" aria-hidden="true" tabindex="-1"></a>  <span class="at">group.by  =</span> <span class="st">"orig.ident"</span>,</span>
+<span id="cb20-377"><a href="#cb20-377" aria-hidden="true" tabindex="-1"></a>  <span class="at">alpha     =</span> <span class="fl">0.4</span></span>
+<span id="cb20-378"><a href="#cb20-378" aria-hidden="true" tabindex="-1"></a>) <span class="sc">+</span> <span class="fu">ggtitle</span>(<span class="st">"Sample"</span>)</span>
+<span id="cb20-379"><a href="#cb20-379" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-380"><a href="#cb20-380" aria-hidden="true" tabindex="-1"></a>p_trt <span class="ot">&lt;-</span> <span class="fu">DimPlot</span>(merged_seurat,</span>
+<span id="cb20-381"><a href="#cb20-381" aria-hidden="true" tabindex="-1"></a>  <span class="at">reduction =</span> <span class="st">"umap.harmony"</span>,</span>
+<span id="cb20-382"><a href="#cb20-382" aria-hidden="true" tabindex="-1"></a>  <span class="at">group.by  =</span> <span class="st">"treatment"</span>,</span>
+<span id="cb20-383"><a href="#cb20-383" aria-hidden="true" tabindex="-1"></a>  <span class="at">alpha     =</span> <span class="fl">0.4</span>,</span>
+<span id="cb20-384"><a href="#cb20-384" aria-hidden="true" tabindex="-1"></a>  <span class="at">cols      =</span> <span class="fu">c</span>(<span class="st">"11kt"</span> <span class="ot">=</span> <span class="st">"#D55E00"</span>, <span class="st">"vehicle"</span> <span class="ot">=</span> <span class="st">"#0072B2"</span>)</span>
+<span id="cb20-385"><a href="#cb20-385" aria-hidden="true" tabindex="-1"></a>) <span class="sc">+</span> <span class="fu">ggtitle</span>(<span class="st">"Condition (11-KT vs. vehicle)"</span>)</span>
+<span id="cb20-386"><a href="#cb20-386" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-387"><a href="#cb20-387" aria-hidden="true" tabindex="-1"></a>p_clu <span class="sc">|</span> p_smp <span class="sc">|</span> p_trt</span>
+<span id="cb20-388"><a href="#cb20-388" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb20-389"><a href="#cb20-389" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-390"><a href="#cb20-390" aria-hidden="true" tabindex="-1"></a>::: {.callout-important title="Challenge 2: Resolution sweep (15 min)"}</span>
+<span id="cb20-391"><a href="#cb20-391" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-392"><a href="#cb20-392" aria-hidden="true" tabindex="-1"></a>The <span class="in">`resolution`</span> parameter controls how finely the graph is partitioned. Re-run <span class="in">`FindClusters`</span> at three resolutions and regenerate the UMAP for each.</span>
+<span id="cb20-393"><a href="#cb20-393" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-394"><a href="#cb20-394" aria-hidden="true" tabindex="-1"></a><span class="in">```r</span></span>
+<span id="cb20-395"><a href="#cb20-395" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (res <span class="cf">in</span> <span class="fu">c</span>(<span class="fl">0.3</span>, <span class="fl">0.8</span>, <span class="fl">1.5</span>)) {</span>
+<span id="cb20-396"><a href="#cb20-396" aria-hidden="true" tabindex="-1"></a>  merged_seurat <span class="ot">&lt;-</span> <span class="fu">FindClusters</span>(merged_seurat, <span class="at">resolution =</span> res, <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb20-397"><a href="#cb20-397" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(</span>
+<span id="cb20-398"><a href="#cb20-398" aria-hidden="true" tabindex="-1"></a>    <span class="fu">DimPlot</span>(merged_seurat, <span class="at">reduction =</span> <span class="st">"umap.harmony"</span>,</span>
+<span id="cb20-399"><a href="#cb20-399" aria-hidden="true" tabindex="-1"></a>            <span class="at">group.by =</span> <span class="st">"seurat_clusters"</span>, <span class="at">label =</span> <span class="cn">TRUE</span>) <span class="sc">+</span></span>
+<span id="cb20-400"><a href="#cb20-400" aria-hidden="true" tabindex="-1"></a>      <span class="fu">ggtitle</span>(<span class="fu">paste</span>(<span class="st">"resolution ="</span>, res))</span>
+<span id="cb20-401"><a href="#cb20-401" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb20-402"><a href="#cb20-402" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb20-403"><a href="#cb20-403" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb20-404"><a href="#cb20-404" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-405"><a href="#cb20-405" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>How many clusters does each resolution produce?</span>
+<span id="cb20-406"><a href="#cb20-406" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Do the broader clusters at low resolution correspond to merged versions of the fine-grained clusters at high resolution, or are they arranged differently?</span>
+<span id="cb20-407"><a href="#cb20-407" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Which resolution do you expect to be most biologically interpretable for an EO atlas, where you expect a dominant electrocyte population plus a handful of smaller types (muscle, Schwann, endothelial, neurons)?</span>
+<span id="cb20-408"><a href="#cb20-408" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-409"><a href="#cb20-409" aria-hidden="true" tabindex="-1"></a>After exploring, set resolution back to **0.8** so the rest of the pipeline (and tomorrow's annotation) is reproducible.</span>
+<span id="cb20-410"><a href="#cb20-410" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-411"><a href="#cb20-411" aria-hidden="true" tabindex="-1"></a>:::: {.callout-tip title="Solution" collapse="true"}</span>
+<span id="cb20-412"><a href="#cb20-412" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-413"><a href="#cb20-413" aria-hidden="true" tabindex="-1"></a>Low resolution (0.3) gives ~5–8 broad clusters — useful for separating electrocytes from non-electrocytes. High resolution (1.5) can produce 20+ clusters, splitting electrocytes into sub-types (anterior face, posterior face, stalk) and possibly fragmenting the rare populations.</span>
+<span id="cb20-414"><a href="#cb20-414" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-415"><a href="#cb20-415" aria-hidden="true" tabindex="-1"></a>The "right" resolution depends on the question. For the cell-type atlas tomorrow, ~10–14 clusters typically work — enough to resolve stalk vs. face electrocytes without over-splitting the smaller populations. Resolution 0.8 is a defensible starting point.</span>
+<span id="cb20-416"><a href="#cb20-416" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-417"><a href="#cb20-417" aria-hidden="true" tabindex="-1"></a><span class="in">```r</span></span>
+<span id="cb20-418"><a href="#cb20-418" aria-hidden="true" tabindex="-1"></a>merged_seurat <span class="ot">&lt;-</span> <span class="fu">FindClusters</span>(merged_seurat, <span class="at">resolution =</span> <span class="fl">0.8</span>, <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb20-419"><a href="#cb20-419" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb20-420"><a href="#cb20-420" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-421"><a href="#cb20-421" aria-hidden="true" tabindex="-1"></a>::::</span>
+<span id="cb20-422"><a href="#cb20-422" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-423"><a href="#cb20-423" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb20-424"><a href="#cb20-424" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-425"><a href="#cb20-425" aria-hidden="true" tabindex="-1"></a>::: {.callout-important title="Challenge 3 (optional, 10 min): Are any clusters sample-dominated?"}</span>
+<span id="cb20-426"><a href="#cb20-426" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-427"><a href="#cb20-427" aria-hidden="true" tabindex="-1"></a>Use a contingency table to check whether any cluster is more than ~80% from a single sample.</span>
+<span id="cb20-428"><a href="#cb20-428" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-429"><a href="#cb20-429" aria-hidden="true" tabindex="-1"></a><span class="in">```r</span></span>
+<span id="cb20-430"><a href="#cb20-430" aria-hidden="true" tabindex="-1"></a>sample_cluster_table <span class="ot">&lt;-</span> <span class="fu">table</span>(</span>
+<span id="cb20-431"><a href="#cb20-431" aria-hidden="true" tabindex="-1"></a>  merged_seurat<span class="sc">$</span>orig.ident,</span>
+<span id="cb20-432"><a href="#cb20-432" aria-hidden="true" tabindex="-1"></a>  merged_seurat<span class="sc">$</span>seurat_clusters</span>
+<span id="cb20-433"><a href="#cb20-433" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb20-434"><a href="#cb20-434" aria-hidden="true" tabindex="-1"></a><span class="fu">prop.table</span>(sample_cluster_table, <span class="at">margin =</span> <span class="dv">2</span>) <span class="sc">|&gt;</span> <span class="fu">round</span>(<span class="dv">2</span>)</span>
+<span id="cb20-435"><a href="#cb20-435" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb20-436"><a href="#cb20-436" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-437"><a href="#cb20-437" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Are any clusters more than 80% from a single sample?</span>
+<span id="cb20-438"><a href="#cb20-438" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>If yes, where do those clusters sit on the Harmony UMAP — peripheral or central?</span>
+<span id="cb20-439"><a href="#cb20-439" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>List two biological and two technical explanations for why a cluster might be sample-dominated.</span>
+<span id="cb20-440"><a href="#cb20-440" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-441"><a href="#cb20-441" aria-hidden="true" tabindex="-1"></a>:::: {.callout-tip title="Solution" collapse="true"}</span>
+<span id="cb20-442"><a href="#cb20-442" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-443"><a href="#cb20-443" aria-hidden="true" tabindex="-1"></a>For the EO dataset most clusters should be reasonably balanced because the dominant cell type (electrocytes) is captured from all four fish. A sample-dominated cluster could indicate:</span>
+<span id="cb20-444"><a href="#cb20-444" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-445"><a href="#cb20-445" aria-hidden="true" tabindex="-1"></a>**Biological:**</span>
+<span id="cb20-446"><a href="#cb20-446" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>A rare cell type that only happened to be captured in one fish (sampling).</span>
+<span id="cb20-447"><a href="#cb20-447" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>A real biological state enriched in one treatment group (not an artifact).</span>
+<span id="cb20-448"><a href="#cb20-448" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-449"><a href="#cb20-449" aria-hidden="true" tabindex="-1"></a>**Technical:**</span>
+<span id="cb20-450"><a href="#cb20-450" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>An ambient RNA or doublet population specific to one capture.</span>
+<span id="cb20-451"><a href="#cb20-451" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Residual GEM-well batch that Harmony did not fully correct.</span>
+<span id="cb20-452"><a href="#cb20-452" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-453"><a href="#cb20-453" aria-hidden="true" tabindex="-1"></a>The way to distinguish: tomorrow we look at marker gene expression. Real cell types have coherent markers; technical artifacts usually do not.</span>
+<span id="cb20-454"><a href="#cb20-454" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-455"><a href="#cb20-455" aria-hidden="true" tabindex="-1"></a>::::</span>
+<span id="cb20-456"><a href="#cb20-456" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-457"><a href="#cb20-457" aria-hidden="true" tabindex="-1"></a>:::</span>
 <span id="cb20-458"><a href="#cb20-458" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-459"><a href="#cb20-459" aria-hidden="true" tabindex="-1"></a>::: {.callout-tip title="Key Points"}</span>
+<span id="cb20-459"><a href="#cb20-459" aria-hidden="true" tabindex="-1"></a><span class="fu">## Save the checkpoint for Saturday</span></span>
 <span id="cb20-460"><a href="#cb20-460" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-461"><a href="#cb20-461" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>CellRanger's cell calls are trustworthy for the EO library; we did not apply manual UMI/gene/mitochondrial filtering.</span>
-<span id="cb20-462"><a href="#cb20-462" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Metadata (<span class="in">`sample`</span>, <span class="in">`fish`</span>, <span class="in">`treatment`</span>) must be stamped onto the merged object before any downstream step — the <span class="in">`INJ`</span> suffix is a library label, *not* a treatment indicator.</span>
-<span id="cb20-463"><a href="#cb20-463" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>SCTransform normalizes counts using a regularized negative binomial regression; PCA operates on the resulting Pearson residuals.</span>
-<span id="cb20-464"><a href="#cb20-464" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>The elbow plot is a judgment call — err on the side of more PCs, and for this dataset 20 is comfortably past the elbow.</span>
-<span id="cb20-465"><a href="#cb20-465" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>Harmony corrects GEM-well batch by adjusting the PCA embedding; the side-by-side PCA vs. Harmony UMAP is the diagnostic for whether it helped.</span>
-<span id="cb20-466"><a href="#cb20-466" aria-hidden="true" tabindex="-1"></a><span class="ss">6. </span>Cluster resolution is a parameter, not an answer — try a sweep, then pick the value that gives biologically interpretable groups for your question.</span>
-<span id="cb20-467"><a href="#cb20-467" aria-hidden="true" tabindex="-1"></a><span class="ss">7. </span>Save the checkpoint at <span class="in">`data/checkpoints/02_harmony_clustered.rds`</span> — Saturday's episode loads this object as its starting state.</span>
-<span id="cb20-468"><a href="#cb20-468" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-469"><a href="#cb20-469" aria-hidden="true" tabindex="-1"></a>:::</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
+<span id="cb20-461"><a href="#cb20-461" aria-hidden="true" tabindex="-1"></a>Save the preprocessed Seurat object so Saturday's annotation episode can start from a known-good state — and so anyone who falls behind can catch up by loading the checkpoint instead of re-running SCT and Harmony.</span>
+<span id="cb20-462"><a href="#cb20-462" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-463"><a href="#cb20-463" aria-hidden="true" tabindex="-1"></a><span class="in">```{r save-checkpoint-02, message=FALSE, warning=FALSE, eval=FALSE}</span></span>
+<span id="cb20-464"><a href="#cb20-464" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(merged_seurat,</span>
+<span id="cb20-465"><a href="#cb20-465" aria-hidden="true" tabindex="-1"></a>  <span class="at">file =</span> <span class="st">"data/checkpoints/02_harmony_clustered.rds"</span>)</span>
+<span id="cb20-466"><a href="#cb20-466" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb20-467"><a href="#cb20-467" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-468"><a href="#cb20-468" aria-hidden="true" tabindex="-1"></a>::: {.callout-tip title="Key Points"}</span>
+<span id="cb20-469"><a href="#cb20-469" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-470"><a href="#cb20-470" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>CellRanger's cell calls are trustworthy for the EO library; we did not apply manual UMI/gene/mitochondrial filtering.</span>
+<span id="cb20-471"><a href="#cb20-471" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Metadata (<span class="in">`sample`</span>, <span class="in">`fish`</span>, <span class="in">`treatment`</span>) must be stamped onto the merged object before any downstream step — the <span class="in">`INJ`</span> suffix is a library label, *not* a treatment indicator.</span>
+<span id="cb20-472"><a href="#cb20-472" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>SCTransform normalizes counts using a regularized negative binomial regression; PCA operates on the resulting Pearson residuals.</span>
+<span id="cb20-473"><a href="#cb20-473" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>The elbow plot is a judgment call — err on the side of more PCs, and for this dataset 20 is comfortably past the elbow.</span>
+<span id="cb20-474"><a href="#cb20-474" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>Harmony corrects GEM-well batch by adjusting the PCA embedding; the side-by-side PCA vs. Harmony UMAP is the diagnostic for whether it helped.</span>
+<span id="cb20-475"><a href="#cb20-475" aria-hidden="true" tabindex="-1"></a><span class="ss">6. </span>Cluster resolution is a parameter, not an answer — try a sweep, then pick the value that gives biologically interpretable groups for your question.</span>
+<span id="cb20-476"><a href="#cb20-476" aria-hidden="true" tabindex="-1"></a><span class="ss">7. </span>Save the checkpoint at <span class="in">`data/checkpoints/02_harmony_clustered.rds`</span> — Saturday's episode loads this object as its starting state.</span>
+<span id="cb20-477"><a href="#cb20-477" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-478"><a href="#cb20-478" aria-hidden="true" tabindex="-1"></a>:::</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 <footer class="footer">

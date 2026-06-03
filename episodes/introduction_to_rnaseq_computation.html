@@ -77,7 +77,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-29bd56fb2c8eaacfda1e825872b9b126.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-389f73fc23c3c3d3fb84ba62a2b360f2.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -390,6 +390,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#forensics-box" id="toc-forensics-box" class="nav-link" data-scroll-target="#forensics-box">Forensics box</a></li>
   </ul></li>
   <li><a href="#beyond-qc-what-friday-and-saturday-will-cover" id="toc-beyond-qc-what-friday-and-saturday-will-cover" class="nav-link" data-scroll-target="#beyond-qc-what-friday-and-saturday-will-cover">Beyond QC: What Friday and Saturday Will Cover</a></li>
+  <li><a href="#reference-documents-10x-genomics" id="toc-reference-documents-10x-genomics" class="nav-link" data-scroll-target="#reference-documents-10x-genomics">Reference documents (10X Genomics)</a></li>
   <li><a href="#keypoints" id="toc-keypoints" class="nav-link" data-scroll-target="#keypoints">Keypoints</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/jasongallant/ss_rnaseq_nsb2026/edit/main/episodes/introduction_to_rnaseq_computation.Rmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/jasongallant/ss_rnaseq_nsb2026/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
@@ -587,18 +588,23 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="qc-worksheet-four-pools" class="level2">
 <h2 class="anchored" data-anchor-id="qc-worksheet-four-pools">QC Worksheet — Four Pools</h2>
-<p>Open the actual reports for each pool in side tabs, walk through them, and fill in the table below. The reports live on the workshop server:</p>
-<ul>
-<li><strong>CellRanger <code>qc_report.html</code></strong> for pool <em>N</em>: <code>https://workshop.efishgenomics.com/qc/poolN_&lt;tissue&gt;/outs/qc_report.html</code></li>
-<li><strong>FastQC HTMLs</strong> for pool <em>N</em>: <code>https://workshop.efishgenomics.com/qc/poolN_&lt;tissue&gt;/fastqc_fcA/</code> and <code>fastqc_fcB/</code></li>
-</ul>
-<p>The four pools are:</p>
+<p>Open the actual reports for each pool in side tabs, walk through them, and fill in the table below.</p>
+<p>The reports live on the workshop server inside your RStudio session — they are <strong>not</strong> published to this public site. To open each one, find the file in the <strong>Files</strong> pane on the right side of RStudio (navigate into <code>data/qc/...</code>), click it, and choose <strong>View in Web Browser</strong>. That opens the rendered HTML in a new tab served through your authenticated RStudio session.</p>
 <table class="caption-top table">
+<colgroup>
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+</colgroup>
 <thead>
 <tr class="header">
 <th>Pool</th>
 <th>Tissue</th>
 <th>Fish</th>
+<th>CellRanger</th>
+<th>FastQC (flow cell A / B)</th>
 </tr>
 </thead>
 <tbody>
@@ -606,21 +612,29 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>1</td>
 <td>Hindbrain</td>
 <td>BB48, BB50</td>
+<td><code>data/qc/pool1_hindbrain/outs/qc_report.html</code></td>
+<td><code>data/qc/pool1_hindbrain/fastqc_fcA/</code> &nbsp;/&nbsp; <code>fastqc_fcB/</code></td>
 </tr>
 <tr class="even">
 <td>2</td>
 <td>Midbrain</td>
 <td>BB48, BB49INJ, BB50, BB50INJ</td>
+<td><code>data/qc/pool2_midbrain/outs/qc_report.html</code></td>
+<td><code>data/qc/pool2_midbrain/fastqc_fcA/</code> &nbsp;/&nbsp; <code>fastqc_fcB/</code></td>
 </tr>
 <tr class="odd">
 <td>3</td>
 <td>Electric organ (EO)</td>
 <td>BB48, BB49INJ, BB50, BB50INJ</td>
+<td><code>data/qc/pool3_eo/outs/qc_report.html</code></td>
+<td><code>data/qc/pool3_eo/fastqc_fcA/</code> &nbsp;/&nbsp; <code>fastqc_fcB/</code></td>
 </tr>
 <tr class="even">
 <td>4</td>
 <td>Skin / Knollenorgan</td>
 <td>BB48, BB49INJ, BB50, BB50INJ</td>
+<td><code>data/qc/pool4_skin/outs/qc_report.html</code></td>
+<td><code>data/qc/pool4_skin/fastqc_fcA/</code> &nbsp;/&nbsp; <code>fastqc_fcB/</code></td>
 </tr>
 </tbody>
 </table>
@@ -865,6 +879,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
+</section>
+<section id="reference-documents-10x-genomics" class="level2">
+<h2 class="anchored" data-anchor-id="reference-documents-10x-genomics">Reference documents (10X Genomics)</h2>
+<p>For deeper reading on the upstream chemistry, run protocols, and yield planning that feed the Cell Ranger output you read above:</p>
+<ul>
+<li><a href="files/snrnaseq-qc/10x_GEMX_Universal_3prime_v4_4plex_OCM_UserGuide.pdf">10x Chromium GEM-X Universal 3′ v4 — 4-plex OCM User Guide</a> — the exact chemistry used for the four EO samples.</li>
+<li><a href="files/snrnaseq-qc/CG000505_Chromium_Nuclei_Isolation_Kit_UG_RevB.pdf">Chromium Nuclei Isolation Kit user guide (CG000505 Rev B)</a> — alternate kit-based nuclei prep (we use the open-protocol workflow described in Thursday’s episode).</li>
+<li><a href="files/snrnaseq-qc/CG000124_Demonstrated_Protocol_Nuclei_isolation_RevG.pdf">Demonstrated Protocol: Nuclei isolation for snRNA-seq (CG000124 Rev G)</a> — 10X’s reference nuclei-isolation protocol for context.</li>
+<li><a href="files/snrnaseq-qc/10x_Sequencing_Handbook.pdf">10X Sequencing Handbook</a> — sequencing planning and per-sample read budgets.</li>
+<li><a href="files/snrnaseq-qc/CG000604_FlowCellCalculator_RevB.xlsx">Flow Cell Calculator (CG000604 Rev B)</a> — Excel calculator we used to spec the four-pool flow cell loading.</li>
+</ul>
 </section>
 <section id="keypoints" class="level2">
 <h2 class="anchored" data-anchor-id="keypoints">Keypoints</h2>
@@ -1355,8 +1380,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "snRNA-seq Computation &amp; QC"</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="an">teaching:</span><span class="co"> 35</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="an">exercises:</span><span class="co"> 25</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="an">mode:</span><span class="co"> self-paced</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="an">reading:</span><span class="co"> 60</span></span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="an">optional:</span><span class="co"> false</span></span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
@@ -1438,139 +1463,146 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-83"><a href="#cb1-83" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-84"><a href="#cb1-84" aria-hidden="true" tabindex="-1"></a><span class="fu">## QC Worksheet — Four Pools</span></span>
 <span id="cb1-85"><a href="#cb1-85" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-86"><a href="#cb1-86" aria-hidden="true" tabindex="-1"></a>Open the actual reports for each pool in side tabs, walk through them, and fill in the table below. The reports live on the workshop server:</span>
+<span id="cb1-86"><a href="#cb1-86" aria-hidden="true" tabindex="-1"></a>Open the actual reports for each pool in side tabs, walk through them, and fill in the table below.</span>
 <span id="cb1-87"><a href="#cb1-87" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-88"><a href="#cb1-88" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**CellRanger `qc_report.html`** for pool *N*: <span class="in">`https://workshop.efishgenomics.com/qc/poolN_&lt;tissue&gt;/outs/qc_report.html`</span></span>
-<span id="cb1-89"><a href="#cb1-89" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**FastQC HTMLs** for pool *N*: <span class="in">`https://workshop.efishgenomics.com/qc/poolN_&lt;tissue&gt;/fastqc_fcA/`</span> and <span class="in">`fastqc_fcB/`</span></span>
-<span id="cb1-90"><a href="#cb1-90" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-91"><a href="#cb1-91" aria-hidden="true" tabindex="-1"></a>The four pools are:</span>
-<span id="cb1-92"><a href="#cb1-92" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-93"><a href="#cb1-93" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Pool <span class="pp">|</span> Tissue <span class="pp">|</span> Fish <span class="pp">|</span></span>
-<span id="cb1-94"><a href="#cb1-94" aria-hidden="true" tabindex="-1"></a><span class="pp">|---|---|---|</span></span>
-<span id="cb1-95"><a href="#cb1-95" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 1 <span class="pp">|</span> Hindbrain <span class="pp">|</span> BB48, BB50 <span class="pp">|</span></span>
-<span id="cb1-96"><a href="#cb1-96" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 2 <span class="pp">|</span> Midbrain <span class="pp">|</span> BB48, BB49INJ, BB50, BB50INJ <span class="pp">|</span></span>
-<span id="cb1-97"><a href="#cb1-97" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 3 <span class="pp">|</span> Electric organ (EO) <span class="pp">|</span> BB48, BB49INJ, BB50, BB50INJ <span class="pp">|</span></span>
-<span id="cb1-98"><a href="#cb1-98" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 4 <span class="pp">|</span> Skin / Knollenorgan <span class="pp">|</span> BB48, BB49INJ, BB50, BB50INJ <span class="pp">|</span></span>
-<span id="cb1-99"><a href="#cb1-99" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-100"><a href="#cb1-100" aria-hidden="true" tabindex="-1"></a><span class="fu">### Per-pool comparison table</span></span>
-<span id="cb1-101"><a href="#cb1-101" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-102"><a href="#cb1-102" aria-hidden="true" tabindex="-1"></a>Read each pool's <span class="in">`qc_report.html`</span> and FastQC output. Fill in the cells below. Some are filled in for you as examples — you'll fill the blanks.</span>
-<span id="cb1-103"><a href="#cb1-103" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-104"><a href="#cb1-104" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Metric <span class="pp">|</span> Pool 1 (Hindbrain) <span class="pp">|</span> Pool 2 (Midbrain) <span class="pp">|</span> Pool 3 (EO) <span class="pp">|</span> Pool 4 (Skin) <span class="pp">|</span></span>
-<span id="cb1-105"><a href="#cb1-105" aria-hidden="true" tabindex="-1"></a><span class="pp">|---|---|---|---|---|</span></span>
-<span id="cb1-106"><a href="#cb1-106" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Confident genome mapping (%) <span class="pp">|</span> 74 <span class="pp">|</span> 76 <span class="pp">|</span> _____ <span class="pp">|</span> _____ <span class="pp">|</span></span>
-<span id="cb1-107"><a href="#cb1-107" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Intronic reads (%) <span class="pp">|</span> 36 <span class="pp">|</span> 38 <span class="pp">|</span> _____ <span class="pp">|</span> _____ <span class="pp">|</span></span>
-<span id="cb1-108"><a href="#cb1-108" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Cells called <span class="pp">|</span> 4,761 <span class="pp">|</span> 5,234 <span class="pp">|</span> _____ <span class="pp">|</span> _____ <span class="pp">|</span></span>
-<span id="cb1-109"><a href="#cb1-109" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Median genes / cell <span class="pp">|</span> 1,500–1,700 <span class="pp">|</span> 1,600–2,200 <span class="pp">|</span> _____ <span class="pp">|</span> _____ <span class="pp">|</span></span>
-<span id="cb1-110"><a href="#cb1-110" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> FastQC: per-base sequence content <span class="pp">|</span> _____ <span class="pp">|</span> _____ <span class="pp">|</span> _____ <span class="pp">|</span> _____ <span class="pp">|</span></span>
-<span id="cb1-111"><a href="#cb1-111" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> FastQC: GC content <span class="pp">|</span> _____ <span class="pp">|</span> _____ <span class="pp">|</span> _____ <span class="pp">|</span> _____ <span class="pp">|</span></span>
-<span id="cb1-112"><a href="#cb1-112" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> FastQC: overrepresented sequences <span class="pp">|</span> _____ <span class="pp">|</span> _____ <span class="pp">|</span> _____ <span class="pp">|</span> _____ <span class="pp">|</span></span>
-<span id="cb1-113"><a href="#cb1-113" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-114"><a href="#cb1-114" aria-hidden="true" tabindex="-1"></a><span class="fu">### Short-answer prompts</span></span>
-<span id="cb1-115"><a href="#cb1-115" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-116"><a href="#cb1-116" aria-hidden="true" tabindex="-1"></a>::: {.callout-important title="Worksheet Q1 — The verdict"}</span>
-<span id="cb1-117"><a href="#cb1-117" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-118"><a href="#cb1-118" aria-hidden="true" tabindex="-1"></a>Based on the metrics you filled in:</span>
-<span id="cb1-119"><a href="#cb1-119" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-120"><a href="#cb1-120" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Which pool would you exclude from analysis, and what's the single strongest piece of evidence?</span>
-<span id="cb1-121"><a href="#cb1-121" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Is the exclusion decision a "lower-quality data" call or a "this is not gene-expression data" call? Defend your wording.</span>
-<span id="cb1-122"><a href="#cb1-122" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>What would you say in a Methods section of a paper to justify the exclusion?</span>
-<span id="cb1-123"><a href="#cb1-123" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-124"><a href="#cb1-124" aria-hidden="true" tabindex="-1"></a>:::: {.callout-tip title="Solution" collapse="true"}</span>
-<span id="cb1-125"><a href="#cb1-125" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-126"><a href="#cb1-126" aria-hidden="true" tabindex="-1"></a>Pool 4 is excluded. The strongest single piece of evidence is the **1% intronic fraction** — snRNA-seq from real nuclei runs 25–45% intronic, and 1% means almost nothing was nuclear pre-mRNA. Combined with the 11% confident mapping and the 77,427 phantom cells called, the data is not low-quality gene expression — it is not gene-expression data at all.</span>
-<span id="cb1-127"><a href="#cb1-127" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-128"><a href="#cb1-128" aria-hidden="true" tabindex="-1"></a>A Methods sentence: *"Pool 4 (skin/knollenorgan) was excluded due to rRNA contamination arising from low nuclear yield during tissue preparation; Kraken2 analysis ruled out exogenous contamination."*</span>
-<span id="cb1-129"><a href="#cb1-129" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-130"><a href="#cb1-130" aria-hidden="true" tabindex="-1"></a>::::</span>
-<span id="cb1-131"><a href="#cb1-131" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-132"><a href="#cb1-132" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb1-133"><a href="#cb1-133" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-134"><a href="#cb1-134" aria-hidden="true" tabindex="-1"></a>::: {.callout-important title="Worksheet Q2 — Intronic fraction"}</span>
-<span id="cb1-135"><a href="#cb1-135" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-136"><a href="#cb1-136" aria-hidden="true" tabindex="-1"></a>The intronic-reads percentage is one of the most diagnostic Cell Ranger metrics for snRNA-seq specifically. Why does the healthy range run **25–45% for snRNA-seq** vs. **&lt;5% for scRNA-seq**?</span>
-<span id="cb1-137"><a href="#cb1-137" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-138"><a href="#cb1-138" aria-hidden="true" tabindex="-1"></a>:::: {.callout-tip title="Solution" collapse="true"}</span>
-<span id="cb1-139"><a href="#cb1-139" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-140"><a href="#cb1-140" aria-hidden="true" tabindex="-1"></a>snRNA-seq captures **nuclear** RNA, which includes large amounts of pre-mRNA — transcripts still being processed and still carrying their introns. scRNA-seq captures **cytoplasmic** RNA, which is fully spliced (introns removed). A high intronic fraction in snRNA-seq is the validation stamp for nuclear capture; in scRNA-seq it would be a contamination flag. Pool 4's 1% intronic rate means whatever was captured wasn't nuclear.</span>
-<span id="cb1-141"><a href="#cb1-141" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-142"><a href="#cb1-142" aria-hidden="true" tabindex="-1"></a>::::</span>
-<span id="cb1-143"><a href="#cb1-143" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-144"><a href="#cb1-144" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb1-145"><a href="#cb1-145" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-146"><a href="#cb1-146" aria-hidden="true" tabindex="-1"></a>::: {.callout-important title="Worksheet Q3 — The barcode-rank plot"}</span>
-<span id="cb1-147"><a href="#cb1-147" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-148"><a href="#cb1-148" aria-hidden="true" tabindex="-1"></a>Click into Pool 2's <span class="in">`qc_report.html`</span> and find the barcode-rank plot. Then do the same for Pool 4. Compare them visually.</span>
-<span id="cb1-149"><a href="#cb1-149" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-150"><a href="#cb1-150" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>What does the "knee" in Pool 2's plot represent biologically?</span>
-<span id="cb1-151"><a href="#cb1-151" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Pool 4 has no knee. What does that mean about what's in the droplets?</span>
-<span id="cb1-152"><a href="#cb1-152" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Why does the absence of a knee lead to 77,427 spurious cell calls?</span>
-<span id="cb1-153"><a href="#cb1-153" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-154"><a href="#cb1-154" aria-hidden="true" tabindex="-1"></a>:::: {.callout-tip title="Solution" collapse="true"}</span>
-<span id="cb1-155"><a href="#cb1-155" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-156"><a href="#cb1-156" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>The knee is the gap between barcodes that contained a real nucleus (high UMI count) and empty droplets (low UMI count). Cells contain 10–100× more mRNA than empty droplets, creating the gap.</span>
-<span id="cb1-157"><a href="#cb1-157" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>No knee means high-UMI and low-UMI barcodes form a continuous ramp — there is no clean signal distinguishing nucleus-containing droplets from empty ones. In Pool 4, free rRNA molecules loaded into essentially every droplet, smearing the distribution.</span>
-<span id="cb1-158"><a href="#cb1-158" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Cell Ranger's barcode-rank algorithm anchors on the knee to call cells. Without one, it picks an inflection point anywhere on the ramp and calls everything above it — 77,427 barcodes with 25–73 genes each, none of them real cells.</span>
-<span id="cb1-159"><a href="#cb1-159" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-160"><a href="#cb1-160" aria-hidden="true" tabindex="-1"></a>::::</span>
-<span id="cb1-161"><a href="#cb1-161" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-162"><a href="#cb1-162" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb1-163"><a href="#cb1-163" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-164"><a href="#cb1-164" aria-hidden="true" tabindex="-1"></a><span class="fu">### Forensics box</span></span>
-<span id="cb1-165"><a href="#cb1-165" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-166"><a href="#cb1-166" aria-hidden="true" tabindex="-1"></a>::: {.callout-note title="Pool 4 forensics — what's actually in the unmapped reads?"}</span>
-<span id="cb1-167"><a href="#cb1-167" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-168"><a href="#cb1-168" aria-hidden="true" tabindex="-1"></a>When FastQC flagged Pool 4 with **~7.5% overrepresented "No Hit" sequences**, the natural reaction is to assume contamination from another organism — bacterial skin microbiome being the obvious candidate.</span>
-<span id="cb1-169"><a href="#cb1-169" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-170"><a href="#cb1-170" aria-hidden="true" tabindex="-1"></a>Three independent lines of evidence ruled this out:</span>
-<span id="cb1-171"><a href="#cb1-171" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-172"><a href="#cb1-172" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**BLAST.** The "No Hit" consensus sequence returned **100% match to *B. brachyistius* 18S/28S rRNA**. The unmapped reads are the fish's own ribosomal RNA — not foreign.</span>
-<span id="cb1-173"><a href="#cb1-173" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**Chemistry.** The 10x Genomics poly(dT) capture chemistry requires a poly(A) tail. Bacterial mRNA isn't polyadenylated. Even if skin microbiome bacteria were present, their transcripts couldn't be captured.</span>
-<span id="cb1-174"><a href="#cb1-174" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**Kraken2.** A microbial classifier ran against the unmapped reads from both Pool 2 (midbrain, clean) and Pool 4 (skin, failed). In both pools, ~81–90% of unmapped reads were **unclassified** — identical fractions. The classified hits were reagent background (*Homo sapiens* handling contaminant, trace *Klebsiella*) and present equally in both pools. No skin-specific microbial enrichment.</span>
-<span id="cb1-175"><a href="#cb1-175" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-176"><a href="#cb1-176" aria-hidden="true" tabindex="-1"></a>The mechanism: skin nuclei are rare and fragile. Mechanical lysis protocols designed for soft brain tissue don't efficiently release nuclei from densely-packed keratinocytes. Low yield → few real nuclei → the abundant, stable rRNA pool dominated what was captured. Result: 89% rRNA library, no knee, 77,427 phantom cells. **This is a sample-preparation problem, not a bioinformatics problem.**</span>
-<span id="cb1-177"><a href="#cb1-177" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-178"><a href="#cb1-178" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb1-179"><a href="#cb1-179" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-180"><a href="#cb1-180" aria-hidden="true" tabindex="-1"></a><span class="fu">## Beyond QC: What Friday and Saturday Will Cover</span></span>
-<span id="cb1-181"><a href="#cb1-181" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-182"><a href="#cb1-182" aria-hidden="true" tabindex="-1"></a>Once you've decided which pools are real, the rest of the pipeline asks: what cell types are in this tissue, and which genes change with treatment?</span>
-<span id="cb1-183"><a href="#cb1-183" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-184"><a href="#cb1-184" aria-hidden="true" tabindex="-1"></a>**Normalization** removes the technical component of nucleus-to-nucleus variation. SCTransform fits a regularized negative binomial model to each gene and returns variance-stabilized residuals.</span>
-<span id="cb1-185"><a href="#cb1-185" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-186"><a href="#cb1-186" aria-hidden="true" tabindex="-1"></a>**PCA** compresses ~3,000 highly variable genes into 20–30 principal components — enough to capture meaningful variance, few enough to cluster on.</span>
-<span id="cb1-187"><a href="#cb1-187" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-188"><a href="#cb1-188" aria-hidden="true" tabindex="-1"></a>**Harmony** corrects GEM-well batch effects in the PCA embedding. With four samples on two capture days, batch is real; Harmony aligns samples within each cell type without flattening cell-type structure.</span>
-<span id="cb1-189"><a href="#cb1-189" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-190"><a href="#cb1-190" aria-hidden="true" tabindex="-1"></a>**Clustering** uses Louvain community detection on a kNN graph in the corrected embedding. The resolution parameter controls how finely the graph is partitioned — a judgment call, not an answer.</span>
-<span id="cb1-191"><a href="#cb1-191" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-192"><a href="#cb1-192" aria-hidden="true" tabindex="-1"></a>**Cell-type annotation** matches clusters to curated marker gene lists (electrocyte: *scn4aa*, *scn4ab*, *kcna7a*; muscle: *pax7b*, myomesins; Schwann: *col28a1a*; endothelial: *cdh5*; motor neuron: *mnx1*, *chata*). Module scores quantify how well each cluster matches each gene set.</span>
-<span id="cb1-193"><a href="#cb1-193" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-194"><a href="#cb1-194" aria-hidden="true" tabindex="-1"></a>**Pseudobulk + DESeq2** runs the central statistical test: aggregate raw counts per (cell-type × sample), then test treatment as a fixed effect. This treats *fish*, not *nucleus*, as the unit of replication — statistically correct for snRNA-seq.</span>
-<span id="cb1-195"><a href="#cb1-195" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-196"><a href="#cb1-196" aria-hidden="true" tabindex="-1"></a>::: {.callout-important title="Predict-first — what's the right unit of replication?"}</span>
-<span id="cb1-197"><a href="#cb1-197" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-198"><a href="#cb1-198" aria-hidden="true" tabindex="-1"></a>We have 2 fish per condition × ~1,400 nuclei per fish = ~5,600 nuclei. A graduate student in your lab proposes testing 11-KT vs. vehicle with a Wilcoxon rank-sum test on the ~2,800 individual 11-KT vs. ~2,800 vehicle nuclei. Predict the consequence before reading the solution.</span>
-<span id="cb1-199"><a href="#cb1-199" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-200"><a href="#cb1-200" aria-hidden="true" tabindex="-1"></a>:::: {.callout-tip title="Solution" collapse="true"}</span>
-<span id="cb1-201"><a href="#cb1-201" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-202"><a href="#cb1-202" aria-hidden="true" tabindex="-1"></a>Nuclei from the same fish are **not independent** — they share fish-level variation in diet, microbiome, stress, circadian state, and countless other factors unrelated to 11-KT. Treating each nucleus as a replicate inflates the degrees of freedom ~1,400-fold, deflating p-values dramatically. The result: many genes look strongly "significant" but the effect rides on one unusual fish. This is pseudoreplication.</span>
-<span id="cb1-203"><a href="#cb1-203" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-204"><a href="#cb1-204" aria-hidden="true" tabindex="-1"></a>Pseudobulk aggregates raw counts to the (cell-type × fish) level, restoring n=2 per group. DESeq2 then estimates dispersion and tests with honest degrees of freedom. The padj values will be much larger than you'd see in the pseudoreplicated test — that's the correct statistical behavior, not a failure of the method.</span>
-<span id="cb1-205"><a href="#cb1-205" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-206"><a href="#cb1-206" aria-hidden="true" tabindex="-1"></a>::::</span>
-<span id="cb1-207"><a href="#cb1-207" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-208"><a href="#cb1-208" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb1-209"><a href="#cb1-209" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-210"><a href="#cb1-210" aria-hidden="true" tabindex="-1"></a><span class="fu">## Keypoints</span></span>
-<span id="cb1-211"><a href="#cb1-211" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-212"><a href="#cb1-212" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Cell Ranger converts FASTQs into a count matrix but does not validate whether the underlying biology was sound — that's what QC is for.</span>
-<span id="cb1-213"><a href="#cb1-213" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>FastQC catches problems in *what was sequenced*; Cell Ranger catches problems in *what was captured*. Both must look right.</span>
-<span id="cb1-214"><a href="#cb1-214" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>The intronic fraction (25–45% healthy) is the single most diagnostic snRNA-seq metric — it distinguishes nuclear capture from contamination.</span>
-<span id="cb1-215"><a href="#cb1-215" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>Pool 4 was excluded because intronic 1%, mapping 11%, and 77,427 phantom cells indicate the library is host ribosomal RNA, not gene expression.</span>
-<span id="cb1-216"><a href="#cb1-216" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>Pool 3 (EO) is the workshop's analytical focus — the library is real, CellRanger's cell calls look reasonable, and the 11-KT × vehicle 2v2 design is intact.</span>
-<span id="cb1-217"><a href="#cb1-217" aria-hidden="true" tabindex="-1"></a><span class="ss">6. </span>The downstream pipeline (SCTransform → PCA → Harmony → Louvain → curated annotation → pseudobulk DESeq2) is what Friday and Saturday's hands-on sessions cover.</span>
-<span id="cb1-218"><a href="#cb1-218" aria-hidden="true" tabindex="-1"></a><span class="ss">7. </span>Nuclei from the same fish are not independent replicates — always aggregate to the biological replicate level before testing for treatment effects.</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
+<span id="cb1-88"><a href="#cb1-88" aria-hidden="true" tabindex="-1"></a>The reports live on the workshop server inside your RStudio session — they are **not** published to this public site. To open each one, find the file in the **Files** pane on the right side of RStudio (navigate into `data/qc/...`), click it, and choose **View in Web Browser**. That opens the rendered HTML in a new tab served through your authenticated RStudio session.</span>
+<span id="cb1-89"><a href="#cb1-89" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-90"><a href="#cb1-90" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Pool <span class="pp">|</span> Tissue <span class="pp">|</span> Fish <span class="pp">|</span> CellRanger <span class="pp">|</span> FastQC (flow cell A / B) <span class="pp">|</span></span>
+<span id="cb1-91"><a href="#cb1-91" aria-hidden="true" tabindex="-1"></a><span class="pp">|---|---|---|---|---|</span></span>
+<span id="cb1-92"><a href="#cb1-92" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 1 <span class="pp">|</span> Hindbrain <span class="pp">|</span> BB48, BB50 <span class="pp">|</span> <span class="in">`data/qc/pool1_hindbrain/outs/qc_report.html`</span> <span class="pp">|</span> <span class="in">`data/qc/pool1_hindbrain/fastqc_fcA/`</span> <span class="dv">&amp;nbsp;</span>/<span class="dv">&amp;nbsp;</span> <span class="in">`fastqc_fcB/`</span> <span class="pp">|</span></span>
+<span id="cb1-93"><a href="#cb1-93" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 2 <span class="pp">|</span> Midbrain <span class="pp">|</span> BB48, BB49INJ, BB50, BB50INJ <span class="pp">|</span> <span class="in">`data/qc/pool2_midbrain/outs/qc_report.html`</span> <span class="pp">|</span> <span class="in">`data/qc/pool2_midbrain/fastqc_fcA/`</span> <span class="dv">&amp;nbsp;</span>/<span class="dv">&amp;nbsp;</span> <span class="in">`fastqc_fcB/`</span> <span class="pp">|</span></span>
+<span id="cb1-94"><a href="#cb1-94" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 3 <span class="pp">|</span> Electric organ (EO) <span class="pp">|</span> BB48, BB49INJ, BB50, BB50INJ <span class="pp">|</span> <span class="in">`data/qc/pool3_eo/outs/qc_report.html`</span> <span class="pp">|</span> <span class="in">`data/qc/pool3_eo/fastqc_fcA/`</span> <span class="dv">&amp;nbsp;</span>/<span class="dv">&amp;nbsp;</span> <span class="in">`fastqc_fcB/`</span> <span class="pp">|</span></span>
+<span id="cb1-95"><a href="#cb1-95" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 4 <span class="pp">|</span> Skin / Knollenorgan <span class="pp">|</span> BB48, BB49INJ, BB50, BB50INJ <span class="pp">|</span> <span class="in">`data/qc/pool4_skin/outs/qc_report.html`</span> <span class="pp">|</span> <span class="in">`data/qc/pool4_skin/fastqc_fcA/`</span> <span class="dv">&amp;nbsp;</span>/<span class="dv">&amp;nbsp;</span> <span class="in">`fastqc_fcB/`</span> <span class="pp">|</span></span>
+<span id="cb1-96"><a href="#cb1-96" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-97"><a href="#cb1-97" aria-hidden="true" tabindex="-1"></a><span class="fu">### Per-pool comparison table</span></span>
+<span id="cb1-98"><a href="#cb1-98" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-99"><a href="#cb1-99" aria-hidden="true" tabindex="-1"></a>Read each pool's <span class="in">`qc_report.html`</span> and FastQC output. Fill in the cells below. Some are filled in for you as examples — you'll fill the blanks.</span>
+<span id="cb1-100"><a href="#cb1-100" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-101"><a href="#cb1-101" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Metric <span class="pp">|</span> Pool 1 (Hindbrain) <span class="pp">|</span> Pool 2 (Midbrain) <span class="pp">|</span> Pool 3 (EO) <span class="pp">|</span> Pool 4 (Skin) <span class="pp">|</span></span>
+<span id="cb1-102"><a href="#cb1-102" aria-hidden="true" tabindex="-1"></a><span class="pp">|---|---|---|---|---|</span></span>
+<span id="cb1-103"><a href="#cb1-103" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Confident genome mapping (%) <span class="pp">|</span> 74 <span class="pp">|</span> 76 <span class="pp">|</span> _____ <span class="pp">|</span> _____ <span class="pp">|</span></span>
+<span id="cb1-104"><a href="#cb1-104" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Intronic reads (%) <span class="pp">|</span> 36 <span class="pp">|</span> 38 <span class="pp">|</span> _____ <span class="pp">|</span> _____ <span class="pp">|</span></span>
+<span id="cb1-105"><a href="#cb1-105" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Cells called <span class="pp">|</span> 4,761 <span class="pp">|</span> 5,234 <span class="pp">|</span> _____ <span class="pp">|</span> _____ <span class="pp">|</span></span>
+<span id="cb1-106"><a href="#cb1-106" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Median genes / cell <span class="pp">|</span> 1,500–1,700 <span class="pp">|</span> 1,600–2,200 <span class="pp">|</span> _____ <span class="pp">|</span> _____ <span class="pp">|</span></span>
+<span id="cb1-107"><a href="#cb1-107" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> FastQC: per-base sequence content <span class="pp">|</span> _____ <span class="pp">|</span> _____ <span class="pp">|</span> _____ <span class="pp">|</span> _____ <span class="pp">|</span></span>
+<span id="cb1-108"><a href="#cb1-108" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> FastQC: GC content <span class="pp">|</span> _____ <span class="pp">|</span> _____ <span class="pp">|</span> _____ <span class="pp">|</span> _____ <span class="pp">|</span></span>
+<span id="cb1-109"><a href="#cb1-109" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> FastQC: overrepresented sequences <span class="pp">|</span> _____ <span class="pp">|</span> _____ <span class="pp">|</span> _____ <span class="pp">|</span> _____ <span class="pp">|</span></span>
+<span id="cb1-110"><a href="#cb1-110" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-111"><a href="#cb1-111" aria-hidden="true" tabindex="-1"></a><span class="fu">### Short-answer prompts</span></span>
+<span id="cb1-112"><a href="#cb1-112" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-113"><a href="#cb1-113" aria-hidden="true" tabindex="-1"></a>::: {.callout-important title="Worksheet Q1 — The verdict"}</span>
+<span id="cb1-114"><a href="#cb1-114" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-115"><a href="#cb1-115" aria-hidden="true" tabindex="-1"></a>Based on the metrics you filled in:</span>
+<span id="cb1-116"><a href="#cb1-116" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-117"><a href="#cb1-117" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Which pool would you exclude from analysis, and what's the single strongest piece of evidence?</span>
+<span id="cb1-118"><a href="#cb1-118" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Is the exclusion decision a "lower-quality data" call or a "this is not gene-expression data" call? Defend your wording.</span>
+<span id="cb1-119"><a href="#cb1-119" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>What would you say in a Methods section of a paper to justify the exclusion?</span>
+<span id="cb1-120"><a href="#cb1-120" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-121"><a href="#cb1-121" aria-hidden="true" tabindex="-1"></a>:::: {.callout-tip title="Solution" collapse="true"}</span>
+<span id="cb1-122"><a href="#cb1-122" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-123"><a href="#cb1-123" aria-hidden="true" tabindex="-1"></a>Pool 4 is excluded. The strongest single piece of evidence is the **1% intronic fraction** — snRNA-seq from real nuclei runs 25–45% intronic, and 1% means almost nothing was nuclear pre-mRNA. Combined with the 11% confident mapping and the 77,427 phantom cells called, the data is not low-quality gene expression — it is not gene-expression data at all.</span>
+<span id="cb1-124"><a href="#cb1-124" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-125"><a href="#cb1-125" aria-hidden="true" tabindex="-1"></a>A Methods sentence: *"Pool 4 (skin/knollenorgan) was excluded due to rRNA contamination arising from low nuclear yield during tissue preparation; Kraken2 analysis ruled out exogenous contamination."*</span>
+<span id="cb1-126"><a href="#cb1-126" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-127"><a href="#cb1-127" aria-hidden="true" tabindex="-1"></a>::::</span>
+<span id="cb1-128"><a href="#cb1-128" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-129"><a href="#cb1-129" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb1-130"><a href="#cb1-130" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-131"><a href="#cb1-131" aria-hidden="true" tabindex="-1"></a>::: {.callout-important title="Worksheet Q2 — Intronic fraction"}</span>
+<span id="cb1-132"><a href="#cb1-132" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-133"><a href="#cb1-133" aria-hidden="true" tabindex="-1"></a>The intronic-reads percentage is one of the most diagnostic Cell Ranger metrics for snRNA-seq specifically. Why does the healthy range run **25–45% for snRNA-seq** vs. **&lt;5% for scRNA-seq**?</span>
+<span id="cb1-134"><a href="#cb1-134" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-135"><a href="#cb1-135" aria-hidden="true" tabindex="-1"></a>:::: {.callout-tip title="Solution" collapse="true"}</span>
+<span id="cb1-136"><a href="#cb1-136" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-137"><a href="#cb1-137" aria-hidden="true" tabindex="-1"></a>snRNA-seq captures **nuclear** RNA, which includes large amounts of pre-mRNA — transcripts still being processed and still carrying their introns. scRNA-seq captures **cytoplasmic** RNA, which is fully spliced (introns removed). A high intronic fraction in snRNA-seq is the validation stamp for nuclear capture; in scRNA-seq it would be a contamination flag. Pool 4's 1% intronic rate means whatever was captured wasn't nuclear.</span>
+<span id="cb1-138"><a href="#cb1-138" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-139"><a href="#cb1-139" aria-hidden="true" tabindex="-1"></a>::::</span>
+<span id="cb1-140"><a href="#cb1-140" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-141"><a href="#cb1-141" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb1-142"><a href="#cb1-142" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-143"><a href="#cb1-143" aria-hidden="true" tabindex="-1"></a>::: {.callout-important title="Worksheet Q3 — The barcode-rank plot"}</span>
+<span id="cb1-144"><a href="#cb1-144" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-145"><a href="#cb1-145" aria-hidden="true" tabindex="-1"></a>Click into Pool 2's <span class="in">`qc_report.html`</span> and find the barcode-rank plot. Then do the same for Pool 4. Compare them visually.</span>
+<span id="cb1-146"><a href="#cb1-146" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-147"><a href="#cb1-147" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>What does the "knee" in Pool 2's plot represent biologically?</span>
+<span id="cb1-148"><a href="#cb1-148" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Pool 4 has no knee. What does that mean about what's in the droplets?</span>
+<span id="cb1-149"><a href="#cb1-149" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Why does the absence of a knee lead to 77,427 spurious cell calls?</span>
+<span id="cb1-150"><a href="#cb1-150" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-151"><a href="#cb1-151" aria-hidden="true" tabindex="-1"></a>:::: {.callout-tip title="Solution" collapse="true"}</span>
+<span id="cb1-152"><a href="#cb1-152" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-153"><a href="#cb1-153" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>The knee is the gap between barcodes that contained a real nucleus (high UMI count) and empty droplets (low UMI count). Cells contain 10–100× more mRNA than empty droplets, creating the gap.</span>
+<span id="cb1-154"><a href="#cb1-154" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>No knee means high-UMI and low-UMI barcodes form a continuous ramp — there is no clean signal distinguishing nucleus-containing droplets from empty ones. In Pool 4, free rRNA molecules loaded into essentially every droplet, smearing the distribution.</span>
+<span id="cb1-155"><a href="#cb1-155" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Cell Ranger's barcode-rank algorithm anchors on the knee to call cells. Without one, it picks an inflection point anywhere on the ramp and calls everything above it — 77,427 barcodes with 25–73 genes each, none of them real cells.</span>
+<span id="cb1-156"><a href="#cb1-156" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-157"><a href="#cb1-157" aria-hidden="true" tabindex="-1"></a>::::</span>
+<span id="cb1-158"><a href="#cb1-158" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-159"><a href="#cb1-159" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb1-160"><a href="#cb1-160" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-161"><a href="#cb1-161" aria-hidden="true" tabindex="-1"></a><span class="fu">### Forensics box</span></span>
+<span id="cb1-162"><a href="#cb1-162" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-163"><a href="#cb1-163" aria-hidden="true" tabindex="-1"></a>::: {.callout-note title="Pool 4 forensics — what's actually in the unmapped reads?"}</span>
+<span id="cb1-164"><a href="#cb1-164" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-165"><a href="#cb1-165" aria-hidden="true" tabindex="-1"></a>When FastQC flagged Pool 4 with **~7.5% overrepresented "No Hit" sequences**, the natural reaction is to assume contamination from another organism — bacterial skin microbiome being the obvious candidate.</span>
+<span id="cb1-166"><a href="#cb1-166" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-167"><a href="#cb1-167" aria-hidden="true" tabindex="-1"></a>Three independent lines of evidence ruled this out:</span>
+<span id="cb1-168"><a href="#cb1-168" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-169"><a href="#cb1-169" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**BLAST.** The "No Hit" consensus sequence returned **100% match to *B. brachyistius* 18S/28S rRNA**. The unmapped reads are the fish's own ribosomal RNA — not foreign.</span>
+<span id="cb1-170"><a href="#cb1-170" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**Chemistry.** The 10x Genomics poly(dT) capture chemistry requires a poly(A) tail. Bacterial mRNA isn't polyadenylated. Even if skin microbiome bacteria were present, their transcripts couldn't be captured.</span>
+<span id="cb1-171"><a href="#cb1-171" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**Kraken2.** A microbial classifier ran against the unmapped reads from both Pool 2 (midbrain, clean) and Pool 4 (skin, failed). In both pools, ~81–90% of unmapped reads were **unclassified** — identical fractions. The classified hits were reagent background (*Homo sapiens* handling contaminant, trace *Klebsiella*) and present equally in both pools. No skin-specific microbial enrichment.</span>
+<span id="cb1-172"><a href="#cb1-172" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-173"><a href="#cb1-173" aria-hidden="true" tabindex="-1"></a>The mechanism: skin nuclei are rare and fragile. Mechanical lysis protocols designed for soft brain tissue don't efficiently release nuclei from densely-packed keratinocytes. Low yield → few real nuclei → the abundant, stable rRNA pool dominated what was captured. Result: 89% rRNA library, no knee, 77,427 phantom cells. **This is a sample-preparation problem, not a bioinformatics problem.**</span>
+<span id="cb1-174"><a href="#cb1-174" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-175"><a href="#cb1-175" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb1-176"><a href="#cb1-176" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-177"><a href="#cb1-177" aria-hidden="true" tabindex="-1"></a><span class="fu">## Beyond QC: What Friday and Saturday Will Cover</span></span>
+<span id="cb1-178"><a href="#cb1-178" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-179"><a href="#cb1-179" aria-hidden="true" tabindex="-1"></a>Once you've decided which pools are real, the rest of the pipeline asks: what cell types are in this tissue, and which genes change with treatment?</span>
+<span id="cb1-180"><a href="#cb1-180" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-181"><a href="#cb1-181" aria-hidden="true" tabindex="-1"></a>**Normalization** removes the technical component of nucleus-to-nucleus variation. SCTransform fits a regularized negative binomial model to each gene and returns variance-stabilized residuals.</span>
+<span id="cb1-182"><a href="#cb1-182" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-183"><a href="#cb1-183" aria-hidden="true" tabindex="-1"></a>**PCA** compresses ~3,000 highly variable genes into 20–30 principal components — enough to capture meaningful variance, few enough to cluster on.</span>
+<span id="cb1-184"><a href="#cb1-184" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-185"><a href="#cb1-185" aria-hidden="true" tabindex="-1"></a>**Harmony** corrects GEM-well batch effects in the PCA embedding. With four samples on two capture days, batch is real; Harmony aligns samples within each cell type without flattening cell-type structure.</span>
+<span id="cb1-186"><a href="#cb1-186" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-187"><a href="#cb1-187" aria-hidden="true" tabindex="-1"></a>**Clustering** uses Louvain community detection on a kNN graph in the corrected embedding. The resolution parameter controls how finely the graph is partitioned — a judgment call, not an answer.</span>
+<span id="cb1-188"><a href="#cb1-188" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-189"><a href="#cb1-189" aria-hidden="true" tabindex="-1"></a>**Cell-type annotation** matches clusters to curated marker gene lists (electrocyte: *scn4aa*, *scn4ab*, *kcna7a*; muscle: *pax7b*, myomesins; Schwann: *col28a1a*; endothelial: *cdh5*; motor neuron: *mnx1*, *chata*). Module scores quantify how well each cluster matches each gene set.</span>
+<span id="cb1-190"><a href="#cb1-190" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-191"><a href="#cb1-191" aria-hidden="true" tabindex="-1"></a>**Pseudobulk + DESeq2** runs the central statistical test: aggregate raw counts per (cell-type × sample), then test treatment as a fixed effect. This treats *fish*, not *nucleus*, as the unit of replication — statistically correct for snRNA-seq.</span>
+<span id="cb1-192"><a href="#cb1-192" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-193"><a href="#cb1-193" aria-hidden="true" tabindex="-1"></a>::: {.callout-important title="Predict-first — what's the right unit of replication?"}</span>
+<span id="cb1-194"><a href="#cb1-194" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-195"><a href="#cb1-195" aria-hidden="true" tabindex="-1"></a>We have 2 fish per condition × ~1,400 nuclei per fish = ~5,600 nuclei. A graduate student in your lab proposes testing 11-KT vs. vehicle with a Wilcoxon rank-sum test on the ~2,800 individual 11-KT vs. ~2,800 vehicle nuclei. Predict the consequence before reading the solution.</span>
+<span id="cb1-196"><a href="#cb1-196" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-197"><a href="#cb1-197" aria-hidden="true" tabindex="-1"></a>:::: {.callout-tip title="Solution" collapse="true"}</span>
+<span id="cb1-198"><a href="#cb1-198" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-199"><a href="#cb1-199" aria-hidden="true" tabindex="-1"></a>Nuclei from the same fish are **not independent** — they share fish-level variation in diet, microbiome, stress, circadian state, and countless other factors unrelated to 11-KT. Treating each nucleus as a replicate inflates the degrees of freedom ~1,400-fold, deflating p-values dramatically. The result: many genes look strongly "significant" but the effect rides on one unusual fish. This is pseudoreplication.</span>
+<span id="cb1-200"><a href="#cb1-200" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-201"><a href="#cb1-201" aria-hidden="true" tabindex="-1"></a>Pseudobulk aggregates raw counts to the (cell-type × fish) level, restoring n=2 per group. DESeq2 then estimates dispersion and tests with honest degrees of freedom. The padj values will be much larger than you'd see in the pseudoreplicated test — that's the correct statistical behavior, not a failure of the method.</span>
+<span id="cb1-202"><a href="#cb1-202" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-203"><a href="#cb1-203" aria-hidden="true" tabindex="-1"></a>::::</span>
+<span id="cb1-204"><a href="#cb1-204" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-205"><a href="#cb1-205" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb1-206"><a href="#cb1-206" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-207"><a href="#cb1-207" aria-hidden="true" tabindex="-1"></a><span class="fu">## Reference documents (10X Genomics)</span></span>
+<span id="cb1-208"><a href="#cb1-208" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-209"><a href="#cb1-209" aria-hidden="true" tabindex="-1"></a>For deeper reading on the upstream chemistry, run protocols, and yield planning that feed the Cell Ranger output you read above:</span>
+<span id="cb1-210"><a href="#cb1-210" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-211"><a href="#cb1-211" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="co">[</span><span class="ot">10x Chromium GEM-X Universal 3′ v4 — 4-plex OCM User Guide</span><span class="co">](files/snrnaseq-qc/10x_GEMX_Universal_3prime_v4_4plex_OCM_UserGuide.pdf)</span> — the exact chemistry used for the four EO samples.</span>
+<span id="cb1-212"><a href="#cb1-212" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="co">[</span><span class="ot">Chromium Nuclei Isolation Kit user guide (CG000505 Rev B)</span><span class="co">](files/snrnaseq-qc/CG000505_Chromium_Nuclei_Isolation_Kit_UG_RevB.pdf)</span> — alternate kit-based nuclei prep (we use the open-protocol workflow described in Thursday's episode).</span>
+<span id="cb1-213"><a href="#cb1-213" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="co">[</span><span class="ot">Demonstrated Protocol: Nuclei isolation for snRNA-seq (CG000124 Rev G)</span><span class="co">](files/snrnaseq-qc/CG000124_Demonstrated_Protocol_Nuclei_isolation_RevG.pdf)</span> — 10X's reference nuclei-isolation protocol for context.</span>
+<span id="cb1-214"><a href="#cb1-214" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="co">[</span><span class="ot">10X Sequencing Handbook</span><span class="co">](files/snrnaseq-qc/10x_Sequencing_Handbook.pdf)</span> — sequencing planning and per-sample read budgets.</span>
+<span id="cb1-215"><a href="#cb1-215" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="co">[</span><span class="ot">Flow Cell Calculator (CG000604 Rev B)</span><span class="co">](files/snrnaseq-qc/CG000604_FlowCellCalculator_RevB.xlsx)</span> — Excel calculator we used to spec the four-pool flow cell loading.</span>
+<span id="cb1-216"><a href="#cb1-216" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-217"><a href="#cb1-217" aria-hidden="true" tabindex="-1"></a><span class="fu">## Keypoints</span></span>
+<span id="cb1-218"><a href="#cb1-218" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-219"><a href="#cb1-219" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Cell Ranger converts FASTQs into a count matrix but does not validate whether the underlying biology was sound — that's what QC is for.</span>
+<span id="cb1-220"><a href="#cb1-220" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>FastQC catches problems in *what was sequenced*; Cell Ranger catches problems in *what was captured*. Both must look right.</span>
+<span id="cb1-221"><a href="#cb1-221" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>The intronic fraction (25–45% healthy) is the single most diagnostic snRNA-seq metric — it distinguishes nuclear capture from contamination.</span>
+<span id="cb1-222"><a href="#cb1-222" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>Pool 4 was excluded because intronic 1%, mapping 11%, and 77,427 phantom cells indicate the library is host ribosomal RNA, not gene expression.</span>
+<span id="cb1-223"><a href="#cb1-223" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>Pool 3 (EO) is the workshop's analytical focus — the library is real, CellRanger's cell calls look reasonable, and the 11-KT × vehicle 2v2 design is intact.</span>
+<span id="cb1-224"><a href="#cb1-224" aria-hidden="true" tabindex="-1"></a><span class="ss">6. </span>The downstream pipeline (SCTransform → PCA → Harmony → Louvain → curated annotation → pseudobulk DESeq2) is what Friday and Saturday's hands-on sessions cover.</span>
+<span id="cb1-225"><a href="#cb1-225" aria-hidden="true" tabindex="-1"></a><span class="ss">7. </span>Nuclei from the same fish are not independent replicates — always aggregate to the biological replicate level before testing for treatment effects.</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 <footer class="footer">
