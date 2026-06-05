@@ -5,6 +5,7 @@ project:
     - CNAME
   render:
     - index.qmd
+    - schedule.qmd
     - episodes/*.Rmd
     - episodes/*.md
     - "!bts/" # Ignores an entire folder
@@ -26,6 +27,8 @@ website:
     left:
       - text: "Home"
         href: index.html
+      - text: "Schedule"
+        href: schedule.html
       - text: "Setup"
         href: episodes/setup.html
     right:
@@ -40,6 +43,7 @@ website:
       - section: "Overview"
         contents:
           - index.qmd
+          - schedule.qmd
       - section: "June 8: Introduction, EOD Recording and Injection"
         contents:
           - episodes/introduction.Rmd

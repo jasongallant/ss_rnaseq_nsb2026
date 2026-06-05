@@ -1,8 +1,9 @@
 ---
 title: "snRNA-seq Computation & QC"
 mode: self-paced
-reading: 60
+reading: 30
 optional: false
+location:  Home     # room shown in the schedule group heading, e.g. Loeb 160
 ---
 
 ::: {.callout-note title="Questions"}

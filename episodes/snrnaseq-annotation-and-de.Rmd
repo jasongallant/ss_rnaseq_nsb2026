@@ -1,9 +1,9 @@
 ---
 title: "Cell-Type Annotation and Differential Expression in the Electric Organ"
-mode: in-class
-teaching: 140
-exercises: 55
+mode: bioinformatics
+exercises: 90
 optional: false
+location: Loeb 156 (Breakroom)      # room shown in the schedule group heading, e.g. Loeb 160
 ---
 
 ::: {.callout-note title="Questions"}

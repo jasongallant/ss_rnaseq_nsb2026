@@ -1,8 +1,9 @@
 ---
 title: "Introduction to Single-Nucleus RNA-seq"
 mode: self-paced
-reading: 40
+reading: 30
 optional: false
+location: Home       # room shown in the schedule group heading, e.g. Loeb 160
 ---
 
 ::: {.callout-note title="Questions"}

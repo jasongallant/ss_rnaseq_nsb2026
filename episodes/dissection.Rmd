@@ -1,9 +1,11 @@
 ---
 title: "Dissection of Electric Organ, Skin, and Brain for snRNA-seq"
-mode: in-class
+mode: protocol
 teaching: 15
-exercises: 60
-optional: false
+labwork: 60
+reading: 15       # optional pre-class reading, in minutes (blank = N/A)
+optional: true
+location: Loeb 160      # room shown in the schedule group heading, e.g. Loeb 160
 ---
 
 ::: {.callout-note title="Questions"}
