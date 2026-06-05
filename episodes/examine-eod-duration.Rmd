@@ -1,9 +1,10 @@
 ---
 title: 'Examining EOD Duration from Raw Recordings'
-mode: in-class
+mode: bioinformatics
 teaching: 20
 exercises: 25
 optional: false
+location: Loeb 156 (Breakroom)      # room shown in the schedule group heading, e.g. Loeb 160
 ---
 
 ::: {.callout-note title="Questions"}

@@ -1,8 +1,9 @@
 ---
 title: "Introduction: Single-Cell Transcriptomics in Weakly Electric Fish"
 mode: self-paced
-reading: 45
+reading: 30
 optional: false
+location: Home     # room shown in the schedule group heading, e.g. Loeb 160
 ---
 
 ::: {.callout-note title="Questions"}
@@ -31,6 +32,12 @@ optional: false
 ```
 
 ## Overview
+
+
+::: {.callout-tip title="Note"}
+The video and text below are highly redundant-- the goal is to give you multiple ways to engage with the material, or refer back as we proceed through the module.
+:::
+
 
 In this module you'll analyze real single-nucleus RNA-seq data from *Brienomyrus brachyistius* — a weakly electric fish from West Africa — to ask which cell types in the electric organ change gene expression when testosterone elongates the electric organ discharge (EOD). The lecture video above introduces the full biological context. This page provides the key concepts in brief and the exercises to work through after watching.
 

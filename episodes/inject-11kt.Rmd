@@ -1,9 +1,11 @@
 ---
-title: "11-Ketotestosterone Injection in Mormyrid Electric Fish"
-mode: in-class
-teaching: 20
-exercises: 75
-optional: false
+title: "11-KT Injection Protocol"
+mode: protocol
+teaching: 10
+labwork: 30
+reading: 15       # optional pre-class reading, in minutes (blank = N/A)
+optional: true
+location: Loeb 160      # room shown in the schedule group heading, e.g. Loeb 160
 ---
 
 ::: {.callout-tip title="Objectives"}

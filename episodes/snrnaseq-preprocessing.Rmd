@@ -1,9 +1,9 @@
 ---
 title: "Preprocessing the Electric Organ snRNA-seq Data"
-mode: in-class
-teaching: 90
-exercises: 45
+mode: bioinformatics
+exercises: 90
 optional: false
+location: Loeb 156 (Breakroom)       # room shown in the schedule group heading, e.g. Loeb 160
 ---
 
 ::: {.callout-note title="Questions"}

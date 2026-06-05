@@ -1,8 +1,10 @@
 ---
 title: "EOD Recording: A Practical Overview"
-mode: self-paced
-reading: 25
+mode: protocol
+labwork: 15
+reading: 30       # optional pre-class reading, in minutes (blank = N/A)
 optional: true
+location: Loeb 160      # room shown in the schedule group heading, e.g. Loeb 160
 ---
 
 ::: {.callout-note title="Questions"}

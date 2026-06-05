@@ -1,8 +1,11 @@
 ---
 title: "Isolating Nuclei from Mormyrid Tissues: Theoretical Overview"
-mode: self-paced
-reading: 45
-optional: false
+mode: protocol
+teaching: 20
+labwork: 25
+reading:        # optional pre-class reading, in minutes (blank = N/A)
+optional: true
+location: Home      # room shown in the schedule group heading, e.g. Loeb 160
 ---
 
 ::: {.callout-note title="Questions"}

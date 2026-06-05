@@ -144,3 +144,36 @@ h2 {
     border: 0;
   }
 }
+
+// Schedule page tables — uniform fixed-width columns so they align across all days.
+table.schedule-table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  margin-bottom: 1.5rem;
+
+  th,
+  td {
+    padding: 0.4rem 0.6rem;
+    border-bottom: 1px solid #e6e6e6;
+    vertical-align: top;
+  }
+
+  // Activity-type + location group header rows.
+  tr.sched-group td {
+    font-weight: 600;
+    background: #f2f7fa;
+  }
+
+  // Indent episode names beneath their group.
+  td.sched-name {
+    padding-left: 1.5rem;
+  }
+
+  // Right-align the two time columns.
+  th:nth-child(n + 2),
+  td:nth-child(n + 2) {
+    text-align: right;
+    white-space: nowrap;
+  }
+}
