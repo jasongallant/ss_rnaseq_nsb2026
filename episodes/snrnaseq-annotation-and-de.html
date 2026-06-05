@@ -77,7 +77,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-389f73fc23c3c3d3fb84ba62a2b360f2.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-19af6fc2f8dc8676cfe4a3cb64b0b01e.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -178,6 +178,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span class="menu-text">Home</span></a>
   </li>  
   <li class="nav-item">
+    <a class="nav-link" href="../schedule.html"> 
+<span class="menu-text">Schedule</span></a>
+  </li>  
+  <li class="nav-item">
     <a class="nav-link" href="../episodes/setup.html"> 
 <span class="menu-text">Setup</span></a>
   </li>  
@@ -231,7 +235,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Overview and Schedule</span></a>
+ <span class="menu-text">Overview</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../schedule.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Schedule</span></a>
   </div>
 </li>
       </ul>
@@ -260,7 +270,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../episodes/inject-11kt.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">11-Ketotestosterone Injection in Mormyrid Electric Fish</span></a>
+ <span class="menu-text">11-KT Injection Protocol</span></a>
   </div>
 </li>
       </ul>
@@ -615,29 +625,29 @@ LOC125747875 LOC125747875</code></pre>
 <span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(cluster, gene, gene_name, product, avg_log2FC, p_val_adj) <span class="sc">|&gt;</span></span>
 <span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>(<span class="dv">20</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 20 x 6
+<pre><code># A tibble: 20 × 6
    cluster gene         gene_name    product                avg_log2FC p_val_adj
    &lt;fct&gt;   &lt;chr&gt;        &lt;chr&gt;        &lt;chr&gt;                       &lt;dbl&gt;     &lt;dbl&gt;
- 1 0       LOC125741747 LOC125741747 uncharacterized LOC12~       3.09 1.55e-100
- 2 0       LOC125721977 LOC125721977 uncharacterized LOC12~       2.97 3.05e-  4
+ 1 0       LOC125741747 LOC125741747 uncharacterized LOC12…       3.09 1.55e-100
+ 2 0       LOC125721977 LOC125721977 uncharacterized LOC12…       2.97 3.05e-  4
  3 0       myog         myog         myogenin                     2.92 1   e+  0
- 4 1       napepld      napepld      N-acyl phosphatidylet~       2.39 4.38e-  3
- 5 1       LOC125723541 LOC125723541 uncharacterized LOC12~       2.36 3.25e- 21
- 6 1       ykt6         ykt6         YKT6 v-SNARE homolog ~       2.36 9.45e-  1
- 7 2       LOC125746078 LOC125746078 uncharacterized LOC12~       6.93 2.79e- 85
- 8 2       LOC125742488 LOC125742488 uncharacterized LOC12~       6.82 1.65e- 14
- 9 2       LOC125738950 LOC125738950 potassium voltage-gat~       6.15 3.51e-102
-10 3       capgb        capgb        capping protein (acti~       5.34 6.77e-  4
-11 3       LOC125725482 LOC125725482 uncharacterized LOC12~       5.34 6.77e-  4
-12 3       LOC125746231 LOC125746231 serine/threonine-prot~       4.93 3.52e-  6
-13 4       LOC125748152 LOC125748152 delta-type opioid rec~       5.94 2.66e-  5
-14 4       erbb3a       erbb3a       erb-b2 receptor tyros~       5.94 2.66e-  5
-15 4       LOC125740478 LOC125740478 ATP-sensitive inward ~       5.61 2.66e-  5
-16 4       LOC125746755 LOC125746755 zinc finger matrin-ty~       5.61 2.66e-  5
-17 4       hapln2       hapln2       hyaluronan and proteo~       5.61 2.66e-  5
-18 4       LOC125708476 LOC125708476 cartilage intermediat~       5.61 2.66e-  5
+ 4 1       napepld      napepld      N-acyl phosphatidylet…       2.39 4.38e-  3
+ 5 1       LOC125723541 LOC125723541 uncharacterized LOC12…       2.36 3.25e- 21
+ 6 1       ykt6         ykt6         YKT6 v-SNARE homolog …       2.36 9.45e-  1
+ 7 2       LOC125746078 LOC125746078 uncharacterized LOC12…       6.93 2.79e- 85
+ 8 2       LOC125742488 LOC125742488 uncharacterized LOC12…       6.82 1.65e- 14
+ 9 2       LOC125738950 LOC125738950 potassium voltage-gat…       6.15 3.51e-102
+10 3       capgb        capgb        capping protein (acti…       5.34 6.77e-  4
+11 3       LOC125725482 LOC125725482 uncharacterized LOC12…       5.34 6.77e-  4
+12 3       LOC125746231 LOC125746231 serine/threonine-prot…       4.93 3.52e-  6
+13 4       LOC125748152 LOC125748152 delta-type opioid rec…       5.94 2.66e-  5
+14 4       erbb3a       erbb3a       erb-b2 receptor tyros…       5.94 2.66e-  5
+15 4       LOC125740478 LOC125740478 ATP-sensitive inward …       5.61 2.66e-  5
+16 4       LOC125746755 LOC125746755 zinc finger matrin-ty…       5.61 2.66e-  5
+17 4       hapln2       hapln2       hyaluronan and proteo…       5.61 2.66e-  5
+18 4       LOC125708476 LOC125708476 cartilage intermediat…       5.61 2.66e-  5
 19 5       LOC125738877 LOC125738877 leptin-B-like                5.38 2.72e-  3
-20 5       LOC125744864 LOC125744864 tubulin alpha-1A chai~       5.38 2.72e-  3</code></pre>
+20 5       LOC125744864 LOC125744864 tubulin alpha-1A chai…       5.38 2.72e-  3</code></pre>
 </div>
 </div>
 <div class="callout callout-style-default callout-note callout-titled" title="Why so many `LOC#####`?">
@@ -876,7 +886,7 @@ LOC125747875 LOC125747875</code></pre>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="snrnaseq-annotation-and-de_files/figure-html/annotate-from-markers-1.png" class="img-fluid figure-img" alt="UMAP of EO nuclei on the Harmony embedding, clusters labeled by the cell type with the highest module score, with stalk electrocytes refined by PMCA <U+00D7> Electrocyte co-expression." width="864"></p>
+<p><img src="snrnaseq-annotation-and-de_files/figure-html/annotate-from-markers-1.png" class="img-fluid figure-img" alt="UMAP of EO nuclei on the Harmony embedding, clusters labeled by the cell type with the highest module score, with stalk electrocytes refined by PMCA × Electrocyte co-expression." width="864"></p>
 <figcaption>Annotated EO cell-type atlas. Stalk electrocytes are distinguished from face electrocytes by PMCA module score; Schwann, endothelial, muscle, and motor neuron clusters are identifiable as smaller distinct populations.</figcaption>
 </figure>
 </div>
@@ -1273,7 +1283,7 @@ Schwann_EO-BB50INJ         Schwann EO-BB50INJ BB50INJ   vehicle</code></pre>
 <span id="cb35-32"><a href="#cb35-32" aria-hidden="true" tabindex="-1"></a>de_combined <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(de_results)</span>
 <span id="cb35-33"><a href="#cb35-33" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Total gene × cell-type tests:"</span>, <span class="fu">nrow</span>(de_combined), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Total gene &lt;U+00D7&gt; cell-type tests: 98523 </code></pre>
+<pre><code>Total gene × cell-type tests: 98523 </code></pre>
 </div>
 </div>
 <div class="cell">
@@ -1311,29 +1321,29 @@ Schwann_EO-BB50INJ         Schwann EO-BB50INJ BB50INJ   vehicle</code></pre>
 <span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(gene_lookup <span class="sc">|&gt;</span> dplyr<span class="sc">::</span><span class="fu">select</span>(key, product), <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"gene"</span> <span class="ot">=</span> <span class="st">"key"</span>)) <span class="sc">|&gt;</span></span>
 <span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(cell_type, gene, product, log2FoldChange, lfcSE, padj)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 20 x 6
+<pre><code># A tibble: 20 × 6
    cell_type   gene         product                log2FoldChange lfcSE     padj
    &lt;chr&gt;       &lt;chr&gt;        &lt;chr&gt;                           &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;
- 1 Electrocyte LOC125746073 multiple C2 and trans~           4.57 0.420 1.07e-23
- 2 Electrocyte atp1b2b      ATPase Na+/K+ transpo~           5.34 0.559 5.93e-18
- 3 Electrocyte LOC125740220 uncharacterized LOC12~           5.17 0.567 2.43e-16
- 4 Electrocyte LOC125728537 sprouty-related, EVH1~           3.78 0.432 4.79e-15
- 5 Electrocyte xirp1        xin actin binding rep~           4.06 0.467 6.69e-15
- 6 Motorneuron LOC125746073 multiple C2 and trans~           4.10 0.437 1.47e-17
- 7 Motorneuron xirp1        xin actin binding rep~           6.25 0.792 3.92e-12
- 8 Motorneuron LOC125747555 myosin heavy chain, f~          -3.66 0.573 1.58e- 7
- 9 Motorneuron zbtb16a      zinc finger and BTB d~           2.98 0.485 5.31e- 7
-10 Motorneuron LOC125745822 uncharacterized LOC12~          -2.98 0.496 9.67e- 7
-11 Muscle      LOC125751819 cytosolic carboxypept~           4.73 0.591 3.27e-12
-12 Muscle      xirp1        xin actin binding rep~           4.35 0.599 5.30e-10
-13 Muscle      LOC125745822 uncharacterized LOC12~          -2.75 0.387 7.30e-10
-14 Muscle      pdzrn3b      PDZ domain containing~           3.64 0.508 7.30e-10
-15 Muscle      zbtb16a      zinc finger and BTB d~           3.20 0.452 7.30e-10
-16 Schwann     LOC125746073 multiple C2 and trans~           4.07 0.383 1.11e-22
-17 Schwann     LOC125745822 uncharacterized LOC12~          -2.59 0.340 3.70e-11
-18 Schwann     LOC125747555 myosin heavy chain, f~          -4.49 0.587 3.70e-11
-19 Schwann     xirp1        xin actin binding rep~           4.15 0.574 5.20e-10
-20 Schwann     zbtb16a      zinc finger and BTB d~           2.57 0.364 1.39e- 9</code></pre>
+ 1 Electrocyte LOC125746073 multiple C2 and trans…           4.57 0.420 1.07e-23
+ 2 Electrocyte atp1b2b      ATPase Na+/K+ transpo…           5.34 0.559 5.93e-18
+ 3 Electrocyte LOC125740220 uncharacterized LOC12…           5.17 0.567 2.43e-16
+ 4 Electrocyte LOC125728537 sprouty-related, EVH1…           3.78 0.432 4.79e-15
+ 5 Electrocyte xirp1        xin actin binding rep…           4.06 0.467 6.69e-15
+ 6 Motorneuron LOC125746073 multiple C2 and trans…           4.10 0.437 1.47e-17
+ 7 Motorneuron xirp1        xin actin binding rep…           6.25 0.792 3.92e-12
+ 8 Motorneuron LOC125747555 myosin heavy chain, f…          -3.66 0.573 1.58e- 7
+ 9 Motorneuron zbtb16a      zinc finger and BTB d…           2.98 0.485 5.31e- 7
+10 Motorneuron LOC125745822 uncharacterized LOC12…          -2.98 0.496 9.67e- 7
+11 Muscle      LOC125751819 cytosolic carboxypept…           4.73 0.591 3.27e-12
+12 Muscle      xirp1        xin actin binding rep…           4.35 0.599 5.30e-10
+13 Muscle      LOC125745822 uncharacterized LOC12…          -2.75 0.387 7.30e-10
+14 Muscle      pdzrn3b      PDZ domain containing…           3.64 0.508 7.30e-10
+15 Muscle      zbtb16a      zinc finger and BTB d…           3.20 0.452 7.30e-10
+16 Schwann     LOC125746073 multiple C2 and trans…           4.07 0.383 1.11e-22
+17 Schwann     LOC125745822 uncharacterized LOC12…          -2.59 0.340 3.70e-11
+18 Schwann     LOC125747555 myosin heavy chain, f…          -4.49 0.587 3.70e-11
+19 Schwann     xirp1        xin actin binding rep…           4.15 0.574 5.20e-10
+20 Schwann     zbtb16a      zinc finger and BTB d…           2.57 0.364 1.39e- 9</code></pre>
 </div>
 </div>
 </section>
@@ -1443,7 +1453,7 @@ Schwann_EO-BB50INJ         Schwann EO-BB50INJ BB50INJ   vehicle</code></pre>
 <span id="cb41-9"><a href="#cb41-9" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(sample, treatment, cell_type_go, n_cells, total, prop) <span class="sc">|&gt;</span></span>
 <span id="cb41-10"><a href="#cb41-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(treatment, cell_type_go)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 20 x 6
+<pre><code># A tibble: 20 × 6
    sample  treatment cell_type_go n_cells total   prop
    &lt;chr&gt;   &lt;chr&gt;     &lt;chr&gt;          &lt;int&gt; &lt;int&gt;  &lt;dbl&gt;
  1 BB48    11kt      Electrocyte      172   555 0.310 
@@ -1485,7 +1495,7 @@ Schwann_EO-BB50INJ         Schwann EO-BB50INJ BB50INJ   vehicle</code></pre>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="snrnaseq-annotation-and-de_files/figure-html/prop-scatter-1.png" class="img-fluid figure-img" alt="Dot plot showing individual fish cell-type proportions for each cluster, colored by treatment." width="864"></p>
-<figcaption>Individual-fish cell-type proportions. Each point is one fish. With n=2 per condition, visually comparing the four individual values is essential &lt;U+2014&gt; never plot means or SE.</figcaption>
+<figcaption>Individual-fish cell-type proportions. Each point is one fish. With n=2 per condition, visually comparing the four individual values is essential — never plot means or SE.</figcaption>
 </figure>
 </div>
 </div>
@@ -2165,10 +2175,10 @@ Schwann           0.25016721 0.8640838 -0.7204970 0.51149179 0.5114918</code></p
   </script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb53" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
 <span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "Cell-Type Annotation and Differential Expression in the Electric Organ"</span></span>
-<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a><span class="an">mode:</span><span class="co"> in-class</span></span>
-<span id="cb53-4"><a href="#cb53-4" aria-hidden="true" tabindex="-1"></a><span class="an">teaching:</span><span class="co"> 140</span></span>
-<span id="cb53-5"><a href="#cb53-5" aria-hidden="true" tabindex="-1"></a><span class="an">exercises:</span><span class="co"> 55</span></span>
-<span id="cb53-6"><a href="#cb53-6" aria-hidden="true" tabindex="-1"></a><span class="an">optional:</span><span class="co"> false</span></span>
+<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a><span class="an">mode:</span><span class="co"> bioinformatics</span></span>
+<span id="cb53-4"><a href="#cb53-4" aria-hidden="true" tabindex="-1"></a><span class="an">exercises:</span><span class="co"> 90</span></span>
+<span id="cb53-5"><a href="#cb53-5" aria-hidden="true" tabindex="-1"></a><span class="an">optional:</span><span class="co"> false</span></span>
+<span id="cb53-6"><a href="#cb53-6" aria-hidden="true" tabindex="-1"></a><span class="an">location:</span><span class="co"> Loeb 156 (Breakroom)      # room shown in the schedule group heading, e.g. Loeb 160</span></span>
 <span id="cb53-7"><a href="#cb53-7" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
 <span id="cb53-8"><a href="#cb53-8" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb53-9"><a href="#cb53-9" aria-hidden="true" tabindex="-1"></a>::: {.callout-note title="Questions"}</span>
