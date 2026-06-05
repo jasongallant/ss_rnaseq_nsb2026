@@ -1,0 +1,109 @@
+---
+title: "Schedule"
+execute:
+  # Always re-run: this page reads other episodes' frontmatter, a dependency
+  # Quarto's fretoucheze cache can't see, so `freeze: auto` would serve stale tables.
+  freeze: false
+---
+
+The six-day schedule below is generated from each episode's frontmatter. Activities fall into three types, shown as labeled groups within each day (the room appears in the group heading once it's set):
+
+- **Self-paced** — pre-class video + reading you do on your own. Has a Reading Time only.
+- **Lab protocols** — hands-on bench work we run together in class. The read-ahead is optional (marked *Optional Reading:*); has both a Reading Time and a Hands-on Time.
+- **Bioinformatics** — instructor-led computational sessions at the keyboard. Has a Hands-on Time only.
+
+```{r schedule, echo=FALSE, results='asis', message=FALSE, warning=FALSE}
+library(yaml)
+
+# Read YAML frontmatter from an episode file.
+read_episode_meta <- function(path) {
+  if (!file.exists(path)) return(list())
+  lines <- readLines(path, warn = FALSE)
+  bounds <- which(lines == "---")
+  if (length(bounds) < 2) return(list())
+  yaml::yaml.load(paste(lines[2:(bounds[2] - 1)], collapse = "\n"))
+}
+
+# A field is "set" only if non-null, non-NA, and not an empty/blank string.
+is_set <- function(x) {
+  !is.null(x) && length(x) == 1 && !is.na(x) && nzchar(trimws(as.character(x)))
+}
+
+fmt_time <- function(x) if (is_set(x)) paste0(x, " min") else "N/A"
+
+`%||%` <- function(a, b) if (!is.null(a)) a else b
+
+esc <- function(x) {
+  x <- gsub("&", "&amp;", x, fixed = TRUE)
+  x <- gsub("<", "&lt;",  x, fixed = TRUE)
+  gsub(">", "&gt;",  x, fixed = TRUE)
+}
+
+# Build one row of metadata for an episode path.
+episode_row <- function(path) {
+  meta   <- read_episode_meta(path)
+  exists <- file.exists(path)
+  title  <- if (!is.null(meta$title)) meta$title else sub("\\.(Rmd|qmd|md)$", "", basename(path))
+  link   <- sub("\\.(Rmd|qmd)$", ".html", path)
+  name   <- if (exists) paste0("<a href=\"", link, "\">", esc(title), "</a>")
+            else        paste0("<em>", esc(title), "</em> (coming soon)")
+  if (isTRUE(meta$optional)) name <- paste0("<em>Optional Reading:</em> ", name)
+  list(
+    name     = name,
+    mode     = if (!is.null(meta$mode)) meta$mode else "bioinformatics",
+    reading  = fmt_time(meta$reading),
+    handson  = fmt_time(meta$labwork %||% meta$exercises),
+    location = if (is_set(meta$location)) as.character(meta$location) else NA_character_
+  )
+}
+
+# Activity groups, in display order: filter key + heading label.
+groups <- list(
+  list(mode = "self-paced",     label = "Self-paced"),
+  list(mode = "protocol",       label = "Lab protocols"),
+  list(mode = "bioinformatics", label = "Bioinformatics")
+)
+
+cfg      <- yaml::yaml.load_file("_quarto.yml")
+sections <- cfg$website$sidebar$contents
+
+for (sec in sections) {
+  if (!is.list(sec) || is.null(sec[["section"]])) next
+
+  day      <- sec[["section"]]
+  contents <- sec[["contents"]]
+
+  episode_paths <- Filter(
+    function(x) is.character(x) && grepl("^episodes/", x),
+    contents
+  )
+
+  if (length(episode_paths) == 0) next
+
+  rows <- lapply(episode_paths, episode_row)
+
+  cat("## ", day, "\n\n")
+  cat('<table class="schedule-table">\n')
+  cat('<colgroup><col style="width:60%"><col style="width:20%"><col style="width:20%"></colgroup>\n')
+  cat('<thead><tr><th>Name</th><th>Reading Time</th><th>Hands-on Time</th></tr></thead>\n')
+  cat('<tbody>\n')
+
+  for (g in groups) {
+    grp <- Filter(function(r) r$mode == g$mode, rows)
+    if (length(grp) == 0) next
+
+    locs  <- Filter(function(x) !is.na(x), lapply(grp, function(r) r$location))
+    label <- if (length(locs) > 0) paste0(g$label, " &mdash; Location: ", esc(locs[[1]])) else g$label
+
+    cat('<tr class="sched-group"><td colspan="3">', label, "</td></tr>\n", sep = "")
+    for (r in grp) {
+      cat('<tr><td class="sched-name">', r$name, "</td><td>", r$reading,
+          "</td><td>", r$handson, "</td></tr>\n", sep = "")
+    }
+  }
+
+  cat('</tbody>\n</table>\n\n')
+}
+```
+
+See [Setup](episodes/setup.html) for getting your R environment set up!
