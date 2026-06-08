@@ -172,11 +172,25 @@ p_feat <- VlnPlot(merged_seurat,
 p_count | p_feat
 ```
 
-::: {.callout-note title="Mitochondrial-percent QC is skipped for this genome"}
+::: {.callout-note title="A contamination axis we can check: ribosomal content"}
 
-In mouse and human data, the percentage of reads from mitochondrial genes (`percent.mt`) flags damaged or lysed cells. Calling `PercentageFeatureSet(merged_seurat, pattern = "^mt-")` here returns approximately zero for every cell — not because the cells are healthy, but because mitochondrial genes in *B. brachyistius* do not use the `^mt-` prefix. Before applying a mitochondrial filter you would need to identify the correct mitochondrial gene names from `features.tsv.gz`. For this workshop we skip that step.
+In mouse and human scRNA-seq, the percentage of reads from mitochondrial genes (`percent.mt`) flags damaged or lysed cells. That metric isn't available to us yet: mitochondrial genes in *B. brachyistius* don't use the `^mt-` prefix, so `PercentageFeatureSet(pattern = "^mt-")` returns ~0 for every cell — not because the nuclei are pristine, but because the pattern matches nothing. Identifying the correct mitochondrial gene names is a work in progress.
+
+There is, however, a complementary axis we *can* compute today, and it is especially informative for single-*nucleus* data. Ribosomal-protein transcripts (`rps*`/`rpl*`) are **cytoplasmic** — they're translated and live out in the cytosol, not the nucleus. A clean nuclear prep should therefore be *depleted* of them. A nucleus carrying a lot of ribosomal-protein mRNA is a sign of **cytoplasmic carryover or ambient contamination** — exactly the failure mode the nuclei-isolation episode warns about.
 
 :::
+
+We compute the ribosomal-protein fraction now as a per-nucleus metric. At this stage it's just a baseline — most nuclei should sit near zero. The interesting signal is *per cluster*, which we revisit once clusters exist.
+
+```{r percent-ribo, message=FALSE, warning=FALSE}
+merged_seurat[["percent_ribo"]] <- PercentageFeatureSet(
+  merged_seurat, pattern = "^rp[sl]"
+)
+
+summary(merged_seurat$percent_ribo)
+```
+
+Most nuclei are near zero with a small upper tail — as expected for a nuclear prep. Split by sample, the distributions look unremarkable; the contamination signal isn't a whole-sample property, which is precisely why we defer the closer look until we can examine it cluster by cluster.
 
 ## Normalization with SCTransform
 
@@ -387,6 +401,42 @@ p_trt <- DimPlot(merged_seurat,
 p_clu | p_smp | p_trt
 ```
 
+## Ribosomal content flags a contamination cluster
+
+Back at the QC step we computed `percent_ribo` and set it aside, noting the signal was per-cluster rather than per-sample. Now that we have clusters, we can cash that in. Project the ribosomal fraction onto the Harmony UMAP and summarize it per cluster.
+
+```{r percent-ribo-featureplot, fig.width=7, fig.height=6, message=FALSE, warning=FALSE, fig.alt="FeaturePlot of per-nucleus ribosomal-protein percentage on the Harmony UMAP, with one peripheral cluster highlighted in warm color.", fig.cap="Ribosomal-protein content projected onto the Harmony UMAP. Nearly all nuclei are near zero (grey); a single peripheral cluster stands out in warm color, marking it as enriched for cytoplasmic ribosomal-protein transcript."}
+FeaturePlot(merged_seurat,
+  features  = "percent_ribo",
+  reduction = "umap.harmony",
+  order     = TRUE,
+    label     = TRUE,
+  repel     = TRUE
+)
+
+```
+
+```{r percent-ribo-by-cluster, message=FALSE, warning=FALSE}
+merged_seurat@meta.data |>
+  dplyr::group_by(seurat_clusters) |>
+  dplyr::summarise(median_ribo = median(percent_ribo), n = dplyr::n()) |>
+  dplyr::arrange(dplyr::desc(median_ribo))
+```
+
+One cluster sits at roughly **9% median ribosomal content — an order of magnitude above the next cluster, and ~30–50× the bulk of the atlas (~0.2%)**. That is not a gradient; it's a categorical outlier.
+
+::: {.callout-note title="Why this cluster is a contamination artifact, not a cell type"}
+
+Remember this is single-*nucleus* data. Ribosomal-protein mRNAs are cytoplasmic, so a clean nuclear prep should be *depleted* of them. A cluster *defined* by ribosomal-protein transcript is the signature of **cytoplasmic carryover / ambient contamination** — nuclei that dragged cytoplasm (or sat in a cytoplasm-rich ambient soup) through isolation.
+
+Tellingly, this cluster's UMI and gene counts are unremarkable — it isn't a low-depth dropout cluster. It lands on the *periphery* of the UMAP precisely because contamination, not cell identity, is what separates it: its dominant axis of variation is ribosomal load rather than a cell-type program. (If you go on to annotate these clusters by marker genes, this one's "markers" come back as ribosomal and metabolic housekeeping genes — no coherent cell-type signature.)
+
+In a production pipeline, ambient contamination like this is exactly what CellBender targets (the ambient-RNA step we flagged as skippable earlier). Here we *surface* the signal but don't filter on it — consistent with this workshop's "read the metrics carefully, don't hand-tune filters" stance. Knowing the cluster is suspect is enough to interpret it correctly downstream.
+
+One honest caveat: the **extreme** outlier (~9%) is a clear-cut contamination artifact, but a couple of other clusters show *milder* ribosomal elevation (a few percent). There the call is genuinely harder — low-level cytoplasmic carryover and a faint biological signal (e.g. a hormone-driven shift in ribosome/mitochondrial transcription) look the same on this single metric, and telling them apart needs more than `percent_ribo` alone.
+
+:::
+
 ::: {.callout-important title="Challenge 2: Resolution sweep (15 min)"}
 
 The `resolution` parameter controls how finely the graph is partitioned. Re-run `FindClusters` at three resolutions and regenerate the UMAP for each.
@@ -467,7 +517,7 @@ saveRDS(merged_seurat,
 
 ::: {.callout-tip title="Key Points"}
 
-1. CellRanger's cell calls are trustworthy for the EO library; we did not apply manual UMI/gene/mitochondrial filtering.
+1. CellRanger's cell calls are trustworthy for the EO library; we did not apply manual UMI/gene/mitochondrial filtering. We *surfaced* a ribosomal-content signal (a cytoplasmic-contamination axis specific to snRNA-seq) — one peripheral cluster stands out — but used it to interpret, not to filter.
 2. Metadata (`sample`, `fish`, `treatment`) must be stamped onto the merged object before any downstream step — the `INJ` suffix is a library label, *not* a treatment indicator.
 3. SCTransform normalizes counts using a regularized negative binomial regression; PCA operates on the resulting Pearson residuals.
 4. The elbow plot is a judgment call — err on the side of more PCs, and for this dataset 20 is comfortably past the elbow.
