@@ -1,0 +1,32 @@
+---
+title: "Interactive Marker-Gene Explorer"
+page-layout: full
+toc: false
+---
+
+This interactive companion to the [Cell-Type Annotation and Differential
+Expression](snrnaseq-annotation-and-de.html) episode lets you explore the
+cluster markers we compute with `FindAllMarkers`.
+
+**Click any cluster** on the Harmony UMAP (or use the dropdown) to see the genes
+that distinguish it from all other nuclei — gene symbol, NCBI product
+description, and the `FindAllMarkers` statistics (`avg_log2FC`, `pct.1`, `pct.2`,
+and the adjusted *p*-value). The table is sorted by effect size and is
+searchable, so you can defend a cluster's identity from its top markers.
+
+::: {.callout-note}
+The app runs entirely in your browser (no server). The first load downloads the
+R runtime and may take 10–20 seconds — give it a moment to start.
+:::
+
+::: {.column-screen-inset-right}
+```{=html}
+<iframe src="https://d18e7eu8nurr5a.cloudfront.net/apps/marker-explorer/index.html"
+        title="EO Marker-Gene Explorer"
+        style="width:100%; height:85vh; min-height:640px; border:1px solid #ddd; border-radius:6px;"
+        loading="lazy"
+        allow="cross-origin-isolated">
+</iframe>
+```
+:::
+

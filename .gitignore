@@ -1,6 +1,11 @@
 episodes/data/*
 slides/
 
+# Marker-explorer shinylive bundle: a build artifact (~86 MB WASM runtime).
+# Hosted on the public course CDN, not committed. Rebuild + deploy with
+# bts/deploy_marker_explorer.sh. Source lives in shiny/marker-explorer/.
+episodes/files/marker-explorer/
+
 # Workshop infrastructure secrets (AWS resource IDs + GitHub PAT)
 bts/infrastructure/.env*
 

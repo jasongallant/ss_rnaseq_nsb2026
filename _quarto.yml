@@ -8,6 +8,7 @@ project:
     - schedule.qmd
     - episodes/*.Rmd
     - episodes/*.md
+    - episodes/marker-explorer.qmd
     - "!bts/" # Ignores an entire folder
     - "!slides/" # Ignores an entire folder
     - "!_includes/" # HTML partials, not pages
@@ -44,15 +45,15 @@ website:
         contents:
           - index.qmd
           - schedule.qmd
-      - section: "June 8: Introduction, EOD Recording and Injection"
+      - section: "June 8: Introduction, Injection, and EOD Analysis"
         contents:
           - episodes/introduction.Rmd
           - episodes/eod-recording.Rmd # optional background
           - episodes/inject-11kt.Rmd
-      - section: "June 9: Tissue Dissection and Analysing EOD Differences"
+          - episodes/examine-eod-duration.Rmd
+      - section: "June 9: Tissue Dissection"
         contents:
           - episodes/dissection.Rmd
-          - episodes/examine-eod-duration.Rmd
       - section: "June 10: Intro to Single-Nucleus RNA-seq Analysis"
         contents:
           - episodes/introduction_to_rnaseq.Rmd
@@ -67,6 +68,7 @@ website:
         contents:
           - episodes/snrnaseq-annotation-and-de.Rmd
       - "---"
+      - episodes/marker-explorer.qmd
       - episodes/setup.md
 
   page-footer:

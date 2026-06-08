@@ -19,8 +19,8 @@ location: Loeb 156 (Breakroom)      # room shown in the schedule group heading, 
 
 - Load the post-Harmony checkpoint produced in Friday's preprocessing episode.
 - Find cluster markers with `FindAllMarkers` and join NCBI gene-product descriptions for interpretation.
-- Assign cell-type labels (electrocyte, muscle, Schwann, endothelial, motor neuron) using curated marker gene lists and `AddModuleScore`.
-- Sub-classify electrocytes into stalk vs. face using PMCA paralog expression.
+- Assign cell-type labels (posterior/anterior face, stalk, Schwann, endothelial, satellite, immune) by scoring curated marker panels with `AddModuleScore`.
+- Identify the innervated stalk with a falsifiable NMJ-signature prediction rather than by exclusion.
 - Aggregate raw counts per (cell type × sample) and run DESeq2 with treatment as the contrast.
 - Plot per-fish pseudobulk values for top DE genes and interpret the n=2-per-group result honestly.
 - Cross-validate against the Losilla & Gallant 2025 bulk RNA-seq DEG table.
@@ -36,8 +36,8 @@ Today is the biological payoff. We assign cell-type identities to those clusters
 The episode has four parts:
 
 1. **Cluster markers.** What genes define each cluster, and what do they tell us about cell identity?
-2. **Cell-type annotation.** Use curated marker gene lists and module scores to label every cluster.
-3. **Stalk vs. face.** PMCA paralog expression separates innervated stalklets from the bulk of the electrocyte population.
+2. **Cell-type annotation.** Score curated marker panels and a falsifiable stalk prediction to label every cluster — splitting the electrocytes into anterior and posterior faces and an innervated stalk.
+3. **Face validation.** Confirm the posterior/anterior face split with the markers that distinguish them.
 4. **Differential expression.** Pseudobulk + DESeq2 contrast 11-KT vs. vehicle within each cell type; cross-validate against Losilla & Gallant 2025.
 
 ## Setup and load Friday's checkpoint
@@ -62,6 +62,10 @@ merged_seurat
 ```
 
 ## Find cluster markers
+
+::: {.callout-note title="The annotator's job"}
+Clustering tells you *which* nuclei group together — it says nothing about *what they are*. For electric-organ tissue there is no off-the-shelf reference atlas to lean on, so we have to earn every label. The method we'll use is the one a good detective uses: treat each cluster as a suspect, form a **falsifiable prediction** about its identity, score the evidence, and revise when the data disagree.
+:::
 
 `FindAllMarkers` runs a Wilcoxon test for each cluster against all other cells, returning genes that distinguish each cluster from the rest. Before calling it on SCT-normalized data with multiple samples, we run `PrepSCTFindMarkers()` to re-correct counts to a common depth across samples.
 
@@ -137,82 +141,75 @@ For non-model genomes like *B. brachyistius*, this level of annotation is typica
 
 :::
 
-## Curated cell-type annotation
+::: {.callout-tip title="Explore the markers interactively"}
+Browse these cluster markers in the [Interactive Marker-Gene Explorer](marker-explorer.html): click a cluster on the UMAP to pull up its sorted, searchable marker table — the same `FindAllMarkers` statistics and product descriptions built above.
+:::
 
-Generic GO enrichment performs poorly when one cell type dominates a tissue. Instead, we annotate using **curated marker gene lists** validated in published work on the mormyrid electric organ.
+## Annotating the clusters: predict, score, revise
 
-Two electrocyte markers are unambiguous across the literature:
+Generic GO enrichment performs poorly when one cell type dominates a tissue, and the electric organ is overwhelmingly electrocyte. Instead we annotate with **curated marker panels** — drawn from published work on the mormyrid electric organ and from prior investigation of these exact clusters.
 
-- **scn4aa** (`LOC125742960`) — Nav1.4a, the principal electrogenic Na⁺ channel. Convergently recruited into electric organs across multiple independent electric-fish lineages (Gallant et al. 2014 *Science*; Thompson et al. 2018 *Curr Biol*).
-- **kcna7a** (`LOC125743019`) — Kv1.7a, the delayed-rectifier K⁺ channel setting EOD repolarization kinetics (Losilla & Gallant 2025 *JEB*).
+One discipline makes this work in a non-model organism: **a feature's name is the gene symbol only where one exists, and otherwise a provisional `LOC########` ID.** Never type a vertebrate symbol from memory and assume it is present — mine the product descriptions and intersect with the features you actually have. (This is why, below, the canonical "kcna7a" channel appears as `LOC125743019`: there is no `kcna7a` feature in this genome.)
 
-Electrocytes are myogenic in origin (derived from muscle), so muscle satellite cells (*pax7b*, myomesins) typically sit near electrocytes on the UMAP. Schwann cells, vascular endothelial cells, and a small motor neuron population round out the expected atlas.
+### Reconnaissance: who is an electrocyte?
+
+Before splitting hairs between compartments, the first question is which clusters are even electrocyte-lineage. The principal electrogenic sodium channel **scn4aa** (`LOC125742960`) is the cleanest lineage marker.
+
+::: {.callout-important title="Activity: who is an electrocyte? (6 min)"}
+Open the [Marker-Gene Explorer](marker-explorer.html). In the **Gene & Signature** tab, single-gene mode, search **scn4aa** (type `LOC125742960`).
+
+1. Which clusters light up? Eyeball a cutoff around a per-cluster mean of ~2.5 — which clusters clear it?
+2. Two clusters sit *just below* the line (c1 ≈ 1.7, c16 ≈ 1.9) and two *just above* (c14 ≈ 2.7, c11 ≈ 3.0). Is 2.5 a hard boundary or a soft one?
+3. Now search **dok2**. One cluster lights up brightly. Is it an electrocyte? If not, what might it be?
+
+:::: {.callout-tip title="Solution" collapse="true"}
+scn4aa is high across the large electrocyte clusters (both faces and the stalk) plus the posterior-tracking c15. The 2.5 line is **soft** — c11/c14 sit just above, c1/c16 just below — so read it as a guide, not a gate. **c16 is not an electrocyte:** `dok2`, an immune docking protein, peaks there — it is the organ's resident **immune/myeloid** population. And note `scn4aa` is itself only a *lineage* marker (detected in ≈98% of electrocytes): it tells you "electrocyte," not *which* electrocyte cluster.
+::::
+:::
+
+### Curated marker panels
+
+These panels were worked out from these exact clusters. Each is a small, positive signature we can score per nucleus.
 
 ```{r marker-gene-lists, message=FALSE, warning=FALSE}
+# Gene-name discipline (see above): PMCA = LOC125738035; Kv1.7-like = LOC125743019;
+# IL-8-like = LOC125720678; CCR8-like = LOC125740656; plectin-like = LOC125719088.
 marker_genes <- list(
-  Electrocyte = c(
-    # Sodium channels — Nav1.4 paralogs
-    "LOC125742960", # scn4aa
-    "scn4ab",
-    # Potassium channels — repolarisation
-    "LOC125743019", # kcna7a
-    "kcna7", "kcnq1.2", "kcnq5a", "kcnn2",
-    # Ion transport / electrocyte identity
-    "cnga3a", "atp1b2b",
-    # Cell-surface and structural identity
-    "rrad", "igsf9ba", "robo2", "tenm1"
-  ),
-  Muscle = c(
-    "pax7b", "pitx3", "myom2a", "myom2b",
-    "hey2", "ezh2", "megf10", "mcama",
-    "fgfr4", "tbx22"
-  ),
-  Schwann = c(
-    "col28a1a", "smoc1", "prss12", "antxr1b",
-    "numb", "olfml2ba", "col6a3", "sema3bl"
-  ),
-  Endothelial = c(
-    "cdh5", "pecam1b", "kdr", "flt1",
-    "clec14a", "pcdh12", "podxl", "adgrl4"
-  ),
-  Motorneuron = c(
-    "mnx1",
-    "LOC125712540", # isl-1
-    "LOC125745880", # isl-1-like
-    "LOC125704285", # isl-2a
-    "LOC125706047", # isl-2a-like
-    "chata", "slc18a3a",
-    "elavl3", "rbfox3a",
-    "nefma", "nefla", "neflb",
-    "LOC125751823", "prph",
-    "sv2a", "snap25a",
-    "LOC125712969",
-    "gap43", "nrn1b", "nrxn1a"
-  )
+  Posterior_face = c("atp1b2b", "cdh13", "LOC125738035"),          # PMCA corroborating (weakest, ~2x)
+  Stalk_NMJ      = c("musk", "chrnb1", "chrna1", "chrne"),         # post-synaptic NMJ apparatus
+  Stalk_body     = c("robo2", "slit2", "sptb", "LOC125719088"),    # microstalklet + stalk-proper membrane
+  Schwann        = c("col28a1a", "smoc1", "prss12", "numb"),
+  Endothelial    = c("cdh5", "pecam1b", "kdr", "flt1"),
+  Satellite      = c("pax7b", "notch3", "megf10", "cdh15", "myf5"),# Pax7+ progenitor pool, not muscle
+  Immune         = c("dok2", "LOC125720678", "LOC125740656")
 )
 
-# Filter to genes actually present in this dataset
+# Filter to genes actually present in this dataset (gene-name discipline as a safety net)
 marker_genes <- lapply(marker_genes, function(g) g[g %in% rownames(merged_seurat)])
 print(sapply(marker_genes, length))
-
-# Stalk sub-type marker: PMCA (plasma membrane Ca2+-ATPase) paralogs
-# Baumann et al. 2025 — pan-PMCA protein enriched on stalklet membrane
-pmca_genes <- c("atp2b1a", "atp2b2", "atp2b3b", "atp2b4")
-pmca_genes <- pmca_genes[pmca_genes %in% rownames(merged_seurat)]
 ```
+
+### Two face programs — and why anterior is defined by absence
+
+Each electrocyte has two electrically distinct membranes. The **posterior (innervated) face** carries a clean, strong program: `atp1b2b` (~70× enriched over the anterior face), `cdh13` (~6–13×), and — more weakly — PMCA (`LOC125738035`, only ~2×). We lead with `atp1b2b`/`cdh13`; PMCA only corroborates.
+
+The **anterior (non-innervated) face** has *no* comparably strong positive marker. It is recognized mainly by the **absence** of the posterior program, with a Kv1.7-like channel (`LOC125743019`) weakly enriched as directional support. That is an honest limitation, not a gap in the analysis — so we score a positive `Posterior_face` panel and read the anterior face as the electrocyte clusters that *lack* it. (The polarity itself — calling the strong program *posterior* — rests partly on contested PMCA protein localization; that two distinct face programs exist is the solid part.)
 
 ### Marker dot plot across clusters
 
 A compact diagnostic — 3–4 most informative markers per cell type — projected as a dot plot across clusters. Dot size = fraction of cells expressing; color = mean expression.
 
-```{r marker-dotplot, fig.width=15, fig.height=5, message=FALSE, warning=FALSE, fig.alt="Dot plot showing curated cell-type marker gene expression across Seurat clusters, including PMCA stalk markers.", fig.cap="Canonical cell-type marker expression across EO clusters. scn4aa and scn4ab are electrocyte Na+ channels; pax7b marks muscle satellite cells; col28a1a marks Schwann cells; cdh5 marks endothelial cells; mnx1 and chata mark motor neurons. atp2b paralogs (PMCA) mark the stalk electrocyte sub-cluster."}
+```{r marker-dotplot, fig.width=15, fig.height=5, message=FALSE, warning=FALSE, fig.alt="Dot plot showing curated cell-type marker gene expression across Seurat clusters, grouped by electrocyte lineage, posterior and anterior face, stalk NMJ and body, Schwann, endothelial, satellite, and immune programs.", fig.cap="Curated cell-type marker expression across EO clusters. scn4aa/scn4ab mark the electrocyte lineage; atp1b2b/cdh13 (with PMCA, LOC125738035) mark the posterior face while LOC125743019 weakly marks the anterior face; musk/chrnb1/chrna1/utrn mark the stalk NMJ and robo2/slit2/sptb the stalk body; col28a1a/smoc1 mark Schwann, cdh5/pecam1b endothelial, pax7b/notch3/megf10 satellite, and dok2 the immune population."}
 dot_genes <- c(
-  "LOC125742960", "scn4ab", "atp1b2b", "rrad",
-  pmca_genes,
-  "pax7b", "myom2a", "hey2",
-  "col28a1a", "smoc1", "numb",
-  "cdh5", "pecam1b", "kdr",
-  "mnx1", "LOC125712540", "chata", "elavl3", "rbfox3a"
+  "LOC125742960", "scn4ab",                  # electrocyte lineage (Na+)
+  "atp1b2b", "cdh13", "LOC125738035",        # posterior face (PMCA last = weakest)
+  "LOC125743019",                            # anterior face (weak Kv1.7-like)
+  "musk", "chrnb1", "chrna1", "utrn",        # stalk — NMJ
+  "robo2", "slit2", "sptb",                  # stalk — body
+  "col28a1a", "smoc1",                       # Schwann
+  "cdh5", "pecam1b",                         # endothelial
+  "pax7b", "notch3", "megf10",               # satellite
+  "dok2", "LOC125720678"                     # immune
 )
 dot_genes <- dot_genes[dot_genes %in% rownames(merged_seurat)]
 
@@ -226,9 +223,9 @@ DotPlot(merged_seurat,
 
 ### Module scores per cell type
 
-`AddModuleScore` computes the average expression of a gene set minus a random control set — positive scores mean the cell expresses that gene set more than expected by chance. We compute one score per cell type plus a PMCA score.
+`AddModuleScore` computes the average expression of a gene set minus a random control set — positive scores mean the cell expresses that gene set more than expected by chance. Pooling several markers this way is also how we rescue **sparse** markers: a low-copy gene like `musk` drops out in many nuclei even when truly on, but the panel as a whole recovers the population no single gene captures. We compute one score per panel.
 
-```{r module-score, fig.width=12, fig.height=9, message=FALSE, warning=FALSE, fig.alt="Feature plots on the Harmony UMAP showing module scores for each cell-type gene list and the PMCA stalk score.", fig.cap="Module scores for curated cell-type gene sets projected onto the Harmony UMAP. Warm colors indicate cells enriched for that cell type's markers. The electrocyte score should dominate; the PMCA score highlights stalk candidates; Schwann, endothelial, muscle, and motor neuron scores highlight smaller distinct territories."}
+```{r module-score, fig.width=12, fig.height=9, message=FALSE, warning=FALSE, fig.alt="Feature plots on the Harmony UMAP showing per-panel module scores for the posterior face, stalk NMJ, stalk body, Schwann, endothelial, satellite, and immune programs.", fig.cap="Module scores for the curated panels projected onto the Harmony UMAP. Warm colors indicate nuclei enriched for that panel's markers. The Posterior_face score highlights the innervated-face clusters; the Stalk_NMJ score isolates the subsynaptic stalk cluster; Stalk_body, Schwann, endothelial, satellite, and immune scores mark their smaller distinct territories. The anterior face has no positive panel — it is the electrocyte territory left dark by the Posterior_face score."}
 for (ct in names(marker_genes)) {
   if (length(marker_genes[[ct]]) < 3) {
     message(ct, ": fewer than 3 markers found — skipping")
@@ -250,86 +247,84 @@ for (ct in names(marker_genes)) {
 score_cols <- paste0(names(marker_genes), "_score")
 score_cols <- score_cols[score_cols %in% colnames(merged_seurat@meta.data)]
 
-if (length(pmca_genes) >= 2) {
-  merged_seurat <- AddModuleScore(
-    merged_seurat,
-    features = list(pmca_genes),
-    name     = "PMCA_score",
-    nbin     = 12,
-    seed     = 42
-  )
-  merged_seurat$PMCA_score <- merged_seurat$PMCA_score1
-  merged_seurat$PMCA_score1 <- NULL
-}
-
-plot_score_cols <- c(
-  score_cols,
-  if ("PMCA_score" %in% colnames(merged_seurat@meta.data)) "PMCA_score"
-)
-
 FeaturePlot(merged_seurat,
-  features  = plot_score_cols,
+  features  = score_cols,
   reduction = "umap.harmony",
   ncol      = 2,
   order     = TRUE
 )
 ```
 
-### Assign cluster labels and refine stalk identity in one pass
+### Predict the stalk before you look
 
-For each cluster we pick the cell type with the highest mean module score. Then we sub-classify the electrocyte cluster with the strongest combined PMCA × electrocyte signal as `Stalk_Electrocyte`.
+The tempting move is "the stalk is whatever cluster is left over after I've labeled the faces." That is **unfalsifiable** — any leftover cluster would do. Make a positive prediction instead.
 
-```{r annotate-from-markers, fig.width=9, fig.height=6, message=FALSE, warning=FALSE, fig.alt="UMAP of EO nuclei on the Harmony embedding, clusters labeled by the cell type with the highest module score, with stalk electrocytes refined by PMCA × Electrocyte co-expression.", fig.cap="Annotated EO cell-type atlas. Stalk electrocytes are distinguished from face electrocytes by PMCA module score; Schwann, endothelial, muscle, and motor neuron clusters are identifiable as smaller distinct populations."}
-cluster_scores <- merged_seurat@meta.data |>
+::: {.callout-tip title="Define a positive prediction"}
+In mormyrids the **stalk is the innervated compartment**, so a stalk nucleus should carry the **post-synaptic neuromuscular apparatus** — acetylcholine-receptor subunits plus MuSK, the master organizer of the synaptic membrane. That is exactly the `Stalk_NMJ` panel. If *no* cluster carries it, we have not found the stalk — an honest result, not a failure.
+:::
+
+::: {.callout-important title="Activity: predict the stalk (5 min)"}
+In the Explorer's **Signature** mode, load the predefined **Stalk_NMJ** set and read the per-cluster bar chart. Then switch to single-gene mode and search **musk**.
+
+1. Which cluster tops the NMJ signature?
+2. Is `musk` specific to that cluster, or spread across many?
+3. A reasonable *prior* guess (before the data) was that the stalk would be cluster 12 or 14. Where do 12 and 14 actually rank?
+
+:::: {.callout-tip title="Solution" collapse="true"}
+**Cluster 17 tops the NMJ signature decisively, and `musk` is essentially unique to it.** The prior guess (12/14) ranks near the *bottom* — a falsified hypothesis, corrected by the data. c17 is small (44 nuclei, `musk` detected in only ~16), which is exactly why we score the whole panel rather than trust one sparse gene: each NMJ gene drops out in different nuclei, but the module score recovers the population.
+::::
+:::
+
+We can confirm the ranking directly — average the NMJ module score within each cluster:
+
+```{r nmj-ranking, message=FALSE, warning=FALSE}
+nmj_by_cluster <- merged_seurat@meta.data |>
   group_by(seurat_clusters) |>
-  summarise(across(all_of(score_cols), mean, .names = "{.col}"), .groups = "drop")
+  summarise(mean_NMJ = mean(Stalk_NMJ_score), n = n(), .groups = "drop") |>
+  arrange(desc(mean_NMJ))
+head(nmj_by_cluster, 5)
 
-cluster_labels <- cluster_scores |>
-  pivot_longer(-seurat_clusters, names_to = "score_col", values_to = "mean_score") |>
-  mutate(cell_type = str_remove(score_col, "_score")) |>
-  group_by(seurat_clusters) |>
-  slice_max(mean_score, n = 1, with_ties = FALSE) |>
-  ungroup() |>
-  dplyr::select(seurat_clusters, cell_type, mean_score) |>
-  arrange(as.integer(as.character(seurat_clusters)))
+stalk_cluster <- as.character(nmj_by_cluster$seurat_clusters[1])   # -> "17", the NMJ anchor
+```
 
-label_vec <- setNames(
-  cluster_labels$cell_type,
-  as.character(cluster_labels$seurat_clusters)
+Cluster 17 is the **NMJ / subsynaptic zone** of the stalk — the electrocyte equivalent of the sole-plate nuclei that sit under a muscle synapse and run a different program from the rest of the syncytium. It does not stand alone: on the UMAP it anchors a small **island** (clusters 5, 6, 8, 17) set well apart from every face cluster. Clusters **5 and 6** are two stalk-*body* programs (microstalklets and stalk-proper, marked by `robo2`/`slit2` and `sptb`/plectin); cluster **8** is a ribosomal/OXPHOS-dominated outlier the preprocessing episode flags as likely **contamination**, so we keep it *out* of the stalk.
+
+::: {.callout-note title="Where are the motor neurons?"}
+We annotate the *post-synaptic* side of the synapse (c17), but there is no motor-neuron cluster — and that is exactly right. A motor neuron's soma, and therefore its nucleus, sits in the hindbrain/spinal cord; only its distal axon terminal reaches the organ. The cell body simply isn't in the EO sample, so its absence **corroborates** the c17 = NMJ call rather than undercutting it. What we *do* capture of the neuron's escort is the resident Schwann cells (c4/c10).
+:::
+
+### Commit the annotation
+
+Having scored every panel and tested the stalk prediction, we can write down the cluster-to-cell-type map. This is the synthesis step: the labels are an explicit, evidence-backed decision, not the output of a fragile one-line `argmax`.
+
+```{r annotate-from-markers, fig.width=9, fig.height=6, message=FALSE, warning=FALSE, fig.alt="UMAP of EO nuclei on the Harmony embedding, clusters labeled by evidence-based cell-type identity: posterior face, anterior face, stalk (NMJ and body zones), Schwann, endothelial, satellite, immune, and a quarantined low-confidence group.", fig.cap="Annotated EO cell-type atlas. Faces are split posterior/anterior; the stalk island (5/6/17) is shown with its NMJ vs body zones; Schwann, endothelial, satellite, and immune populations are smaller distinct territories. Clusters 1, 8, and 11 (progenitor-like, ribosomal contamination, and unresolved) are quarantined as low-confidence."}
+# Evidence-derived cluster identities.
+# Faces split posterior/anterior; the stalk island (5/6/17) is merged to one label for
+# downstream pseudobulk. c8 (ribosomal contamination), c1 (progenitor-like, below the
+# scn4aa cutoff) and c11 (unresolved electrocyte state) are quarantined as "Other".
+cluster_identity <- c(
+  "0"  = "Posterior_face", "3"  = "Posterior_face", "15" = "Posterior_face",
+  "2"  = "Anterior_face",  "7"  = "Anterior_face",  "12" = "Anterior_face", "14" = "Anterior_face",
+  "5"  = "Stalk",          "6"  = "Stalk",          "17" = "Stalk",
+  "4"  = "Schwann",        "10" = "Schwann",
+  "9"  = "Endothelial",
+  "13" = "Satellite",
+  "16" = "Immune",
+  "1"  = "Other", "8" = "Other", "11" = "Other"
 )
-merged_seurat$cell_type_go <- unname(label_vec[as.character(merged_seurat$seurat_clusters)])
+merged_seurat$cell_type_go <- unname(
+  cluster_identity[as.character(merged_seurat$seurat_clusters)]
+)
 
-# Stalk refinement: search ALL clusters by PMCA × electrocyte co-expression score
-merged_seurat$cell_type_detail <- merged_seurat$cell_type_go
+# Finer view for the atlas plot: split the stalk into its NMJ vs body zones
+cluster_detail <- cluster_identity
+cluster_detail[c("5", "6")] <- "Stalk_body"
+cluster_detail["17"]        <- "Stalk_NMJ"
+merged_seurat$cell_type_detail <- unname(
+  cluster_detail[as.character(merged_seurat$seurat_clusters)]
+)
 
-if (length(pmca_genes) >= 2 && "PMCA_score" %in% colnames(merged_seurat@meta.data)) {
-  stalk_scores <- merged_seurat@meta.data |>
-    group_by(seurat_clusters) |>
-    summarise(
-      mean_PMCA = mean(PMCA_score),
-      mean_Elec = mean(Electrocyte_score),
-      n_cells = n(),
-      initial_label = names(sort(table(cell_type_go), decreasing = TRUE))[1],
-      .groups = "drop"
-    ) |>
-    mutate(stalk_score = mean_PMCA * pmax(mean_Elec, 0)) |>
-    arrange(desc(stalk_score))
-
-  stalk_cluster <- as.character(stalk_scores$seurat_clusters[1])
-  cat("Stalk candidate: cluster", stalk_cluster,
-      "(PMCA =", round(stalk_scores$mean_PMCA[1], 3), ")\n")
-
-  pmca_by_cluster <- merged_seurat@meta.data |>
-    filter(cell_type_go == "Electrocyte") |>
-    group_by(seurat_clusters) |>
-    summarise(mean_PMCA = mean(PMCA_score), n_cells = n(), .groups = "drop") |>
-    arrange(desc(mean_PMCA))
-
-  stalk_idx <- rownames(merged_seurat@meta.data)[
-    as.character(merged_seurat$seurat_clusters) == stalk_cluster
-  ]
-  merged_seurat$cell_type_detail[stalk_idx] <- "Stalk_Electrocyte"
-}
+print(table(merged_seurat$cell_type_go))
 
 DimPlot(merged_seurat,
   reduction = "umap.harmony",
@@ -337,7 +332,7 @@ DimPlot(merged_seurat,
   label     = TRUE,
   repel     = TRUE
 ) +
-  ggtitle("EO cell types (marker-based annotation, Harmony UMAP)") +
+  ggtitle("EO cell types (evidence-based annotation, Harmony UMAP)") +
   NoLegend()
 ```
 
@@ -348,24 +343,19 @@ saveRDS(merged_seurat,
   file = "data/checkpoints/03_annotated.rds")
 ```
 
-::: {.callout-important title="Challenge 1: Defend the cell-type calls (15 min)"}
+::: {.callout-important title="Challenge 1: Stress-test the cell-type calls (15 min)"}
 
-Look at the annotated UMAP and the dot plot above.
+Use the dot plot, the module-score UMAPs, and the Explorer to push back on the map we just committed.
 
-1. Which cluster has the strongest electrocyte signature? Is it the stalk or a face cluster?
-2. The motor neuron population in EO is often sparse. Did the annotation find one? Inspect the `mnx1` and `chata` FeaturePlot — does the labeled motor neuron cluster express both?
-3. Find one cluster you're skeptical of. What evidence would change your mind?
+1. **The stalk call.** We leaned heavily on cluster 17 despite its small size. Search `musk` in the Explorer: how specific is it to c17 (peak vs. everywhere else)? Given only ~16 of its 44 nuclei are `musk`⁺, why is the module score still trustworthy?
+2. **The anterior face.** Posterior face has `atp1b2b`/`cdh13`; what positive marker cleanly defines the *anterior* face? Look at the `Posterior_face` module-score UMAP — how is the anterior face actually recognized?
+3. **A quarantined cluster.** We dumped clusters 1, 8, and 11 into "Other." Pick one, inspect its top markers in the Explorer (Tab 2), and decide: is it a real cell type we mislabeled, contamination, or genuinely unresolved? What evidence would change your mind?
 
 :::: {.callout-tip title="Solution" collapse="true"}
 
-There is no single correct answer — it depends on clustering resolution. General expectations:
-
-- One or more large clusters should receive the **Electrocyte** label, since electrocytes dominate the EO. The cluster refined to **Stalk_Electrocyte** should have high PMCA expression.
-- Because electrocytes are myogenic, **Muscle** clusters may appear nearby on the UMAP.
-- **Schwann** and **Endothelial** clusters are usually compact and small.
-- **Motorneuron** clusters may be sparse — cholinergic terminals don't always survive nuclear isolation. The cluster should co-express *mnx1* (TF) and *chata* (cholinergic identity).
-
-Skepticism is healthy. A "Schwann" cluster with no *col28a1a* expression deserves a second look — likely a misassignment driven by one outlier marker.
+- **Stalk (c17).** `musk` peaks at c17 and is near-zero elsewhere, so its *specificity* (the gap between pct-in and pct-out) is high even though its *sensitivity* is low — a classic sparse, low-copy marker. Pooling the whole NMJ panel into a module score recovers the population that any single gene misses through dropout.
+- **Anterior face.** There is *no* strong positive marker — `LOC125743019` (Kv1.7-like) is only weakly enriched. The anterior face is the electrocyte territory that stays **dark on the `Posterior_face` score**: it's defined by the *absence* of the posterior program, which is an honest limitation of the data, not a labeling mistake.
+- **Other (1/8/11).** c8 is the ribosomal/OXPHOS outlier (~9% ribosomal, ~half from one fish) — the classic contamination signature, not a cell type. c1 sits below the `scn4aa` lineage cutoff with progenitor-like markers. c11 is electrocyte-lineage but has no coherent positive program — genuinely unresolved. Quarantining ambiguous clusters rather than force-labeling them is good practice: it keeps the downstream differential-expression groups clean.
 
 ::::
 
@@ -374,7 +364,7 @@ Skepticism is healthy. A "Schwann" cluster with no *col28a1a* expression deserve
 ::: {.callout-tip title="Stretch break — and a fork in the road"}
 This is the end of the cell-type annotation block. The remaining material is denser than what came before it:
 
-- The **face sub-classification** section below (k-means on UMAP centroids, markers, biology check) is conceptually optional — if you're running short on time, **skip directly to "Pseudobulk aggregation"** and come back to this on your own. Anything downstream uses `cell_type_label`, which is already in the saved checkpoint.
+- The **face sub-classification** section below (markers that distinguish posterior from anterior, biology check) is conceptually optional — if you're running short on time, **skip directly to "Pseudobulk aggregation"** and come back to this on your own. Anything downstream uses `cell_type_go`, which is already in the saved checkpoint.
 - The **DESeq2 + propeller + cross-study scatter** sections are the central statistical payoff and should be hit live.
 
 If you're on pace, take five minutes to stand up, stretch, and refill your water. The rest of the episode runs straight through to differential expression.
@@ -382,54 +372,17 @@ If you're on pace, take five minutes to stand up, stretch, and refill your water
 
 ## Electrocyte face sub-classification {#sec-face-subclass}
 
-*Optional for fast finishers — skippable if the room is tight on time.* Each electrocyte has two electrochemically distinct membranes: the **posterior (innervated) face**, which generates the action potential, and the **anterior (non-innervated) face**, which generates a counter-potential. The exact channel inventory of each face is not fully resolved in *B. brachyistius*. Our data can begin to address this.
+*Optional for fast finishers — skippable if the room is tight on time.* We already split the electrocytes into a **posterior (innervated) face** and an **anterior (non-innervated) face** during annotation. Here we *validate* that split. The posterior face generates the action potential (Nav-dominated); the anterior face generates a counter-potential. The exact channel inventory of each face is not fully resolved in *B. brachyistius* — our data can begin to address it.
 
-Below we split the non-stalk electrocyte clusters into two candidate face groups using k-means on UMAP centroids, find markers that distinguish them, and judge whether the split is biologically coherent.
-
-```{r elec-face-setup, message=FALSE, warning=FALSE}
-if (exists("stalk_cluster") && exists("pmca_by_cluster")) {
-  face_clusters <- pmca_by_cluster |>
-    filter(as.character(seurat_clusters) != stalk_cluster) |>
-    pull(seurat_clusters) |>
-    as.character()
-
-  umap_mat <- Embeddings(merged_seurat, "umap.harmony")
-
-  face_centroids <- merged_seurat@meta.data |>
-    rownames_to_column("cell") |>
-    filter(as.character(seurat_clusters) %in% face_clusters) |>
-    left_join(as.data.frame(umap_mat) |> rownames_to_column("cell"), by = "cell") |>
-    group_by(seurat_clusters) |>
-    summarise(
-      U1 = mean(.data[[colnames(umap_mat)[1]]]),
-      U2 = mean(.data[[colnames(umap_mat)[2]]]),
-      .groups = "drop"
-    )
-
-  set.seed(42)
-  km <- kmeans(face_centroids[, c("U1", "U2")], centers = 2)
-  face_centroids$face_group <- as.character(km$cluster)
-
-  face_A <- face_centroids |> filter(face_group == "1") |> pull(seurat_clusters) |> as.character()
-  face_B <- face_centroids |> filter(face_group == "2") |> pull(seurat_clusters) |> as.character()
-
-  cat("Face group A clusters:", paste(face_A, collapse = ", "), "\n")
-  cat("Face group B clusters:", paste(face_B, collapse = ", "), "\n")
-}
-```
+Below we find the genes that distinguish the two labeled face groups and judge whether they form a biologically coherent program (a positive `avg_log2FC` means up in the posterior face).
 
 ```{r elec-face-markers, message=FALSE, warning=FALSE}
-if (exists("face_A") && exists("face_B")) {
-  elec_cells <- rownames(merged_seurat@meta.data)[
-    merged_seurat$cell_type_go == "Electrocyte"
-  ]
-
+if (all(c("Posterior_face", "Anterior_face") %in% merged_seurat$cell_type_go)) {
   face_markers <- FindMarkers(
     merged_seurat,
-    ident.1  = face_A,
-    ident.2  = face_B,
-    group.by = "seurat_clusters",
-    cells    = elec_cells,
+    ident.1  = "Posterior_face",
+    ident.2  = "Anterior_face",
+    group.by = "cell_type_go",
     verbose  = FALSE
   ) |>
     tibble::rownames_to_column("gene") |>
@@ -527,6 +480,9 @@ pb_meta <- data.frame(
     extra = "merge"
   ) |>
   mutate(
+    # AggregateExpression sanitizes "_" in group labels to "-"; restore underscores so
+    # cell_type matches the annotation-side labels (Posterior_face, Anterior_face, ...).
+    cell_type = gsub("-", "_", cell_type),
     sample = sub("EO-", "", orig_ident),
     treatment = case_when(
       sample %in% c("BB48", "BB49INJ") ~ "11kt",
@@ -550,7 +506,8 @@ sample_counts_per_ct <- pb_meta |>
   group_by(cell_type) |>
   filter(all(n >= 2)) |>
   pull(cell_type) |>
-  unique()
+  unique() |>
+  setdiff("Other")   # "Other" pools contamination/ambiguous clusters — not a biological group
 
 cat("Cell types testable:\n")
 print(sample_counts_per_ct)
@@ -624,8 +581,8 @@ de_combined |>
 
 With n=2 per group, **never plot means ± SE** — show every fish's value as a point. The point of pseudobulk is biological-replicate-level evidence; the visualization should reflect that.
 
-```{r pseudobulk-visualization, fig.width=11, fig.height=5, message=FALSE, warning=FALSE, fig.alt="Dot plots of DESeq2 size-factor-normalized counts for the top 3 DE genes in the Electrocyte cluster, with one dot per fish colored by treatment.", fig.cap="Per-fish pseudobulk expression of top DE genes in the Electrocyte cluster. Each point is one fish (n=2 per condition). Showing individual values rather than means makes the fish-to-fish consistency of each effect transparent."}
-ct_vis <- if ("Electrocyte" %in% sample_counts_per_ct) "Electrocyte" else sample_counts_per_ct[1]
+```{r pseudobulk-visualization, fig.width=11, fig.height=5, message=FALSE, warning=FALSE, fig.alt="Dot plots of DESeq2 size-factor-normalized counts for the top 3 DE genes in the visualized cell type, with one dot per fish colored by treatment.", fig.cap="Per-fish pseudobulk expression of top DE genes in the visualized cell type (ct_vis). Each point is one fish (n=2 per condition). Showing individual values rather than means makes the fish-to-fish consistency of each effect transparent."}
+ct_vis <- if ("Posterior_face" %in% sample_counts_per_ct) "Posterior_face" else sample_counts_per_ct[1]
 
 dds_vis <- dds_objects[[ct_vis]]
 dds_vis <- estimateSizeFactors(dds_vis)
@@ -686,7 +643,7 @@ There's no single right answer. The honest reasoning chain:
 
 ## Differential cell-type abundance
 
-Beyond *which genes change*, we can ask whether *cell-type proportions* shift. If 11-KT promotes muscle-to-electrocyte differentiation, the Muscle cluster should shrink and Electrocyte grow.
+Beyond *which genes change*, we can ask whether *cell-type proportions* shift. If 11-KT drives the satellite pool to differentiate into electrocytes, the Satellite fraction should shrink and the face populations grow.
 
 ```{r cell-proportions, message=FALSE, warning=FALSE}
 prop_table <- merged_seurat@meta.data |>
@@ -772,7 +729,7 @@ cat("Losilla & Gallant 2025 bulk DEGs:", nrow(losilla_bulk), "\n")
 ```
 
 ```{r bulk-snrna-overlap, message=FALSE, warning=FALSE}
-ct_check <- if ("Electrocyte" %in% names(de_results)) "Electrocyte" else names(de_results)[1]
+ct_check <- if ("Posterior_face" %in% names(de_results)) "Posterior_face" else names(de_results)[1]
 
 overlap_tbl <- de_results[[ct_check]] |>
   inner_join(losilla_bulk, by = c("gene" = "gene_bulk")) |>
@@ -848,7 +805,7 @@ Use the scatter plot and concordance numbers to answer:
 
 1. Cluster markers from `FindAllMarkers` plus NCBI gene-product descriptions are the bridge from cluster number to cell-type identity.
 2. Curated marker gene lists from the EO literature, combined with `AddModuleScore`, give defensible cell-type labels in a non-model organism.
-3. The stalk sub-classification rides on PMCA paralog expression — Baumann et al. 2025 shows pan-PMCA enrichment on the stalklet membrane.
+3. A *falsifiable prediction* — the stalk should carry the post-synaptic NMJ apparatus (`musk`/AChR) — beats labeling by exclusion: it points cleanly to the subsynaptic cluster (17) and is corroborated by the absent motor-neuron soma.
 4. Nuclei from the same fish are not independent replicates; treating them as such is pseudoreplication and inflates false-positive rates.
 5. Pseudobulk aggregation (`AggregateExpression` with `assay = "RNA"`) sums raw counts per (cell-type × sample), restoring the n=2-per-group structure for DESeq2.
 6. With n=2 per group, report log2FoldChange and direction first, padj second. Plot every fish — never group means.
